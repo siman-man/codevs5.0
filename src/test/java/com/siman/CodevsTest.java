@@ -38,11 +38,13 @@ public class CodevsTest {
 
         PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
         assertThat(my.soulPower, is(6));
+        assertThat(my.dogCount, is(2));
         assertThat(my.useSkill[NinjaSkill.SUPER_HIGH_SPEED], is(0));
         assertThat(my.useSkill[NinjaSkill.ENEMY_ROCKFALL], is(2));
 
         PlayerInfo enemy = codevs.playerInfoList[Codevs.ENEMY_ID];
         assertThat(enemy.soulPower, is(4));
+        assertThat(enemy.dogCount, is(9));
         assertThat(enemy.useSkill[NinjaSkill.SUPER_HIGH_SPEED], is(0));
         assertThat(enemy.useSkill[NinjaSkill.ENEMY_ROCKFALL], is(0));
     }

@@ -15,9 +15,29 @@ public class PlayerInfo {
     public int dogCount;
 
     /**
-     *
+     * プレイヤーのフィールド上に存在しているニンジャソウルの数
      */
     public int soulCount;
+
+    /**
+     * 忍者リスト
+     */
+    public Ninja[] ninjaList;
+
+    /**
+     * 忍犬リスト
+     */
+    public Dog[] dogList;
+
+    /**
+     * ニンジャソウルのリスト
+     */
+    public NinjaSoul[] soulList;
+
+    /**
+     * フィールド
+     */
+    public int[][] field;
 
     /**
      * プレイヤーの術利用回数履歴

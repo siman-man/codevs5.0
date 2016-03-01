@@ -53,21 +53,6 @@ public class Codevs {
     public PlayerInfo[] playerInfoList;
 
     /**
-     * 忍者リスト
-     */
-    public Ninja[][] ninjaList;
-
-    /**
-     * 忍犬リスト
-     */
-    public Dog[][] dogList;
-
-    /**
-     * ニンジャソウルのリスト
-     */
-    public NinjaSoul[][] ninjaSoulList;
-
-    /**
      * 残り時間(msec)
      */
     public long remainTime;
@@ -92,12 +77,6 @@ public class Codevs {
      */
     public int width;
 
-    /**
-     * フィールド (playerId, y, x)
-     */
-    public int[][][] field;
-
-
     public void Codevs() {
     }
 
@@ -109,7 +88,6 @@ public class Codevs {
         initNinja();
         initDogList();
         initNinjaSoulList();
-        initField();
     }
 
     public void initPlayer() {
@@ -121,37 +99,36 @@ public class Codevs {
     }
 
     public void initNinja() {
-        this.ninjaList = new Ninja[PLAYER_NUM][NINJA_NUM];
-
         for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
+            PlayerInfo playerInfo = this.playerInfoList[playerId];
+            playerInfo.ninjaList = new Ninja[NINJA_NUM];
+
             for (int i = 0; i < NINJA_NUM; i++) {
-                this.ninjaList[playerId][i] = new Ninja();
+                playerInfo.ninjaList[i] = new Ninja();
             }
         }
     }
 
     public void initDogList() {
-        this.dogList = new Dog[PLAYER_NUM][MAX_DOG_NUM];
-
         for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
+            PlayerInfo playerInfo = this.playerInfoList[playerId];
+            playerInfo.dogList = new Dog[MAX_DOG_NUM];
+
             for (int i = 0; i < MAX_DOG_NUM; i++) {
-                this.dogList[playerId][i] = new Dog();
+                playerInfo.dogList[i] = new Dog();
             }
         }
     }
 
     public void initNinjaSoulList() {
-        this.ninjaSoulList = new NinjaSoul[PLAYER_NUM][MAX_SOUL_NUM];
-
         for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
+            PlayerInfo playerInfo = this.playerInfoList[playerId];
+            playerInfo.soulList = new NinjaSoul[MAX_SOUL_NUM];
+
             for (int i = 0; i < MAX_SOUL_NUM; i++) {
-                this.ninjaSoulList[playerId][i] = new NinjaSoul();
+                playerInfo.soulList[i] = new NinjaSoul();
             }
         }
-    }
-
-    public void initField() {
-        this.field = new int[PLAYER_NUM][][];
     }
 
     /**
@@ -175,9 +152,9 @@ public class Codevs {
             playerInfo.soulPower = sc.nextInt();
             this.height = sc.nextInt();
             this.width = sc.nextInt();
-            this.field[playerId] = new int[this.height][this.width];
+            playerInfo.field = new int[this.height][this.width];
             for(int y = 0; y < this.height; y++){
-                Arrays.fill(this.field[playerId][y], 0);
+                Arrays.fill(playerInfo.field[y], 0);
             }
 
             for (int y = 0; y < this.height; y++) {
@@ -185,28 +162,28 @@ public class Codevs {
 
                 for (int x = 0; x < this.width; x++) {
                     char type = line.charAt(x);
-                    this.field[playerId][y][x] |= Field.toInteger(type);
+                    playerInfo.field[y][x] |= Field.toInteger(type);
                 }
             }
 
             int ninjaCount = sc.nextInt();
             for (int ninjaId = 0; ninjaId < ninjaCount; ninjaId++) {
                 int id = sc.nextInt();
-                this.ninjaList[playerId][id].y = sc.nextInt();
-                this.ninjaList[playerId][id].x = sc.nextInt();
+                playerInfo.ninjaList[id].y = sc.nextInt();
+                playerInfo.ninjaList[id].x = sc.nextInt();
             }
 
             playerInfo.dogCount = sc.nextInt();
             for (int i = 0; i < playerInfo.dogCount; i++) {
                 int dogId = sc.nextInt();
-                this.dogList[playerId][dogId].y = sc.nextInt();
-                this.dogList[playerId][dogId].x = sc.nextInt();
+                playerInfo.dogList[dogId].y = sc.nextInt();
+                playerInfo.dogList[dogId].x = sc.nextInt();
             }
 
             playerInfo.soulCount = sc.nextInt();
             for (int i = 0; i < playerInfo.soulCount; i++) {
-                this.ninjaSoulList[playerId][i].y = sc.nextInt();
-                this.ninjaSoulList[playerId][i].x = sc.nextInt();
+                playerInfo.soulList[i].y = sc.nextInt();
+                playerInfo.soulList[i].x = sc.nextInt();
             }
 
             /**
