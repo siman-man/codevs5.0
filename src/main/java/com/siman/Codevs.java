@@ -1,7 +1,6 @@
 package main.java.com.siman;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -51,7 +50,7 @@ public class Codevs {
     /**
      * プレイヤーリスト
      */
-    public Player[] playerList;
+    public PlayerInfo[] playerInfoList;
 
     /**
      * 忍者リスト
@@ -114,10 +113,10 @@ public class Codevs {
     }
 
     public void initPlayer() {
-        this.playerList = new Player[PLAYER_NUM];
+        this.playerInfoList = new PlayerInfo[PLAYER_NUM];
 
         for (int i = 0; i < PLAYER_NUM; i++) {
-            this.playerList[i] = new Player();
+            this.playerInfoList[i] = new PlayerInfo();
         }
     }
 
@@ -171,9 +170,9 @@ public class Codevs {
         }
 
         for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
-            Player player = this.playerList[playerId];
+            PlayerInfo playerInfo = this.playerInfoList[playerId];
 
-            player.soulPower = sc.nextInt();
+            playerInfo.soulPower = sc.nextInt();
             this.height = sc.nextInt();
             this.width = sc.nextInt();
             this.field[playerId] = new int[this.height][this.width];
@@ -197,15 +196,15 @@ public class Codevs {
                 this.ninjaList[playerId][id].x = sc.nextInt();
             }
 
-            int dogCount = sc.nextInt();
-            for (int i = 0; i < dogCount; i++) {
+            playerInfo.dogCount = sc.nextInt();
+            for (int i = 0; i < playerInfo.dogCount; i++) {
                 int dogId = sc.nextInt();
                 this.dogList[playerId][dogId].y = sc.nextInt();
                 this.dogList[playerId][dogId].x = sc.nextInt();
             }
 
-            int soulCount = sc.nextInt();
-            for (int i = 0; i < soulCount; i++) {
+            playerInfo.soulCount = sc.nextInt();
+            for (int i = 0; i < playerInfo.soulCount; i++) {
                 this.ninjaSoulList[playerId][i].y = sc.nextInt();
                 this.ninjaSoulList[playerId][i].x = sc.nextInt();
             }
@@ -214,7 +213,7 @@ public class Codevs {
              * スキルの使用回数をセット
              */
             for (int i = 0; i < this.skills; i++) {
-                player.useSkill[i] = sc.nextInt();
+                playerInfo.useSkill[i] = sc.nextInt();
             }
         }
     }
