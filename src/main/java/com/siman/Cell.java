@@ -10,6 +10,16 @@ public class Cell {
     public int id;
 
     /**
+     * y座標
+     */
+    public int y;
+
+    /**
+     * x座標
+     */
+    public int x;
+
+    /**
      * 現在のセルの状態
      */
     public int state;
@@ -21,17 +31,24 @@ public class Cell {
 
     public Cell(int id) {
         this.id = id;
+        this.y = id / Field.WIDTH;
+        this.x = id % Field.WIDTH;
     }
 
+    /**
+     * セルの状態を初期化する
+     */
     public void clear() {
         this.state = 0;
         this.danger = 0;
     }
 
+    /**
+     * セルの座標を取得する
+     *
+     * @return
+     */
     public Coord getCoord() {
-        int y = this.id / Field.WIDTH;
-        int x = this.id % Field.WIDTH;
-
-        return new Coord(y,x);
+        return new Coord(this.y, this.x);
     }
 }

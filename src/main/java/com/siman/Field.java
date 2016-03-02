@@ -14,6 +14,11 @@ public class Field {
      */
     public static int WIDTH = 14;
 
+    /**
+     * セルの数
+     */
+    public static int CELL_COUNT = HEIGHT * WIDTH;
+
     public static int WALL = 1;
     public static int FLOOR = 2;
     public static int STONE = 4;
