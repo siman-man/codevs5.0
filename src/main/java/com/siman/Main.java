@@ -14,6 +14,7 @@ public class Main {
         while (true) {
             try (Scanner sc = new Scanner(System.in)) {
                 codevs.readTurnInfo(sc);
+                codevs.beforeProc();
             }
         }
     }

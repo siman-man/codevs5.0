@@ -185,8 +185,11 @@ public class Codevs {
                 int ninjaY = sc.nextInt();
                 int ninjaX = sc.nextInt();
 
-                playerInfo.ninjaList[id].y = ninjaY;
-                playerInfo.ninjaList[id].x = ninjaX;
+                Ninja ninja = playerInfo.ninjaList[id];
+
+                ninja.y = ninjaY;
+                ninja.x = ninjaX;
+                ninja.saveStatus();
 
                 playerInfo.field[ninjaY][ninjaX].state |= (ninjaId == 0)? Field.NINJA_A : Field.NINJA_B;
             }
@@ -219,6 +222,12 @@ public class Codevs {
                 playerInfo.useSkill[i] = sc.nextInt();
             }
         }
+    }
+
+    /**
+     * 思考を始める前に自前に行う処理
+     */
+    public void beforeProc() {
     }
 
     /**
