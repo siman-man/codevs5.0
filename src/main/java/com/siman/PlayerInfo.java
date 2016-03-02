@@ -45,6 +45,11 @@ public class PlayerInfo {
     public int[][] savedField;
 
     /**
+     * 任意の2点間の最短距離
+     */
+    public int[][] shortDist;
+
+    /**
      * プレイヤーの術利用回数履歴
      */
     public int[] useSkill;
@@ -89,4 +94,8 @@ public class PlayerInfo {
             }
         }
     }
+
+    /**
+     *
+     */
 }

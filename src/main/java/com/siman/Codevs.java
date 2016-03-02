@@ -139,7 +139,8 @@ public class Codevs {
 
             for (int y = 0; y < Field.HEIGHT; y++) {
                 for (int x = 0; x < Field.WIDTH; x++) {
-                    playerInfo.field[y][x] = new Cell();
+                    int id = (y * Field.WIDTH) + x;
+                    playerInfo.field[y][x] = new Cell(id);
                 }
             }
         }
