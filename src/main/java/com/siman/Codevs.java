@@ -223,6 +223,7 @@ public class Codevs {
 
     /**
      * 忍者を移動させる
+     * 事前にcanMove()を使用して有効な移動かどうかを判定しておくこと
      */
     public void move(int playerId, int ninjaId, int direct) {
         PlayerInfo player = this.playerInfoList[playerId];

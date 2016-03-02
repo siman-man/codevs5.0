@@ -50,7 +50,7 @@ public class CodevsTest {
     }
 
     /**
-     * 移動判定が出来るかどうか
+     * 移動判定のテスト
      */
     @Test
     public void testCanMove() throws Exception {
@@ -65,6 +65,8 @@ public class CodevsTest {
         assertFalse(codevs.canMove(Codevs.MY_ID, 2, 3, 1));
         // 石push, 石有
         assertFalse(codevs.canMove(Codevs.MY_ID, 1, 4, 2));
+        // 石push, 忍者有
+        assertFalse(codevs.canMove(Codevs.MY_ID, 7, 5, 1));
 
         // 床に向かう
         assertTrue(codevs.canMove(Codevs.MY_ID, 1, 1, 1));
@@ -101,5 +103,18 @@ public class CodevsTest {
         assertThat(ninja.x, is(2));
         assertTrue(Field.existNinja(field[1][2].state));
         assertFalse(Field.existNinja(field[1][1].state));
+
+        ninja.y = 3;
+        ninja.x = 3;
+        // 最初は石が押されていない
+        assertFalse(Field.existStone(field[3][5].state));
+
+        // 石に向かって移動（Next ソウル）
+        codevs.move(Codevs.MY_ID, 0, 1);
+        assertThat(ninja.y, is(3));
+        assertThat(ninja.x, is(4));
+        assertTrue(Field.existNinja(field[3][4].state));
+        assertFalse(Field.existNinja(field[3][3].state));
+        assertTrue(Field.existStone(field[3][5].state));
     }
 }
