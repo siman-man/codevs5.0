@@ -43,7 +43,7 @@ public class Codevs {
      */
     public static int ENEMY_ID = 1;
 
-    public final int DY[] = {1, 0, -1, 0};
+    public final int DY[] = {-1, 0, 1, 0};
     public final int DX[] = {0, 1, 0, -1};
     public final char DS[] = {'L', 'U', 'R', 'D'};
 
@@ -88,6 +88,7 @@ public class Codevs {
         initNinja();
         initDogList();
         initNinjaSoulList();
+        initField();
     }
 
     public void initPlayer() {
@@ -131,6 +132,19 @@ public class Codevs {
         }
     }
 
+    public void initField() {
+        for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
+            PlayerInfo playerInfo = this.playerInfoList[playerId];
+            playerInfo.field = new Cell[Field.HEIGHT][Field.WIDTH];
+
+            for (int y = 0; y < Field.HEIGHT; y++) {
+                for (int x = 0; x < Field.WIDTH; x++) {
+                    playerInfo.field[y][x] = new Cell();
+                }
+            }
+        }
+    }
+
     /**
      * ターンの最初に与えられる情報を読み込む
      *
@@ -152,17 +166,16 @@ public class Codevs {
             playerInfo.soulPower = sc.nextInt();
             this.height = sc.nextInt();
             this.width = sc.nextInt();
-            playerInfo.field = new int[this.height][this.width];
-            for(int y = 0; y < this.height; y++){
-                Arrays.fill(playerInfo.field[y], 0);
-            }
 
             for (int y = 0; y < this.height; y++) {
                 String line = sc.next();
 
                 for (int x = 0; x < this.width; x++) {
                     char type = line.charAt(x);
-                    playerInfo.field[y][x] |= Field.toInteger(type);
+                    Cell cell = playerInfo.field[y][x];
+                    cell.clear();
+
+                    cell.state |= Field.toInteger(type);
                 }
             }
 
@@ -192,6 +205,28 @@ public class Codevs {
             for (int i = 0; i < this.skills; i++) {
                 playerInfo.useSkill[i] = sc.nextInt();
             }
+        }
+    }
+
+    public boolean canMove(int playerId, int y, int x, int direct) {
+        PlayerInfo player = this.playerInfoList[playerId];
+        Cell[][] field = player.field;
+        int ny = y + DY[direct];
+        int nx = x + DX[direct];
+
+        // 床であれば無条件で移動出来る
+        if (Field.isFloor(field[ny][nx].state)) return true;
+        // 壁は移動出来ない
+        if (Field.isWall(field[ny][nx].state)) return false;
+
+        // 石の場合は次の座標を見て、石を押せるかどうかを判定する
+        if (Field.isStone(field[ny][nx].state)) {
+            int nny = ny + DY[direct];
+            int nnx = nx + DX[direct];
+
+            return Field.isMovableObject(field[nny][nnx].state);
+        } else {
+            return true;
         }
     }
 }

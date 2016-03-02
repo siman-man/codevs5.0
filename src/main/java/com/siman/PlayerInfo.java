@@ -37,7 +37,7 @@ public class PlayerInfo {
     /**
      * フィールド
      */
-    public int[][] field;
+    public Cell[][] field;
 
     /**
      * プレイヤーの術利用回数履歴

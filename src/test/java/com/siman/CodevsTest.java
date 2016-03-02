@@ -7,8 +7,10 @@ import org.junit.Test;
 import java.io.File;
 import java.util.Scanner;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by siman on 3/1/16.
@@ -47,5 +49,24 @@ public class CodevsTest {
         assertThat(enemy.dogCount, is(9));
         assertThat(enemy.useSkill[NinjaSkill.SUPER_HIGH_SPEED], is(0));
         assertThat(enemy.useSkill[NinjaSkill.ENEMY_ROCKFALL], is(0));
+    }
+
+    /**
+     * 移動判定が出来るかどうか
+     */
+    @Test
+    public void testCanMove() throws Exception {
+        Codevs codevs = new Codevs();
+        codevs.init();
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        Utility.readFieldInfo(my.field, "src/test/resources/fields/sample_field.in");
+
+        assertFalse(codevs.canMove(Codevs.MY_ID, 1, 1, 0));
+        // 石push, 忍犬有
+        assertFalse(codevs.canMove(Codevs.MY_ID, 2, 3, 1));
+
+        assertTrue(codevs.canMove(Codevs.MY_ID, 1, 1, 1));
+        // 石push, ソウル有
+        assertTrue(codevs.canMove(Codevs.MY_ID, 3, 3, 1));
     }
 }
