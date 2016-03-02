@@ -35,21 +35,30 @@ public class FieldTest {
     }
 
     @Test
-    public void testIsStone() throws Exception {
-        assertTrue(Field.isStone(4));
-        assertTrue(Field.isStone(5));
+    public void testExistStone() throws Exception {
+        assertTrue(Field.existStone(4));
+        assertTrue(Field.existStone(5));
 
-        assertFalse(Field.isStone(1));
-        assertFalse(Field.isStone(2));
+        assertFalse(Field.existStone(1));
+        assertFalse(Field.existStone(2));
     }
 
     @Test
-    public void testIsSoul() throws Exception {
-        assertTrue(Field.isSoul(8));
-        assertTrue(Field.isSoul(12));
+    public void testExistSoul() throws Exception {
+        assertTrue(Field.existSoul(8));
+        assertTrue(Field.existSoul(12));
 
-        assertFalse(Field.isSoul(1));
-        assertFalse(Field.isSoul(2));
+        assertFalse(Field.existSoul(1));
+        assertFalse(Field.existSoul(2));
+    }
+
+    @Test
+    public void testExistNinja() throws Exception {
+        assertTrue(Field.existNinja(32));
+        assertTrue(Field.existNinja(36));
+
+        assertFalse(Field.existNinja(1));
+        assertFalse(Field.existNinja(2));
     }
 
     @Test

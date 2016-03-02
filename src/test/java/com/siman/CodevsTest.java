@@ -1,8 +1,6 @@
 package test.java.com.siman;
 
-import main.java.com.siman.Codevs;
-import main.java.com.siman.NinjaSkill;
-import main.java.com.siman.PlayerInfo;
+import main.java.com.siman.*;
 import org.junit.Test;
 import java.io.File;
 import java.util.Scanner;
@@ -78,5 +76,30 @@ public class CodevsTest {
         assertTrue(codevs.canMove(Codevs.MY_ID, 1, 5, 2));
         // 石push, ソウル有
         assertTrue(codevs.canMove(Codevs.MY_ID, 3, 3, 1));
+    }
+
+    /**
+     * 忍者の移動ができてるかどうか
+     */
+    @Test
+    public void testMove() throws Exception {
+        Codevs codevs = new Codevs();
+        codevs.init();
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        Utility.readFieldInfo(my.field, "src/test/resources/fields/sample_field.in");
+        Cell[][] field = my.field;
+
+        Ninja ninja = my.ninjaList[0];
+        field[1][1].state |= Field.NINJA_A;
+
+        ninja.y = 1;
+        ninja.x = 1;
+
+        // 床に向かって移動
+        codevs.move(Codevs.MY_ID, 0, 1);
+        assertThat(ninja.y, is(1));
+        assertThat(ninja.x, is(2));
+        assertTrue(Field.existNinja(field[1][2].state));
+        assertFalse(Field.existNinja(field[1][1].state));
     }
 }

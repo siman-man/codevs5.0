@@ -187,7 +187,8 @@ public class Codevs {
 
                 playerInfo.ninjaList[id].y = ninjaY;
                 playerInfo.ninjaList[id].x = ninjaX;
-                playerInfo.field[ninjaY][ninjaX].state |= Field.NINJA;
+
+                playerInfo.field[ninjaY][ninjaX].state |= (ninjaId == 0)? Field.NINJA_A : Field.NINJA_B;
             }
 
             playerInfo.dogCount = sc.nextInt();
@@ -220,6 +221,47 @@ public class Codevs {
         }
     }
 
+    /**
+     * 忍者を移動させる
+     */
+    public void move(int playerId, int ninjaId, int direct) {
+        PlayerInfo player = this.playerInfoList[playerId];
+        Ninja ninja = player.ninjaList[ninjaId];
+
+        Cell cell = player.field[ninja.y][ninja.x];
+
+        int ny = ninja.y + DY[direct];
+        int nx = ninja.x + DX[direct];
+
+        Cell ncell = player.field[ny][nx];
+
+        // 忍者の位置を更新
+        ninja.y = ny;
+        ninja.x = nx;
+        cell.state &= (ninjaId == 0)? Field.DELETE_NINJA_A : Field.DELETE_NINJA_B;
+        ncell.state |= (ninjaId == 0)? Field.NINJA_A : Field.NINJA_B;
+
+        // 石が存在する場合は石を押す
+        if (Field.existStone(ncell.state)) {
+            int nny = ny + DY[direct];
+            int nnx = nx + DX[direct];
+
+            Cell nncell = player.field[nny][nnx];
+
+            ncell.state ^= Field.STONE;
+            nncell.state |= Field.STONE;
+        }
+    }
+
+    /**
+     * 指定の座標に移動できるかどうかを調べる
+     *
+     * @param playerId 判定したいプレイヤーID
+     * @param y        移動元のy座標
+     * @param x        移動元のx座標
+     * @param direct   移動する方向
+     * @return true(移動できる)
+     */
     public boolean canMove(int playerId, int y, int x, int direct) {
         PlayerInfo player = this.playerInfoList[playerId];
         Cell[][] field = player.field;
@@ -232,7 +274,7 @@ public class Codevs {
         if (Field.isWall(field[ny][nx].state)) return false;
 
         // 石の場合は次の座標を見て、石を押せるかどうかを判定する
-        if (Field.isStone(field[ny][nx].state)) {
+        if (Field.existStone(field[ny][nx].state)) {
             int nny = ny + DY[direct];
             int nnx = nx + DX[direct];
 
