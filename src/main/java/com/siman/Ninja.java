@@ -136,6 +136,11 @@ public class Ninja {
     public int saveX;
 
     /**
+     * 目標のニンジャソウルID
+     */
+    public int targetSoulId;
+
+    /**
      * 現在の状態を保存
      */
     public void saveStatus() {

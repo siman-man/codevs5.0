@@ -54,6 +54,21 @@ public class PlayerInfo {
         this.savedField = new int[Field.HEIGHT][Field.WIDTH];
     }
 
+    public void setTargetSoul() {
+        int minDist = Integer.MAX_VALUE;
+        int targetA = -1;
+        int targetB = -1;
+
+        for(int soulIdA = 0; soulIdA < this.soulCount; soulIdA++) {
+            NinjaSoul soulA = this.soulList[soulIdA];
+
+            for(int soulIdB = 0; soulIdB < this.soulCount; soulIdB++) {
+                if(soulIdA == soulIdB) continue;
+                NinjaSoul soulB = this.soulList[soulIdB];
+            }
+        }
+    }
+
     public void saveField() {
         for(int y = 0; y < Field.HEIGHT; y++){
             for(int x = 0; x < Field.WIDTH; x++) {
