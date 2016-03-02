@@ -6,6 +6,10 @@ import java.util.Arrays;
  * Created by siman on 3/1/16.
  */
 public class PlayerInfo {
+
+    public final int DY[] = {-1, 0, 1, 0};
+    public final int DX[] = {0, 1, 0, -1};
+
     /**
      * プレイヤーの忍者ソウル・パワー
      */
@@ -83,12 +87,20 @@ public class PlayerInfo {
         this.eachCellDist = new int[Field.CELL_COUNT][Field.CELL_COUNT];
 
         for (int y = 0; y < Field.HEIGHT; y++) {
-            Arrays.fill(this.eachCellDist[y], -1);
+            Arrays.fill(this.eachCellDist[y], Integer.MAX_VALUE);
         }
 
         for (int k = 0; k < Field.CELL_COUNT; k++) {
-            for(int v = 0; v < Field.CELL_COUNT; v++) {
-                for(int i = 0; i < 4; i++) {
+            Cell cellA = getCell(k);
+            if (Field.isWall(cellA.state)) continue;
+
+            for (int i = 0; i < Field.CELL_COUNT; i++) {
+                Cell cellB = getCell(i);
+                if (Field.isWall(cellB.state)) continue;
+
+                for (int j = 0; j < Field.CELL_COUNT; j++) {
+                    Cell cellC = getCell(j);
+                    if (Field.isWall(cellC.state)) continue;
                 }
             }
         }
