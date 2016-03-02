@@ -61,11 +61,21 @@ public class CodevsTest {
         PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
         Utility.readFieldInfo(my.field, "src/test/resources/fields/sample_field.in");
 
+        // 壁に向かう
         assertFalse(codevs.canMove(Codevs.MY_ID, 1, 1, 0));
         // 石push, 忍犬有
         assertFalse(codevs.canMove(Codevs.MY_ID, 2, 3, 1));
+        // 石push, 石有
+        assertFalse(codevs.canMove(Codevs.MY_ID, 1, 4, 2));
 
+        // 床に向かう
         assertTrue(codevs.canMove(Codevs.MY_ID, 1, 1, 1));
+        // 忍者ソウルに向かう
+        assertTrue(codevs.canMove(Codevs.MY_ID, 5, 5, 0));
+        // 忍者に向かう
+        assertTrue(codevs.canMove(Codevs.MY_ID, 1, 1, 2));
+        // 忍犬に向かう
+        assertTrue(codevs.canMove(Codevs.MY_ID, 1, 5, 2));
         // 石push, ソウル有
         assertTrue(codevs.canMove(Codevs.MY_ID, 3, 3, 1));
     }

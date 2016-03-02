@@ -51,4 +51,13 @@ public class FieldTest {
         assertFalse(Field.isSoul(1));
         assertFalse(Field.isSoul(2));
     }
+
+    @Test
+    public void testIsMovableObject() throws Exception {
+        assertTrue(Field.isMovableObject(Field.FLOOR));
+        assertTrue(Field.isMovableObject(Field.SOUL));
+
+        assertFalse(Field.isMovableObject(Field.WALL));
+        assertFalse(Field.isMovableObject(Field.DOG));
+    }
 }

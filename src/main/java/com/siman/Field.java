@@ -4,7 +4,14 @@ package main.java.com.siman;
  * Created by siman on 3/1/16.
  */
 public class Field {
+    /**
+     * フィールドの縦幅
+     */
     public static int HEIGHT = 17;
+
+    /**
+     * フィールドの横幅
+     */
     public static int WIDTH = 14;
 
     public static int WALL = 1;

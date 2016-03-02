@@ -182,21 +182,33 @@ public class Codevs {
             int ninjaCount = sc.nextInt();
             for (int ninjaId = 0; ninjaId < ninjaCount; ninjaId++) {
                 int id = sc.nextInt();
-                playerInfo.ninjaList[id].y = sc.nextInt();
-                playerInfo.ninjaList[id].x = sc.nextInt();
+                int ninjaY = sc.nextInt();
+                int ninjaX = sc.nextInt();
+
+                playerInfo.ninjaList[id].y = ninjaY;
+                playerInfo.ninjaList[id].x = ninjaX;
+                playerInfo.field[ninjaY][ninjaX].state |= Field.NINJA;
             }
 
             playerInfo.dogCount = sc.nextInt();
             for (int i = 0; i < playerInfo.dogCount; i++) {
                 int dogId = sc.nextInt();
-                playerInfo.dogList[dogId].y = sc.nextInt();
-                playerInfo.dogList[dogId].x = sc.nextInt();
+                int dogY = sc.nextInt();
+                int dogX = sc.nextInt();
+
+                playerInfo.dogList[dogId].y = dogY;
+                playerInfo.dogList[dogId].x = dogX;
+                playerInfo.field[dogY][dogX].state |= Field.DOG;
             }
 
             playerInfo.soulCount = sc.nextInt();
             for (int i = 0; i < playerInfo.soulCount; i++) {
-                playerInfo.soulList[i].y = sc.nextInt();
-                playerInfo.soulList[i].x = sc.nextInt();
+                int soulY = sc.nextInt();
+                int soulX = sc.nextInt();
+
+                playerInfo.soulList[i].y = soulY;
+                playerInfo.soulList[i].x = soulX;
+                playerInfo.field[soulY][soulX].state |= Field.SOUL;
             }
 
             /**
