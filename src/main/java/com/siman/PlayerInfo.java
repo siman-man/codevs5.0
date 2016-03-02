@@ -40,11 +40,38 @@ public class PlayerInfo {
     public Cell[][] field;
 
     /**
+     * フィールドの状態を保存
+     */
+    public int[][] savedField;
+
+    /**
      * プレイヤーの術利用回数履歴
      */
     public int[] useSkill;
 
     public PlayerInfo() {
         this.useSkill = new int[Codevs.MAX_SKILL_COUNT];
+        this.savedField = new int[Field.HEIGHT][Field.WIDTH];
+    }
+
+    public void saveField() {
+        for(int y = 0; y < Field.HEIGHT; y++){
+            for(int x = 0; x < Field.WIDTH; x++) {
+                Cell cell = this.field[y][x];
+                this.savedField[y][x] = cell.state;
+            }
+        }
+    }
+
+    /**
+     * フィールドの状態を保存時に戻す
+     */
+    public void rollbackField() {
+        for(int y = 0; y < Field.HEIGHT; y++){
+            for(int x = 0; x < Field.WIDTH; x++) {
+                Cell cell = this.field[y][x];
+                cell.state = this.savedField[y][x];
+            }
+        }
     }
 }

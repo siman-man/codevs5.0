@@ -161,9 +161,9 @@ public class Codevs {
         }
 
         for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
-            PlayerInfo playerInfo = this.playerInfoList[playerId];
+            PlayerInfo player = this.playerInfoList[playerId];
 
-            playerInfo.soulPower = sc.nextInt();
+            player.soulPower = sc.nextInt();
             this.height = sc.nextInt();
             this.width = sc.nextInt();
 
@@ -172,12 +172,14 @@ public class Codevs {
 
                 for (int x = 0; x < this.width; x++) {
                     char type = line.charAt(x);
-                    Cell cell = playerInfo.field[y][x];
+                    Cell cell = player.field[y][x];
                     cell.clear();
 
                     cell.state |= Field.toInteger(type);
                 }
             }
+
+            player.saveField();
 
             int ninjaCount = sc.nextInt();
             for (int ninjaId = 0; ninjaId < ninjaCount; ninjaId++) {
@@ -185,41 +187,41 @@ public class Codevs {
                 int ninjaY = sc.nextInt();
                 int ninjaX = sc.nextInt();
 
-                Ninja ninja = playerInfo.ninjaList[id];
+                Ninja ninja = player.ninjaList[id];
 
                 ninja.y = ninjaY;
                 ninja.x = ninjaX;
                 ninja.saveStatus();
 
-                playerInfo.field[ninjaY][ninjaX].state |= (ninjaId == 0)? Field.NINJA_A : Field.NINJA_B;
+                player.field[ninjaY][ninjaX].state |= (ninjaId == 0)? Field.NINJA_A : Field.NINJA_B;
             }
 
-            playerInfo.dogCount = sc.nextInt();
-            for (int i = 0; i < playerInfo.dogCount; i++) {
+            player.dogCount = sc.nextInt();
+            for (int i = 0; i < player.dogCount; i++) {
                 int dogId = sc.nextInt();
                 int dogY = sc.nextInt();
                 int dogX = sc.nextInt();
 
-                playerInfo.dogList[dogId].y = dogY;
-                playerInfo.dogList[dogId].x = dogX;
-                playerInfo.field[dogY][dogX].state |= Field.DOG;
+                player.dogList[dogId].y = dogY;
+                player.dogList[dogId].x = dogX;
+                player.field[dogY][dogX].state |= Field.DOG;
             }
 
-            playerInfo.soulCount = sc.nextInt();
-            for (int i = 0; i < playerInfo.soulCount; i++) {
+            player.soulCount = sc.nextInt();
+            for (int i = 0; i < player.soulCount; i++) {
                 int soulY = sc.nextInt();
                 int soulX = sc.nextInt();
 
-                playerInfo.soulList[i].y = soulY;
-                playerInfo.soulList[i].x = soulX;
-                playerInfo.field[soulY][soulX].state |= Field.SOUL;
+                player.soulList[i].y = soulY;
+                player.soulList[i].x = soulX;
+                player.field[soulY][soulX].state |= Field.SOUL;
             }
 
             /**
              * スキルの使用回数をセット
              */
             for (int i = 0; i < this.skills; i++) {
-                playerInfo.useSkill[i] = sc.nextInt();
+                player.useSkill[i] = sc.nextInt();
             }
         }
     }
