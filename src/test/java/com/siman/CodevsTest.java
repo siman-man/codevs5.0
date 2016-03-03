@@ -2,6 +2,7 @@ package test.java.com.siman;
 
 import main.java.com.siman.*;
 import org.junit.Test;
+
 import java.io.File;
 import java.util.Scanner;
 
@@ -47,6 +48,9 @@ public class CodevsTest {
         assertThat(enemy.dogCount, is(9));
         assertThat(enemy.useSkill[NinjaSkill.SUPER_HIGH_SPEED], is(0));
         assertThat(enemy.useSkill[NinjaSkill.ENEMY_ROCKFALL], is(0));
+
+        Cell[][] field = my.field;
+        assertTrue(Field.isFloor(field[1][1].state));
     }
 
     /**
@@ -57,7 +61,7 @@ public class CodevsTest {
         Codevs codevs = new Codevs();
         codevs.init();
         PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
-        Utility.readFieldInfo(my.field, "src/test/resources/fields/sample_field.in");
+        Utility.readFieldInfo(my, "src/test/resources/fields/sample_field.in");
 
         // 壁に向かう
         assertFalse(codevs.canMove(Codevs.MY_ID, 1, 1, 0));
@@ -88,7 +92,7 @@ public class CodevsTest {
         Codevs codevs = new Codevs();
         codevs.init();
         PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
-        Utility.readFieldInfo(my.field, "src/test/resources/fields/sample_field.in");
+        Utility.readFieldInfo(my, "src/test/resources/fields/sample_field.in");
         Cell[][] field = my.field;
 
         Ninja ninja = my.ninjaList[0];
@@ -116,5 +120,13 @@ public class CodevsTest {
         assertTrue(Field.existNinja(field[3][4].state));
         assertFalse(Field.existNinja(field[3][3].state));
         assertTrue(Field.existStone(field[3][5].state));
+
+        ninja.y = 1;
+        ninja.x = 5;
+        // 忍犬に向かって移動
+        codevs.move(Codevs.MY_ID, 0, 2);
+        assertThat(ninja.y, is(2));
+        assertThat(ninja.x, is(5));
+        assertTrue(Field.existNinja(field[2][5].state));
     }
 }

@@ -106,6 +106,9 @@ public class PlayerInfo {
         }
     }
 
+    /**
+     * フィールドの状態を保存する
+     */
     public void saveField() {
         for (int y = 0; y < Field.HEIGHT; y++) {
             for (int x = 0; x < Field.WIDTH; x++) {
@@ -129,6 +132,8 @@ public class PlayerInfo {
 
     /**
      * 自分のフィールドのセルを取得する
+     *
+     * @param id セルのID
      */
     public Cell getCell(int id) {
         int y = id / Field.WIDTH;

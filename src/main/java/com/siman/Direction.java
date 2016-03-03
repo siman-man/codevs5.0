@@ -5,7 +5,7 @@ package main.java.com.siman;
  */
 public class Direction {
     public int toInteger(char direct) {
-        switch(direct){
+        switch (direct) {
             case 'U':
                 return 0;
             case 'R':
@@ -20,7 +20,7 @@ public class Direction {
     }
 
     public char toChar(int direct) {
-        switch(direct){
+        switch (direct) {
             case 0:
                 return 'U';
             case 1:

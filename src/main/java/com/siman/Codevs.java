@@ -91,6 +91,9 @@ public class Codevs {
         initField();
     }
 
+    /**
+     * プレイヤー情報の初期化を行う
+     */
     public void initPlayer() {
         this.playerInfoList = new PlayerInfo[PLAYER_NUM];
 
@@ -99,6 +102,9 @@ public class Codevs {
         }
     }
 
+    /**
+     * 忍者情報の初期化を行う
+     */
     public void initNinja() {
         for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
             PlayerInfo playerInfo = this.playerInfoList[playerId];
@@ -110,6 +116,9 @@ public class Codevs {
         }
     }
 
+    /**
+     * 忍犬情報の初期化を行う
+     */
     public void initDogList() {
         for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
             PlayerInfo playerInfo = this.playerInfoList[playerId];
@@ -121,6 +130,9 @@ public class Codevs {
         }
     }
 
+    /**
+     * ニンジャソウル情報の初期化を行う
+     */
     public void initNinjaSoulList() {
         for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
             PlayerInfo playerInfo = this.playerInfoList[playerId];
@@ -132,6 +144,9 @@ public class Codevs {
         }
     }
 
+    /**
+     * フィールド情報の初期化を行う
+     */
     public void initField() {
         for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
             PlayerInfo playerInfo = this.playerInfoList[playerId];
@@ -176,10 +191,16 @@ public class Codevs {
                     Cell cell = player.field[y][x];
                     cell.clear();
 
+                    // 壁以外は全て床属性を持つ
+                    if (type != 'W') {
+                        cell.state |= Field.FLOOR;
+                    }
+
                     cell.state |= Field.toInteger(type);
                 }
             }
 
+            // フィールドの状態を保存しておく
             player.saveField();
 
             int ninjaCount = sc.nextInt();
@@ -194,7 +215,7 @@ public class Codevs {
                 ninja.x = ninjaX;
                 ninja.saveStatus();
 
-                player.field[ninjaY][ninjaX].state |= (ninjaId == 0)? Field.NINJA_A : Field.NINJA_B;
+                player.field[ninjaY][ninjaX].state |= (ninjaId == 0) ? Field.NINJA_A : Field.NINJA_B;
             }
 
             player.dogCount = sc.nextInt();
@@ -251,8 +272,8 @@ public class Codevs {
         // 忍者の位置を更新
         ninja.y = ny;
         ninja.x = nx;
-        cell.state &= (ninjaId == 0)? Field.DELETE_NINJA_A : Field.DELETE_NINJA_B;
-        ncell.state |= (ninjaId == 0)? Field.NINJA_A : Field.NINJA_B;
+        cell.state &= (ninjaId == 0) ? Field.DELETE_NINJA_A : Field.DELETE_NINJA_B;
+        ncell.state |= (ninjaId == 0) ? Field.NINJA_A : Field.NINJA_B;
 
         // 石が存在する場合は石を押す
         if (Field.existStone(ncell.state)) {

@@ -1,9 +1,6 @@
 package test.java.com.siman;
 
-import main.java.com.siman.Cell;
-import main.java.com.siman.Codevs;
-import main.java.com.siman.Field;
-import main.java.com.siman.PlayerInfo;
+import main.java.com.siman.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,8 +37,34 @@ public class PlayerInfoTest {
         assertThat(cellB.y, is(1));
         assertThat(cellB.x, is(0));
 
-        Cell cellC = my.getCell(Field.WIDTH+1);
+        Cell cellC = my.getCell(Field.WIDTH + 1);
         assertThat(cellC.y, is(1));
         assertThat(cellC.x, is(1));
+    }
+
+    @Test
+    public void testRollbackField() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        Utility.readFieldInfo(my, "src/test/resources/fields/sample_field.in");
+        Cell[][] field = my.field;
+
+        my.saveField();
+
+        assertTrue(Field.isFloor(field[7][5].state));
+        assertFalse(Field.existNinja(field[7][6].state));
+        assertTrue(Field.existNinja(field[7][7].state));
+
+        codevs.move(Codevs.MY_ID, 0, 3);
+
+        assertFalse(Field.isFloor(field[7][5].state));
+        assertTrue(Field.existStone(field[7][5].state));
+        assertTrue(Field.existNinja(field[7][6].state));
+        assertTrue(Field.isFloor(field[7][7].state));
+
+        my.rollbackField();
+
+        assertTrue(Field.isFloor(field[7][5].state));
+        assertFalse(Field.existNinja(field[7][6].state));
+        assertTrue(Field.existNinja(field[7][7].state));
     }
 }

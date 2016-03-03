@@ -60,6 +60,9 @@ public class Field {
 
     /**
      * 壁かどうかの判定を行う
+     *
+     * @param state フィールドの状態
+     * @return true(壁が存在している)
      */
     public static boolean isWall(int state) {
         return (state & WALL) == WALL;
@@ -67,20 +70,39 @@ public class Field {
 
     /**
      * 床かどうかの判定を行う
+     *
+     * @param state フィールドの状態
+     * @return true(床が存在している)
      */
     public static boolean isFloor(int state) {
-        return (state & FLOOR) == FLOOR;
+        return (state == FLOOR || state == (FLOOR | SOUL));
     }
 
     /**
      * 石かどうかの判定を行う
+     *
+     * @param state フィールドの状態
+     * @return true(石が存在している)
      */
     public static boolean existStone(int state) {
         return (state & STONE) == STONE;
     }
 
     /**
+     * 忍犬がいるかどうかのチェックを行う
+     *
+     * @param state フィールドの状態
+     * @return true(忍犬が存在している)
+     */
+    public static boolean existDog(int state) {
+        return (state & DOG) == DOG;
+    }
+
+    /**
      * ニンジャソウルかどうかの判定を行う
+     *
+     * @param state フィールドの状態
+     * @return true(ニンジャソウルが存在している)
      */
     public static boolean existSoul(int state) {
         return (state & SOUL) == SOUL;
@@ -88,6 +110,9 @@ public class Field {
 
     /**
      * 忍者が存在しているかどうか
+     *
+     * @param state フィールドの状態
+     * @return true(忍者が存在している)
      */
     public static boolean existNinja(int state) {
         return ((state & NINJA_A) == NINJA_A || (state & NINJA_B) == NINJA_B);
@@ -95,8 +120,12 @@ public class Field {
 
     /**
      * 石と重なっても大丈夫なオブジェクトかどうかを判定
+     * (忍者・忍犬・石・壁が存在しない）
+     *
+     * @param state フィールドの状態
+     * @return true(石と重ねても大丈夫)
      */
     public static boolean isMovableObject(int state) {
-        return (existSoul(state) || isFloor(state));
+        return !(existNinja(state) || existDog(state) || existStone(state) || isWall(state));
     }
 }
