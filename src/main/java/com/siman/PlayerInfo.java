@@ -164,6 +164,38 @@ public class PlayerInfo {
     }
 
     /**
+     * 忍者を移動させる
+     * 事前にcanMove()を使用して有効な移動かどうかを判定しておくこと
+     */
+    public void move(int playerId, int ninjaId, int direct) {
+        Ninja ninja = this.ninjaList[ninjaId];
+
+        Cell cell = this.field[ninja.y][ninja.x];
+
+        int ny = ninja.y + DY[direct];
+        int nx = ninja.x + DX[direct];
+
+        Cell ncell = this.field[ny][nx];
+
+        // 忍者の位置を更新
+        ninja.y = ny;
+        ninja.x = nx;
+        cell.state &= (ninjaId == 0) ? Field.DELETE_NINJA_A : Field.DELETE_NINJA_B;
+        ncell.state |= (ninjaId == 0) ? Field.NINJA_A : Field.NINJA_B;
+
+        // 石が存在する場合は石を押す
+        if (Field.existStone(ncell.state)) {
+            int nny = ny + DY[direct];
+            int nnx = nx + DX[direct];
+
+            Cell nncell = this.field[nny][nnx];
+
+            ncell.state ^= Field.STONE;
+            nncell.state |= Field.STONE;
+        }
+    }
+
+    /**
      * 指定の座標に移動できるかどうかを調べる
      *
      * @param y      移動元のy座標

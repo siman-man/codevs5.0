@@ -5,7 +5,38 @@ package main.java.com.siman;
  */
 public class Ninja {
 
-    public static char[][] MOVE_PATTERN = {
+    // 通常時
+    public static char[][] NORMAL_MOVE_PATTERN = {
+            // 1マス移動
+            {'U'},
+            {'R'},
+            {'D'},
+            {'L'},
+
+            // 2マス移動
+            {'U', 'U'},
+            {'U', 'R'},
+            {'U', 'D'},
+            {'U', 'L'},
+
+            {'R', 'U'},
+            {'R', 'R'},
+            {'R', 'D'},
+            {'R', 'L'},
+
+            {'D', 'U'},
+            {'D', 'R'},
+            {'D', 'D'},
+            {'D', 'L'},
+
+            {'L', 'U'},
+            {'L', 'R'},
+            {'L', 'D'},
+            {'L', 'L'},
+    };
+
+    // 超高速使用時
+    public static char[][] SUPER_MOVE_PATTERN = {
             // 1マス移動
             {'U'},
             {'R'},

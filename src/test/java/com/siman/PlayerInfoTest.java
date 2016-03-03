@@ -54,7 +54,7 @@ public class PlayerInfoTest {
         assertFalse(Field.existNinja(field[7][6].state));
         assertTrue(Field.existNinja(field[7][7].state));
 
-        codevs.move(Codevs.MY_ID, 0, 3);
+        my.move(Codevs.MY_ID, 0, 3);
 
         assertFalse(Field.isFloor(field[7][5].state));
         assertTrue(Field.existStone(field[7][5].state));
