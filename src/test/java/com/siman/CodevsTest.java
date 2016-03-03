@@ -64,24 +64,24 @@ public class CodevsTest {
         Utility.readFieldInfo(my, "src/test/resources/fields/sample_field.in");
 
         // 壁に向かう
-        assertFalse(codevs.canMove(Codevs.MY_ID, 1, 1, 0));
+        assertFalse(my.canMove(1, 1, 0));
         // 石push, 忍犬有
-        assertFalse(codevs.canMove(Codevs.MY_ID, 2, 3, 1));
+        assertFalse(my.canMove(2, 3, 1));
         // 石push, 石有
-        assertFalse(codevs.canMove(Codevs.MY_ID, 1, 4, 2));
+        assertFalse(my.canMove(1, 4, 2));
         // 石push, 忍者有
-        assertFalse(codevs.canMove(Codevs.MY_ID, 7, 5, 1));
+        assertFalse(my.canMove(7, 5, 1));
 
         // 床に向かう
-        assertTrue(codevs.canMove(Codevs.MY_ID, 1, 1, 1));
+        assertTrue(my.canMove(1, 1, 1));
         // 忍者ソウルに向かう
-        assertTrue(codevs.canMove(Codevs.MY_ID, 5, 5, 0));
+        assertTrue(my.canMove(5, 5, 0));
         // 忍者に向かう
-        assertTrue(codevs.canMove(Codevs.MY_ID, 1, 1, 2));
+        assertTrue(my.canMove(1, 1, 2));
         // 忍犬に向かう
-        assertTrue(codevs.canMove(Codevs.MY_ID, 1, 5, 2));
+        assertTrue(my.canMove(1, 5, 2));
         // 石push, ソウル有
-        assertTrue(codevs.canMove(Codevs.MY_ID, 3, 3, 1));
+        assertTrue(my.canMove(3, 3, 1));
     }
 
     /**

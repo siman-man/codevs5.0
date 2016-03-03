@@ -10,6 +10,8 @@ public class PlayerInfo {
     public final int DY[] = {-1, 0, 1, 0};
     public final int DX[] = {0, 1, 0, -1};
 
+    public static int INF = 9999;
+
     /**
      * プレイヤーの忍者ソウル・パワー
      */
@@ -86,21 +88,113 @@ public class PlayerInfo {
     public void updateEachCellDist() {
         this.eachCellDist = new int[Field.CELL_COUNT][Field.CELL_COUNT];
 
-        for (int y = 0; y < Field.HEIGHT; y++) {
-            Arrays.fill(this.eachCellDist[y], Integer.MAX_VALUE);
+        for (int y = 0; y < Field.CELL_COUNT; y++) {
+            Arrays.fill(this.eachCellDist[y], INF);
+        }
+
+        /**
+         * 各セル間のコストを求める
+         */
+        for (int y = 1; y < Field.HEIGHT - 1; y++) {
+            for (int x = 1; x < Field.WIDTH - 1; x++) {
+                Cell fromCell = this.field[y][x];
+
+                // 自分自身のコストは0で初期化
+                this.eachCellDist[fromCell.id][fromCell.id] = 0;
+
+                for (int i = 0; i < 4; i++) {
+                    int ny = y + DY[i];
+                    int nx = x + DX[i];
+
+                    Cell toCell = this.field[ny][nx];
+                    if (Field.isWall(toCell.state)) continue;
+
+                    if (canMove(y, x, i)) {
+                        this.eachCellDist[fromCell.id][toCell.id] = 1;
+                    }
+                }
+            }
         }
 
         for (int k = 0; k < Field.CELL_COUNT; k++) {
-            Cell cellA = getCell(k);
-            if (Field.isWall(cellA.state)) continue;
+            Cell cellK = getCell(k);
+            if (Field.isWall(cellK.state)) continue;
 
             for (int i = 0; i < Field.CELL_COUNT; i++) {
-                Cell cellB = getCell(i);
-                if (Field.isWall(cellB.state)) continue;
+                Cell cellI = getCell(i);
+                if (Field.isWall(cellI.state)) continue;
 
                 for (int j = 0; j < Field.CELL_COUNT; j++) {
-                    Cell cellC = getCell(j);
-                    if (Field.isWall(cellC.state)) continue;
+                    Cell cellJ = getCell(j);
+                    if (Field.isWall(cellJ.state)) continue;
+
+                    int distA = this.eachCellDist[i][j];
+                    int distB = this.eachCellDist[i][k] + this.eachCellDist[k][j];
+                    this.eachCellDist[i][j] = Math.min(distA, distB);
+                }
+            }
+        }
+    }
+
+    /**
+     * 指定の座標に移動できるかどうかを調べる
+     *
+     * @param y      移動元のy座標
+     * @param x      移動元のx座標
+     * @param direct 移動する方向
+     * @return true(移動できる)
+     */
+    public boolean canMove(int y, int x, int direct) {
+        int ny = y + DY[direct];
+        int nx = x + DX[direct];
+
+        // 床であれば無条件で移動出来る
+        if (Field.isFloor(this.field[ny][nx].state)) return true;
+        // 壁は移動出来ない
+        if (Field.isWall(this.field[ny][nx].state)) return false;
+
+        // 石の場合は次の座標を見て、石を押せるかどうかを判定する
+        if (Field.existStone(this.field[ny][nx].state)) {
+            int nny = ny + DY[direct];
+            int nnx = nx + DX[direct];
+
+            return Field.isMovableObject(this.field[nny][nnx].state);
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 石の種類を調べる
+     */
+    public void updateStoneStatus() {
+        for (int y = 0; y < Field.HEIGHT; y++) {
+            for (int x = 0; x < Field.WIDTH; x++) {
+                Cell cell = this.field[y][x];
+
+                if (Field.existStone(cell.state)) {
+                    int uy = y + DY[0];
+                    int ux = x + DX[0];
+                    Cell cellU = this.field[uy][ux];
+
+                    int ry = y + DY[1];
+                    int rx = x + DX[1];
+                    Cell cellR = this.field[ry][rx];
+
+                    int dy = y + DY[2];
+                    int dx = x + DX[2];
+                    Cell cellD = this.field[dy][dx];
+
+                    int ly = y + DY[3];
+                    int lx = x + DX[3];
+                    Cell cellL = this.field[ly][lx];
+
+                    boolean existV = Field.existStone(cellU.state) || Field.existStone(cellD.state);
+                    boolean existH = Field.existStone(cellR.state) || Field.existStone(cellL.state);
+
+                    if (existV && existH) {
+                        cell.state |= Field.FIX_STONE;
+                    }
                 }
             }
         }

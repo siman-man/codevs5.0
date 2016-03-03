@@ -26,6 +26,7 @@ public class Field {
     public static int DOG = 16;
     public static int NINJA_A = 32;
     public static int NINJA_B = 64;
+    public static int FIX_STONE = 128;
 
     public static int DELETE_NINJA_A = 95;
     public static int DELETE_NINJA_B = 63;

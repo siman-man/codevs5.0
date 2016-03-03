@@ -67,4 +67,18 @@ public class PlayerInfoTest {
         assertFalse(Field.existNinja(field[7][6].state));
         assertTrue(Field.existNinja(field[7][7].state));
     }
+
+    @Test
+    public void testUpdateEachCellDist() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        Utility.readFieldInfo(my, "src/test/resources/fields/cost_field.in");
+
+        my.updateEachCellDist();
+
+        assertThat(my.eachCellDist[15][15], is(0));
+        assertThat(my.eachCellDist[15][16], is(9999));
+        assertThat(my.eachCellDist[15][17], is(9999));
+        assertThat(my.eachCellDist[15][29], is(1));
+
+    }
 }

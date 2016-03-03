@@ -202,6 +202,7 @@ public class Codevs {
 
             // フィールドの状態を保存しておく
             player.saveField();
+            player.updateStoneStatus();
 
             int ninjaCount = sc.nextInt();
             for (int ninjaId = 0; ninjaId < ninjaCount; ninjaId++) {
@@ -284,37 +285,6 @@ public class Codevs {
 
             ncell.state ^= Field.STONE;
             nncell.state |= Field.STONE;
-        }
-    }
-
-    /**
-     * 指定の座標に移動できるかどうかを調べる
-     *
-     * @param playerId 判定したいプレイヤーID
-     * @param y        移動元のy座標
-     * @param x        移動元のx座標
-     * @param direct   移動する方向
-     * @return true(移動できる)
-     */
-    public boolean canMove(int playerId, int y, int x, int direct) {
-        PlayerInfo player = this.playerInfoList[playerId];
-        Cell[][] field = player.field;
-        int ny = y + DY[direct];
-        int nx = x + DX[direct];
-
-        // 床であれば無条件で移動出来る
-        if (Field.isFloor(field[ny][nx].state)) return true;
-        // 壁は移動出来ない
-        if (Field.isWall(field[ny][nx].state)) return false;
-
-        // 石の場合は次の座標を見て、石を押せるかどうかを判定する
-        if (Field.existStone(field[ny][nx].state)) {
-            int nny = ny + DY[direct];
-            int nnx = nx + DX[direct];
-
-            return Field.isMovableObject(field[nny][nnx].state);
-        } else {
-            return true;
         }
     }
 }
