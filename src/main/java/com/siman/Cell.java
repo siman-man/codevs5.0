@@ -27,7 +27,7 @@ public class Cell {
     /**
      * 危険度合い
      */
-    public int danger;
+    public int dangerValue;
 
     public Cell(int id) {
         this.id = id;
@@ -40,7 +40,7 @@ public class Cell {
      */
     public void clear() {
         this.state = 0;
-        this.danger = 0;
+        this.dangerValue = 0;
     }
 
     /**

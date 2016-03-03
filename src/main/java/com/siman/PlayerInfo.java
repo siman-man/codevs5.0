@@ -70,15 +70,44 @@ public class PlayerInfo {
     /**
      * 忍者の行動を決める
      */
-    public void action() {
+    public ActionInfo[] action() {
         char[][] movePattern = Ninja.NORMAL_MOVE_PATTERN;
+        Ninja ninjaA = this.ninjaList[0];
+        Ninja ninjaB = this.ninjaList[1];
 
-        for (char[] patternA : movePattern) {
-            for (char[] patternB : movePattern) {
+        int maxEval = Integer.MIN_VALUE;
+        ActionInfo bestActionA = new ActionInfo();
+        ActionInfo bestActionB = new ActionInfo();
+
+        for (char[] actionA : movePattern) {
+            ActionInfo infoA = moveAction(ninjaA, actionA);
+            if (!infoA.isValid()) continue;
+
+            for (char[] actionB : movePattern) {
+                ActionInfo infoB = moveAction(ninjaB, actionB);
+
+                if (infoB.isValid()) {
+                    int eval = 0;
+
+                    if (maxEval < eval) {
+                        maxEval = eval;
+                        bestActionA = infoA;
+                        bestActionB = infoB;
+                    }
+                }
+
+                // 状態を元に戻す
+                this.rollbackField();
+                this.rollbackNinja();
+                moveAction(ninjaA, actionA);
             }
-
-            this.rollbackField();
         }
+
+        // 最後に元に戻しておく
+        this.rollbackField();
+        this.rollbackNinja();
+
+        return new ActionInfo[]{bestActionA, bestActionB};
     }
 
     /**
@@ -187,9 +216,7 @@ public class PlayerInfo {
      * 忍者を移動させる
      * 事前にcanMove()を使用して有効な移動かどうかを判定しておくこと
      */
-    public void move(int playerId, int ninjaId, int direct) {
-        Ninja ninja = this.ninjaList[ninjaId];
-
+    public void move(Ninja ninja, int direct) {
         Cell cell = this.field[ninja.y][ninja.x];
 
         int ny = ninja.y + DY[direct];
@@ -200,8 +227,8 @@ public class PlayerInfo {
         // 忍者の位置を更新
         ninja.y = ny;
         ninja.x = nx;
-        cell.state &= (ninjaId == 0) ? Field.DELETE_NINJA_A : Field.DELETE_NINJA_B;
-        ncell.state |= (ninjaId == 0) ? Field.NINJA_A : Field.NINJA_B;
+        cell.state &= (ninja.id == 0) ? Field.DELETE_NINJA_A : Field.DELETE_NINJA_B;
+        ncell.state |= (ninja.id == 0) ? Field.NINJA_A : Field.NINJA_B;
 
         // 石が存在する場合は石を押す
         if (Field.existStone(ncell.state)) {
@@ -213,6 +240,40 @@ public class PlayerInfo {
             ncell.state ^= Field.STONE;
             nncell.state |= Field.STONE;
         }
+    }
+
+    /**
+     * 忍者が行動する
+     *
+     * @param ninja  移動する忍者
+     * @param action 移動リスト
+     * @return
+     */
+    public ActionInfo moveAction(Ninja ninja, char[] action) {
+        ActionInfo info = new ActionInfo();
+
+        for (char command : action) {
+            int direct = Direction.toInteger(command);
+
+            if (canMove(ninja.y, ninja.x, direct)) {
+                move(ninja, direct);
+
+                Cell cell = this.field[ninja.y][ninja.x];
+
+                if (Field.existSoul(cell.state)) {
+                    info.getSoulCount++;
+                }
+            } else {
+                info.valid = false;
+                return info;
+            }
+        }
+
+        Cell cell = this.field[ninja.y][ninja.x];
+
+        info.dangerValue = cell.dangerValue;
+
+        return info;
     }
 
     /**
@@ -240,6 +301,25 @@ public class PlayerInfo {
             return Field.isMovableObject(this.field[nny][nnx].state);
         } else {
             return true;
+        }
+    }
+
+    /**
+     * フィールドの危険度を設定
+     */
+    public void updateDangerValue() {
+        for(int id = 0; id < this.dogCount; id++) {
+            Dog dog = this.dogList[id];
+
+            for(int i = 0; i < 4; i++){
+                int ny = dog.y + DY[i];
+                int nx = dog.x + DX[i];
+
+                Cell cell = this.field[ny][nx];
+
+                if(Field.isWall(cell.state)) continue;
+                cell.dangerValue += 10;
+            }
         }
     }
 
@@ -300,6 +380,15 @@ public class PlayerInfo {
                 Cell cell = this.field[y][x];
                 cell.state = this.savedField[y][x];
             }
+        }
+    }
+
+    /**
+     * 忍者を元の位置に戻す
+     */
+    public void rollbackNinja() {
+        for (Ninja ninja : this.ninjaList) {
+            ninja.rollback();
         }
     }
 

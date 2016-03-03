@@ -4,7 +4,7 @@ package main.java.com.siman;
  * Created by siman on 3/2/16.
  */
 public class Direction {
-    public int toInteger(char direct) {
+    public static int toInteger(char direct) {
         switch (direct) {
             case 'U':
                 return 0;
@@ -19,7 +19,7 @@ public class Direction {
         }
     }
 
-    public char toChar(int direct) {
+    public static char toChar(int direct) {
         switch (direct) {
             case 0:
                 return 'U';

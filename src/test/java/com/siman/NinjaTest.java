@@ -13,7 +13,7 @@ public class NinjaTest {
 
     @Test
     public void testSaveStatus() throws Exception {
-        Ninja ninja = new Ninja();
+        Ninja ninja = new Ninja(0);
         ninja.y = 10;
         ninja.x = 5;
 
@@ -25,7 +25,7 @@ public class NinjaTest {
 
     @Test
     public void testRollback() throws Exception {
-        Ninja ninja = new Ninja();
+        Ninja ninja = new Ninja(0);
         ninja.y = 10;
         ninja.x = 5;
 

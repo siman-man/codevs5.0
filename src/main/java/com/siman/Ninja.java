@@ -147,6 +147,11 @@ public class Ninja {
     };
 
     /**
+     * ID
+     */
+    public int id;
+
+    /**
      * 現在のy座標
      */
     public int y;
@@ -170,6 +175,10 @@ public class Ninja {
      * 目標のニンジャソウルID
      */
     public int targetSoulId;
+
+    public Ninja(int id) {
+        this.id = id;
+    }
 
     /**
      * 現在の状態を保存

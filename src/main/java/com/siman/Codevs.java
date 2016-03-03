@@ -43,6 +43,11 @@ public class Codevs {
      */
     public static int ENEMY_ID = 1;
 
+    /**
+     * 現在のターン
+     */
+    public int turn;
+
     public final int DY[] = {-1, 0, 1, 0};
     public final int DX[] = {0, 1, 0, -1};
     public final char DS[] = {'L', 'U', 'R', 'D'};
@@ -84,6 +89,8 @@ public class Codevs {
      * ゲームの初期化処理を行う
      */
     public void init() {
+        this.turn = 0;
+
         initPlayer();
         initNinja();
         initDogList();
@@ -110,8 +117,8 @@ public class Codevs {
             PlayerInfo playerInfo = this.playerInfoList[playerId];
             playerInfo.ninjaList = new Ninja[NINJA_NUM];
 
-            for (int i = 0; i < NINJA_NUM; i++) {
-                playerInfo.ninjaList[i] = new Ninja();
+            for (int id = 0; id < NINJA_NUM; id++) {
+                playerInfo.ninjaList[id] = new Ninja(id);
             }
         }
     }
@@ -167,6 +174,7 @@ public class Codevs {
      * @param sc 入力元
      */
     public void readTurnInfo(Scanner sc) {
+        this.turn++;
         StringBuilder res = new StringBuilder();
         this.remainTime = sc.nextLong();
         this.skills = sc.nextInt();
@@ -224,6 +232,7 @@ public class Codevs {
 
                 player.dogList[dogId].y = dogY;
                 player.dogList[dogId].x = dogX;
+                player.dogList[dogId].update_at = this.turn;
                 player.field[dogY][dogX].state |= Field.DOG;
             }
 
@@ -234,7 +243,6 @@ public class Codevs {
 
                 player.soulList[i].y = soulY;
                 player.soulList[i].x = soulX;
-                player.field[soulY][soulX].state |= Field.SOUL;
             }
 
             /**
@@ -255,11 +263,13 @@ public class Codevs {
         my.updateStoneStatus();
         my.updateEachCellDist();
         my.setTargetSoul();
+        my.updateDangerValue();
 
         PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
         enemy.saveField();
         enemy.updateStoneStatus();
         enemy.updateEachCellDist();
+        enemy.updateDangerValue();
     }
 
     /**
@@ -267,7 +277,7 @@ public class Codevs {
      */
     public void action() {
         PlayerInfo my = this.playerInfoList[MY_ID];
-        my.action();
+        ActionInfo[] actions = my.action();
     }
 
     /**

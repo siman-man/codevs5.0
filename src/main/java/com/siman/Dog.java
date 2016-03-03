@@ -7,6 +7,7 @@ public class Dog {
     public int id;
     public int y;
     public int x;
+    public int update_at;
 
     public void Dog() {
     }

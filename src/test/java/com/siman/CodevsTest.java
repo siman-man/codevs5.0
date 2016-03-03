@@ -102,7 +102,7 @@ public class CodevsTest {
         ninja.x = 1;
 
         // 床に向かって移動
-        my.move(Codevs.MY_ID, 0, 1);
+        my.move(ninja, 1);
         assertThat(ninja.y, is(1));
         assertThat(ninja.x, is(2));
         assertTrue(Field.existNinja(field[1][2].state));
@@ -114,7 +114,7 @@ public class CodevsTest {
         assertFalse(Field.existStone(field[3][5].state));
 
         // 石に向かって移動（Next ソウル）
-        my.move(Codevs.MY_ID, 0, 1);
+        my.move(ninja, 1);
         assertThat(ninja.y, is(3));
         assertThat(ninja.x, is(4));
         assertTrue(Field.existNinja(field[3][4].state));
@@ -124,7 +124,7 @@ public class CodevsTest {
         ninja.y = 1;
         ninja.x = 5;
         // 忍犬に向かって移動
-        my.move(Codevs.MY_ID, 0, 2);
+        my.move(ninja, 2);
         assertThat(ninja.y, is(2));
         assertThat(ninja.x, is(5));
         assertTrue(Field.existNinja(field[2][5].state));
