@@ -10,7 +10,7 @@ public class PlayerInfo {
     public final int DY[] = {-1, 0, 1, 0};
     public final int DX[] = {0, 1, 0, -1};
 
-    public static int INF = 9999;
+    public static int INF = 99;
 
     /**
      * プレイヤーの忍者ソウル・パワー
@@ -81,7 +81,7 @@ public class PlayerInfo {
 
         for (char[] actionA : movePattern) {
             ActionInfo infoA = moveAction(ninjaA, actionA);
-            if (!infoA.isValid()){
+            if (!infoA.isValid()) {
                 // 状態を元に戻す
                 this.rollbackField();
                 this.rollbackNinja();
@@ -93,15 +93,20 @@ public class PlayerInfo {
 
                 if (infoB.isValid()) {
                     int eval = 0;
+                    int nidA = getId(ninjaA.y, ninjaA.x);
+                    int nidB = getId(ninjaB.y, ninjaB.x);
 
-                    eval += 3 * infoA.getSoulCount;
-                    eval += 3 * infoB.getSoulCount;
+                    //eval -= this.eachCellDist[nidA][nidB];
+                    eval -= calcManhattanDist(ninjaA.y, ninjaA.x, ninjaB.y, ninjaB.x);
+
+                    eval += 200 * infoA.getSoulCount;
+                    eval += 200 * infoB.getSoulCount;
 
                     eval -= infoA.dangerValue;
                     eval -= infoB.dangerValue;
 
-                    eval -= infoA.targetSoulDist;
-                    eval -= infoB.targetSoulDist;
+                    eval -= 3 * infoA.targetSoulDist;
+                    eval -= 3 * infoB.targetSoulDist;
 
                     if (maxEval < eval) {
                         maxEval = eval;
@@ -110,19 +115,19 @@ public class PlayerInfo {
                     }
                 }
 
-                // 状態を元に戻す
+                // Aが行動した状態まで戻す
                 this.rollbackField();
                 this.rollbackNinja();
                 moveAction(ninjaA, actionA);
             }
+
+            this.rollbackField();
+            this.rollbackNinja();
         }
 
         // 最後に元に戻しておく
         this.rollbackField();
         this.rollbackNinja();
-
-        System.err.println(String.format("best target distA = %d", bestActionA.targetSoulDist));
-        System.err.println(String.format("best target distB = %d", bestActionB.targetSoulDist));
 
         return new ActionInfo[]{bestActionA, bestActionB};
     }
@@ -165,10 +170,6 @@ public class PlayerInfo {
             }
         }
 
-        System.err.println(String.format("ninjaA target = %d", targetA));
-        System.err.println(String.format("ninjaB target = %d", targetB));
-        ninjaA.targetSoulId = targetA;
-        ninjaB.targetSoulId = targetB;
     }
 
     /**
@@ -250,7 +251,7 @@ public class PlayerInfo {
 
             Cell nncell = this.field[nny][nnx];
 
-            ncell.state ^= Field.STONE;
+            ncell.state &= Field.DELETE_STONE;
             nncell.state |= Field.STONE;
         }
     }
@@ -258,7 +259,7 @@ public class PlayerInfo {
     /**
      * 忍者が行動する
      *
-     * @param ninja  移動する忍者
+     * @param ninja       移動する忍者
      * @param commandList 移動リスト
      * @return
      */
@@ -274,7 +275,7 @@ public class PlayerInfo {
                 Cell cell = this.field[ninja.y][ninja.x];
 
                 if (Field.existSoul(cell.state)) {
-                    info.getSoulCount++;
+                    info.getSoulCount += 1;
                 }
             } else {
                 info.valid = false;
@@ -291,8 +292,8 @@ public class PlayerInfo {
 
         info.dangerValue = cell.dangerValue;
         info.targetSoulDist = targetDist;
+        info.commandList = commandList.clone();
 
-        info.commandList = commandList;
         return info;
     }
 
@@ -328,18 +329,33 @@ public class PlayerInfo {
      * フィールドの危険度を設定
      */
     public void updateDangerValue() {
-        for(int id = 0; id < this.dogCount; id++) {
+        for (int id = 0; id < this.dogCount; id++) {
             Dog dog = this.dogList[id];
-            this.field[dog.y][dog.x].dangerValue += 100;
+            int did = getId(dog.y, dog.x);
+            this.field[dog.y][dog.x].dangerValue = 99999;
 
-            for(int i = 0; i < 4; i++){
+            for (int y = 1; y < Field.HEIGHT; y++) {
+                for (int x = 1; x < Field.WIDTH; x++) {
+                    Cell cell = this.field[y][x];
+                    int dist = Math.max(this.eachCellDist[did][cell.id], this.eachCellDist[cell.id][did]);
+
+                    if (dist <= 1) {
+                        cell.dangerValue = 99999;
+                    } else if (dist <= 2) {
+                        cell.dangerValue += 50;
+                    } else if (dist <= 4) {
+                        cell.dangerValue += Math.max(cell.dangerValue, 5 - dist);
+                    }
+                }
+            }
+            for (int i = 0; i < 4; i++) {
                 int ny = dog.y + DY[i];
                 int nx = dog.x + DX[i];
 
                 Cell cell = this.field[ny][nx];
 
-                if(Field.isWall(cell.state)) continue;
-                cell.dangerValue += 100;
+                if (Field.isWall(cell.state)) continue;
+                cell.dangerValue = 99999;
             }
         }
     }
@@ -427,5 +443,9 @@ public class PlayerInfo {
 
     public int getId(int y, int x) {
         return (y * Field.WIDTH) + x;
+    }
+
+    public int calcManhattanDist(int y1, int x1, int y2, int x2) {
+        return (Math.abs(y1 - y2) - Math.abs(x1 - x2));
     }
 }

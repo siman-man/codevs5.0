@@ -175,11 +175,8 @@ public class Codevs {
      */
     public void readTurnInfo(Scanner sc) {
         this.turn++;
-        System.err.println(String.format("turn %d", this.turn));
         this.remainTime = sc.nextLong();
-        System.err.println(String.format("remainTime = %d", this.remainTime));
         this.skills = sc.nextInt();
-        System.err.println(String.format("skills = %d", this.skills));
         this.skillCost = new int[this.skills];
 
         for (int i = 0; i < this.skills; i++) {
@@ -245,6 +242,7 @@ public class Codevs {
 
                 player.soulList[i].y = soulY;
                 player.soulList[i].x = soulX;
+                player.field[soulY][soulX].state |= Field.SOUL;
             }
 
             /**
@@ -261,17 +259,17 @@ public class Codevs {
      */
     public void beforeProc() {
         PlayerInfo my = this.playerInfoList[MY_ID];
-        my.saveField();
         my.updateStoneStatus();
         my.updateEachCellDist();
         my.setTargetSoulId();
         my.updateDangerValue();
+        my.saveField();
 
         PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
-        enemy.saveField();
         enemy.updateStoneStatus();
         enemy.updateEachCellDist();
         enemy.updateDangerValue();
+        enemy.saveField();
     }
 
     /**

@@ -30,6 +30,7 @@ public class Field {
 
     public static int DELETE_NINJA_A = 95;
     public static int DELETE_NINJA_B = 63;
+    public static int DELETE_STONE = 507;
 
     /**
      * フィールドの入力を数値に変換する、一部はテストで使用
