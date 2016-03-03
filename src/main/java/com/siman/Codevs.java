@@ -218,7 +218,6 @@ public class Codevs {
 
                 ninja.y = ninjaY;
                 ninja.x = ninjaX;
-                ninja.saveStatus();
 
                 player.field[ninjaY][ninjaX].state |= (ninjaId == 0) ? Field.NINJA_A : Field.NINJA_B;
             }
@@ -261,14 +260,16 @@ public class Codevs {
         PlayerInfo my = this.playerInfoList[MY_ID];
         my.updateStoneStatus();
         my.updateEachCellDist();
-        my.setTargetSoulId();
         my.updateDangerValue();
+        my.setTargetSoulId();
+        my.saveNinjaStatus();
         my.saveField();
 
         PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
         enemy.updateStoneStatus();
         enemy.updateEachCellDist();
         enemy.updateDangerValue();
+        enemy.saveNinjaStatus();
         enemy.saveField();
     }
 

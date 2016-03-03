@@ -76,8 +76,8 @@ public class PlayerInfoTest {
         my.updateEachCellDist();
 
         assertThat(my.eachCellDist[15][15], is(0));
-        assertThat(my.eachCellDist[15][16], is(9999));
-        assertThat(my.eachCellDist[15][17], is(9999));
+        assertThat(my.eachCellDist[15][16], is(PlayerInfo.INF));
+        assertThat(my.eachCellDist[15][17], is(PlayerInfo.INF));
         assertThat(my.eachCellDist[15][29], is(1));
         assertThat(my.eachCellDist[29][15], is(1));
         assertThat(my.eachCellDist[15][75], is(8));
@@ -92,7 +92,7 @@ public class PlayerInfoTest {
         Ninja ninjaA = my.ninjaList[0];
         Ninja ninjaB = my.ninjaList[1];
 
-        assertThat(ninjaA.targetSoulId, is(0));
+        assertThat(ninjaA.targetSoulId, is(1));
         assertThat(ninjaB.targetSoulId, is(2));
     }
 

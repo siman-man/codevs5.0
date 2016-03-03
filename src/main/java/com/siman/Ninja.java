@@ -176,6 +176,11 @@ public class Ninja {
      */
     public int targetSoulId;
 
+    /**
+     * 保存した目標ソウルID
+     */
+    public int saveTarget;
+
     public Ninja(int id) {
         this.id = id;
     }
@@ -186,6 +191,7 @@ public class Ninja {
     public void saveStatus() {
         this.saveY = this.y;
         this.saveX = this.x;
+        this.saveTarget = this.targetSoulId;
     }
 
     /**
@@ -194,5 +200,6 @@ public class Ninja {
     public void rollback() {
         this.y = this.saveY;
         this.x = this.saveX;
+        this.targetSoulId = this.saveTarget;
     }
 }

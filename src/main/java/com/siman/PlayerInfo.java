@@ -145,6 +145,8 @@ public class PlayerInfo {
 
         for (int soulIdA = 0; soulIdA < this.soulCount; soulIdA++) {
             NinjaSoul soulA = this.soulList[soulIdA];
+            Cell cellA = this.field[soulA.y][soulA.x];
+            if (cellA.dangerValue > 0) continue;
             int sidA = getId(soulA.y, soulA.x);
             int distA_1 = this.eachCellDist[nidA][sidA];
             int distA_2 = this.eachCellDist[sidA][nidA];
@@ -154,6 +156,8 @@ public class PlayerInfo {
             for (int soulIdB = 0; soulIdB < this.soulCount; soulIdB++) {
                 if (soulIdA == soulIdB) continue;
                 NinjaSoul soulB = this.soulList[soulIdB];
+                Cell cellB = this.field[soulB.y][soulB.x];
+                if (cellB.dangerValue > 0) continue;
                 int sidB = getId(soulB.y, soulB.x);
                 int distB_1 = this.eachCellDist[nidB][sidB];
                 int distB_2 = this.eachCellDist[sidB][nidB];
@@ -170,6 +174,27 @@ public class PlayerInfo {
             }
         }
 
+        ninjaA.targetSoulId = targetA;
+        ninjaB.targetSoulId = targetB;
+    }
+
+    public void updateTargetSoul(Ninja ninja) {
+        int minDist = Integer.MAX_VALUE;
+
+        for (int soulId = 0; soulId < this.soulCount; soulId++) {
+            if (ninja.targetSoulId == soulId) continue;
+            NinjaSoul soul = this.soulList[soulId];
+            Cell cell = this.field[soul.y][soul.x];
+            if (cell.dangerValue > 0) continue;
+            int nid = getId(ninja.y, ninja.x);
+            int sid = getId(soul.y, soul.x);
+
+            int dist = Math.min(this.eachCellDist[nid][sid], this.eachCellDist[sid][nid]);
+            if (minDist > dist) {
+                minDist = dist;
+                ninja.targetSoulId = soulId;
+            }
+        }
     }
 
     /**
@@ -200,7 +225,14 @@ public class PlayerInfo {
                     if (Field.isWall(toCell.state)) continue;
 
                     if (canMove(y, x, i)) {
-                        this.eachCellDist[fromCell.id][toCell.id] = 1;
+                        int nny = ny + DY[i];
+                        int nnx = nx + DX[i];
+                        Cell nCell = this.field[nny][nnx];
+
+                        if (Field.existStone(toCell.state) && (Field.existStone(nCell.state) || Field.isWall(nCell.state))) {
+                        } else {
+                            this.eachCellDist[fromCell.id][toCell.id] = 1;
+                        }
                     }
                 }
             }
@@ -276,6 +308,7 @@ public class PlayerInfo {
 
                 if (Field.existSoul(cell.state)) {
                     info.getSoulCount += 1;
+                    updateTargetSoul(ninja);
                 }
             } else {
                 info.valid = false;
@@ -397,6 +430,15 @@ public class PlayerInfo {
     }
 
     /**
+     *
+     */
+    public void saveNinjaStatus() {
+        for (int ninjaId = 0; ninjaId < Codevs.NINJA_NUM; ninjaId++) {
+            this.ninjaList[ninjaId].saveStatus();
+        }
+    }
+
+    /**
      * フィールドの状態を保存する
      */
     public void saveField() {
@@ -447,5 +489,11 @@ public class PlayerInfo {
 
     public int calcManhattanDist(int y1, int x1, int y2, int x2) {
         return (Math.abs(y1 - y2) - Math.abs(x1 - x2));
+    }
+
+    public int getWallDist(int y, int x) {
+        int distY = Math.min(y, Field.HEIGHT - y);
+        int distX = Math.min(x, Field.WIDTH - x);
+        return Math.min(distY, distX);
     }
 }
