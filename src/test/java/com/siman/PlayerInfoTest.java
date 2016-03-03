@@ -95,4 +95,12 @@ public class PlayerInfoTest {
         assertThat(ninjaA.targetSoulId, is(0));
         assertThat(ninjaB.targetSoulId, is(2));
     }
+
+    @Test
+    public void testAction() throws Exception {
+        codevs.beforeProc();
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+
+        my.action();
+    }
 }

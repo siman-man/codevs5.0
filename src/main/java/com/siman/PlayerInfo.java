@@ -67,6 +67,26 @@ public class PlayerInfo {
         this.savedField = new int[Field.HEIGHT][Field.WIDTH];
     }
 
+    /**
+     * 忍者の行動を決める
+     */
+    public void action() {
+        char[][] movePattern = Ninja.NORMAL_MOVE_PATTERN;
+
+        for (char[] patternA : movePattern) {
+            for (char[] patternB : movePattern) {
+            }
+
+            this.rollbackField();
+        }
+    }
+
+    /**
+     * 決定した行動を出力する
+     */
+    public void output() {
+    }
+
     public void setTargetSoul() {
         int minDist = Integer.MAX_VALUE;
         int targetA = -1;

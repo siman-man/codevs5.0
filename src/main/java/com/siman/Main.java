@@ -15,6 +15,8 @@ public class Main {
             try (Scanner sc = new Scanner(System.in)) {
                 codevs.readTurnInfo(sc);
                 codevs.beforeProc();
+                codevs.action();
+                codevs.output();
             }
         }
     }

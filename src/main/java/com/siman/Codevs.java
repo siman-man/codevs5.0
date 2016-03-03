@@ -200,9 +200,6 @@ public class Codevs {
                 }
             }
 
-            // フィールドの状態を保存しておく
-            player.saveField();
-            player.updateStoneStatus();
 
             int ninjaCount = sc.nextInt();
             for (int ninjaId = 0; ninjaId < ninjaCount; ninjaId++) {
@@ -254,7 +251,30 @@ public class Codevs {
      */
     public void beforeProc() {
         PlayerInfo my = this.playerInfoList[MY_ID];
+        my.saveField();
+        my.updateStoneStatus();
         my.updateEachCellDist();
         my.setTargetSoul();
+
+        PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
+        enemy.saveField();
+        enemy.updateStoneStatus();
+        enemy.updateEachCellDist();
+    }
+
+    /**
+     * アクション
+     */
+    public void action() {
+        PlayerInfo my = this.playerInfoList[MY_ID];
+        my.action();
+    }
+
+    /**
+     * 出力
+     */
+    public void output() {
+        PlayerInfo my = this.playerInfoList[MY_ID];
+        my.output();
     }
 }
