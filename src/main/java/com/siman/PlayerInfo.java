@@ -72,14 +72,41 @@ public class PlayerInfo {
         int targetA = -1;
         int targetB = -1;
 
+        Ninja ninjaA = this.ninjaList[0];
+        Ninja ninjaB = this.ninjaList[1];
+
+        int nidA = getId(ninjaA.y, ninjaA.x);
+        int nidB = getId(ninjaB.y, ninjaB.x);
+
         for (int soulIdA = 0; soulIdA < this.soulCount; soulIdA++) {
             NinjaSoul soulA = this.soulList[soulIdA];
+            int sidA = getId(soulA.y, soulA.x);
+            int distA_1 = this.eachCellDist[nidA][sidA];
+            int distA_2 = this.eachCellDist[sidA][nidA];
+
+            if (distA_1 != distA_2) continue;
 
             for (int soulIdB = 0; soulIdB < this.soulCount; soulIdB++) {
                 if (soulIdA == soulIdB) continue;
                 NinjaSoul soulB = this.soulList[soulIdB];
+                int sidB = getId(soulB.y, soulB.x);
+                int distB_1 = this.eachCellDist[nidB][sidB];
+                int distB_2 = this.eachCellDist[sidB][nidB];
+
+                if (distB_1 != distB_2) continue;
+
+                int totalDist = distA_1 + distB_1;
+
+                if (minDist > totalDist) {
+                    minDist = totalDist;
+                    targetA = soulIdA;
+                    targetB = soulIdB;
+                }
             }
         }
+
+        ninjaA.targetSoulId = targetA;
+        ninjaB.targetSoulId = targetB;
     }
 
     /**
@@ -234,5 +261,9 @@ public class PlayerInfo {
         int x = id % Field.WIDTH;
 
         return this.field[y][x];
+    }
+
+    public int getId(int y, int x) {
+        return (y * Field.WIDTH) + x;
     }
 }

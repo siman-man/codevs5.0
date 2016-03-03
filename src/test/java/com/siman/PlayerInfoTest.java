@@ -79,6 +79,20 @@ public class PlayerInfoTest {
         assertThat(my.eachCellDist[15][16], is(9999));
         assertThat(my.eachCellDist[15][17], is(9999));
         assertThat(my.eachCellDist[15][29], is(1));
+        assertThat(my.eachCellDist[29][15], is(1));
+        assertThat(my.eachCellDist[15][75], is(8));
+        assertThat(my.eachCellDist[75][15], is(8));
+    }
 
+    @Test
+    public void testSetTargetSoul() throws Exception {
+        codevs.beforeProc();
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+
+        Ninja ninjaA = my.ninjaList[0];
+        Ninja ninjaB = my.ninjaList[1];
+
+        assertThat(ninjaA.targetSoulId, is(0));
+        assertThat(ninjaB.targetSoulId, is(2));
     }
 }

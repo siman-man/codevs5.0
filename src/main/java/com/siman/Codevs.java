@@ -253,6 +253,9 @@ public class Codevs {
      * 思考を始める前に自前に行う処理
      */
     public void beforeProc() {
+        PlayerInfo my = this.playerInfoList[MY_ID];
+        my.updateEachCellDist();
+        my.setTargetSoul();
     }
 
     /**
