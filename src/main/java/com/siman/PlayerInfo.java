@@ -81,13 +81,27 @@ public class PlayerInfo {
 
         for (char[] actionA : movePattern) {
             ActionInfo infoA = moveAction(ninjaA, actionA);
-            if (!infoA.isValid()) continue;
+            if (!infoA.isValid()){
+                // 状態を元に戻す
+                this.rollbackField();
+                this.rollbackNinja();
+                continue;
+            }
 
             for (char[] actionB : movePattern) {
                 ActionInfo infoB = moveAction(ninjaB, actionB);
 
                 if (infoB.isValid()) {
                     int eval = 0;
+
+                    eval += 3 * infoA.getSoulCount;
+                    eval += 3 * infoB.getSoulCount;
+
+                    eval -= infoA.dangerValue;
+                    eval -= infoB.dangerValue;
+
+                    eval -= infoA.targetSoulDist;
+                    eval -= infoB.targetSoulDist;
 
                     if (maxEval < eval) {
                         maxEval = eval;
@@ -107,19 +121,16 @@ public class PlayerInfo {
         this.rollbackField();
         this.rollbackNinja();
 
+        System.err.println(String.format("best target distA = %d", bestActionA.targetSoulDist));
+        System.err.println(String.format("best target distB = %d", bestActionB.targetSoulDist));
+
         return new ActionInfo[]{bestActionA, bestActionB};
     }
 
-    /**
-     * 決定した行動を出力する
-     */
-    public void output() {
-    }
-
-    public void setTargetSoul() {
+    public void setTargetSoulId() {
         int minDist = Integer.MAX_VALUE;
-        int targetA = -1;
-        int targetB = -1;
+        int targetA = 0;
+        int targetB = 1;
 
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
@@ -154,6 +165,8 @@ public class PlayerInfo {
             }
         }
 
+        System.err.println(String.format("ninjaA target = %d", targetA));
+        System.err.println(String.format("ninjaB target = %d", targetB));
         ninjaA.targetSoulId = targetA;
         ninjaB.targetSoulId = targetB;
     }
@@ -246,13 +259,13 @@ public class PlayerInfo {
      * 忍者が行動する
      *
      * @param ninja  移動する忍者
-     * @param action 移動リスト
+     * @param commandList 移動リスト
      * @return
      */
-    public ActionInfo moveAction(Ninja ninja, char[] action) {
+    public ActionInfo moveAction(Ninja ninja, char[] commandList) {
         ActionInfo info = new ActionInfo();
 
-        for (char command : action) {
+        for (char command : commandList) {
             int direct = Direction.toInteger(command);
 
             if (canMove(ninja.y, ninja.x, direct)) {
@@ -271,8 +284,15 @@ public class PlayerInfo {
 
         Cell cell = this.field[ninja.y][ninja.x];
 
-        info.dangerValue = cell.dangerValue;
+        int nid = getId(ninja.y, ninja.x);
+        NinjaSoul soul = this.soulList[ninja.targetSoulId];
+        int sid = getId(soul.y, soul.x);
+        int targetDist = this.eachCellDist[nid][sid];
 
+        info.dangerValue = cell.dangerValue;
+        info.targetSoulDist = targetDist;
+
+        info.commandList = commandList;
         return info;
     }
 
@@ -310,6 +330,7 @@ public class PlayerInfo {
     public void updateDangerValue() {
         for(int id = 0; id < this.dogCount; id++) {
             Dog dog = this.dogList[id];
+            this.field[dog.y][dog.x].dangerValue += 100;
 
             for(int i = 0; i < 4; i++){
                 int ny = dog.y + DY[i];
@@ -318,7 +339,7 @@ public class PlayerInfo {
                 Cell cell = this.field[ny][nx];
 
                 if(Field.isWall(cell.state)) continue;
-                cell.dangerValue += 10;
+                cell.dangerValue += 100;
             }
         }
     }

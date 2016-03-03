@@ -8,10 +8,14 @@ public class ActionInfo {
     public int targetSoulDist;
     public int dangerValue;
     public boolean valid;
-    public char[] action;
+    public char[] commandList;
 
     public ActionInfo() {
-        this.action = new char[]{'N'};
+        this.commandList = new char[]{'N'};
+        this.valid = true;
+        this.getSoulCount = 0;
+        this.targetSoulDist = 9999;
+        this.dangerValue = 0;
     }
 
     public boolean isValid() {

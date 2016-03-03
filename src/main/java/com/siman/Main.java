@@ -10,13 +10,14 @@ public class Main {
         System.out.flush();
 
         Codevs codevs = new Codevs();
+        codevs.init();
 
-        while (true) {
-            try (Scanner sc = new Scanner(System.in)) {
+        try (Scanner sc = new Scanner(System.in)) {
+            while (true) {
                 codevs.readTurnInfo(sc);
                 codevs.beforeProc();
-                codevs.action();
-                codevs.output();
+                ActionInfo[] actions = codevs.action();
+                codevs.output(actions);
             }
         }
     }

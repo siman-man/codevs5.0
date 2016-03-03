@@ -1,6 +1,7 @@
 package test.java.com.siman;
 
 import main.java.com.siman.*;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -15,13 +16,19 @@ import static org.junit.Assert.assertTrue;
  * Created by siman on 3/1/16.
  */
 public class CodevsTest {
+    Codevs codevs;
+
+    @Before
+    public void setup(){
+        this.codevs = new Codevs();
+        this.codevs.init();
+    }
+
     /**
      * ターン情報を読み込めてるかどうかをテスト
      */
     @Test
     public void testReadTurnInfo() throws Exception {
-        Codevs codevs = new Codevs();
-        codevs.init();
         File file = new File("src/test/resources/sample.in");
         Scanner sc = new Scanner(file);
 
@@ -42,12 +49,14 @@ public class CodevsTest {
         assertThat(my.dogCount, is(2));
         assertThat(my.useSkill[NinjaSkill.SUPER_HIGH_SPEED], is(0));
         assertThat(my.useSkill[NinjaSkill.ENEMY_ROCKFALL], is(2));
+        assertThat(my.useSkill[NinjaSkill.ROTATION_ZAN], is(1));
 
         PlayerInfo enemy = codevs.playerInfoList[Codevs.ENEMY_ID];
         assertThat(enemy.soulPower, is(4));
         assertThat(enemy.dogCount, is(9));
         assertThat(enemy.useSkill[NinjaSkill.SUPER_HIGH_SPEED], is(0));
         assertThat(enemy.useSkill[NinjaSkill.ENEMY_ROCKFALL], is(0));
+        assertThat(enemy.useSkill[NinjaSkill.ROTATION_ZAN], is(2));
 
         Cell[][] field = my.field;
         assertTrue(Field.isFloor(field[1][1].state));
@@ -128,5 +137,16 @@ public class CodevsTest {
         assertThat(ninja.y, is(2));
         assertThat(ninja.x, is(5));
         assertTrue(Field.existNinja(field[2][5].state));
+    }
+
+    @Test
+    public void testLoop() throws Exception {
+        File file = new File("src/test/resources/sample.in");
+        Scanner sc = new Scanner(file);
+        codevs.readTurnInfo(sc);
+
+        this.codevs.beforeProc();
+        ActionInfo[] actions = this.codevs.action();
+        this.codevs.output(actions);
     }
 }
