@@ -99,6 +99,14 @@ public class PlayerInfoTest {
     }
 
     @Test
+    public void testManhattanDist() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        assertThat(my.calcManhattanDist(0, 0, 1, 1), is(2));
+        assertThat(my.calcManhattanDist(0, 2, 5, 1), is(6));
+        assertThat(my.calcManhattanDist(10, 2, 5, 7), is(10));
+    }
+
+    @Test
     public void testAction() throws Exception {
         CommandList commandList = new CommandList();
         codevs.beforeProc(commandList);

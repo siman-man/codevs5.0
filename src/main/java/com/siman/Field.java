@@ -30,6 +30,7 @@ public class Field {
 
     public static int DELETE_NINJA_A = 95;
     public static int DELETE_NINJA_B = 63;
+    public static int DELETE_DOG = 495;
     public static int DELETE_STONE = 507;
 
     /**
@@ -121,6 +122,15 @@ public class Field {
     }
 
     /**
+     * 固定石かどうか
+     * @param state フィールドの状態
+     * @return true(固定石が存在している)
+     */
+    public static boolean existFixStone(int state) {
+        return (state & FIX_STONE) == FIX_STONE;
+    }
+
+    /**
      * 石と重なっても大丈夫なオブジェクトかどうかを判定
      * (忍者・忍犬・石・壁が存在しない）
      *
@@ -129,5 +139,14 @@ public class Field {
      */
     public static boolean isMovableObject(int state) {
         return !(existNinja(state) || existDog(state) || existStone(state) || isWall(state));
+    }
+
+    /**
+     * 忍犬が移動できるオブジェクトかどうかを判定
+     * @param state フィールドの状態
+     * @return true(忍犬が移動できる)
+     */
+    public static boolean isDogMovableObject(int state) {
+        return !(existDog(state) || existStone(state) || isWall(state));
     }
 }

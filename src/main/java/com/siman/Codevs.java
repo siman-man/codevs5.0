@@ -1,5 +1,6 @@
 package main.java.com.siman;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -93,7 +94,6 @@ public class Codevs {
 
         initPlayer();
         initNinja();
-        initDogList();
         initNinjaSoulList();
         initField();
     }
@@ -119,20 +119,6 @@ public class Codevs {
 
             for (int id = 0; id < NINJA_NUM; id++) {
                 playerInfo.ninjaList[id] = new Ninja(id);
-            }
-        }
-    }
-
-    /**
-     * 忍犬情報の初期化を行う
-     */
-    public void initDogList() {
-        for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
-            PlayerInfo playerInfo = this.playerInfoList[playerId];
-            playerInfo.dogList = new Dog[MAX_DOG_NUM];
-
-            for (int i = 0; i < MAX_DOG_NUM; i++) {
-                playerInfo.dogList[i] = new Dog();
             }
         }
     }
@@ -223,14 +209,14 @@ public class Codevs {
             }
 
             player.dogCount = sc.nextInt();
+            player.dogList = new ArrayList<>();
             for (int i = 0; i < player.dogCount; i++) {
                 int dogId = sc.nextInt();
                 int dogY = sc.nextInt();
                 int dogX = sc.nextInt();
 
-                player.dogList[dogId].y = dogY;
-                player.dogList[dogId].x = dogX;
-                player.dogList[dogId].update_at = this.turn;
+                Dog dog = new Dog(dogY, dogX);
+                player.dogList.add(dog);
                 player.field[dogY][dogX].state |= Field.DOG;
             }
 
@@ -258,22 +244,26 @@ public class Codevs {
      */
     public void beforeProc(CommandList commandList) {
         PlayerInfo my = this.playerInfoList[MY_ID];
+        my.clean();
         my.updateStoneStatus();
         my.updateEachCellDist();
+        my.spell(commandList);
+
         my.updateDangerValue();
         my.setTargetSoulId();
         my.saveNinjaStatus();
         my.saveField();
 
         PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
+        enemy.clean();
         enemy.updateStoneStatus();
         enemy.updateEachCellDist();
+
         enemy.updateDangerValue();
         enemy.setTargetSoulId();
         enemy.saveNinjaStatus();
         enemy.saveField();
 
-        my.spell(commandList);
     }
 
     /**
