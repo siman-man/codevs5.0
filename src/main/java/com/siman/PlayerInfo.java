@@ -1,6 +1,7 @@
 package main.java.com.siman;
 
 import com.sun.webkit.dom.HTMLAnchorElementImpl;
+import test.java.com.siman.Utility;
 
 import java.util.Arrays;
 import java.util.List;
@@ -124,8 +125,8 @@ public class PlayerInfo {
             int maxX = -1;
             Ninja ninjaA = this.ninjaList[0];
             Ninja ninjaB = this.ninjaList[1];
-            int nidA = getId(ninjaA.y, ninjaA.x);
-            int nidB = getId(ninjaB.y, ninjaB.x);
+            int nidA = Utility.getId(ninjaA.y, ninjaA.x);
+            int nidB = Utility.getId(ninjaB.y, ninjaB.x);
 
             for (int y = 0; y < Field.HEIGHT; y++) {
                 for (int x = 0; x < Field.WIDTH; x++) {
@@ -152,7 +153,7 @@ public class PlayerInfo {
                 commandList.useSkill = true;
                 commandList.spell = String.format("%d %d %d", NinjaSkill.MY_AVATAR, maxY, maxX);
                 this.summonsAvator = true;
-                this.avatorId = getId(maxY, maxX);
+                this.avatorId = Utility.getId(maxY, maxX);
             }
         } else if (this.soulPower >= Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK]) {
             //breakFixStone(commandList);
@@ -189,8 +190,8 @@ public class PlayerInfo {
 
                 if (infoB.isValid()) {
                     int eval = 0;
-                    int nidA = getId(ninjaA.y, ninjaA.x);
-                    int nidB = getId(ninjaB.y, ninjaB.x);
+                    int nidA = Utility.getId(ninjaA.y, ninjaA.x);
+                    int nidB = Utility.getId(ninjaB.y, ninjaB.x);
 
                     //eval -= this.eachCellDist[nidA][nidB];
                     eval += calcManhattanDist(ninjaA.y, ninjaA.x, ninjaB.y, ninjaB.x);
@@ -236,30 +237,28 @@ public class PlayerInfo {
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
 
-        int nidA = getId(ninjaA.y, ninjaA.x);
-        int nidB = getId(ninjaB.y, ninjaB.x);
+        int nidA = Utility.getId(ninjaA.y, ninjaA.x);
+        int nidB = Utility.getId(ninjaB.y, ninjaB.x);
 
         for (NinjaSoul soulA : this.soulList) {
             Cell cellA = this.field[soulA.y][soulA.x];
             if (cellA.dangerValue > 50) continue;
-            int sidA = getId(soulA.y, soulA.x);
-            int distA = this.eachCellDist[nidA][sidA];
+            int distA = this.eachCellDist[nidA][soulA.sid];
 
             for (NinjaSoul soulB : this.soulList) {
-                if (soulA.cid == soulB.cid) continue;
+                if (soulA.id == soulB.id) continue;
                 Cell cellB = this.field[soulB.y][soulB.x];
 
                 if (this.eachCellDistNonPush[cellA.id][cellB.id] <= 4) continue;
                 if (cellB.dangerValue > 50) continue;
-                int sidB = getId(soulB.y, soulB.x);
-                int distB = this.eachCellDist[nidB][sidB];
+                int distB = this.eachCellDist[nidB][soulB.sid];
 
                 int totalDist = distA + distB;
 
                 if (minDist > totalDist) {
                     minDist = totalDist;
-                    targetA = soulA.cid;
-                    targetB = soulB.cid;
+                    targetA = soulA.id;
+                    targetB = soulB.id;
                     minDistA = distA;
                     minDistB = distB;
                 }
@@ -277,19 +276,18 @@ public class PlayerInfo {
         int minId = -1;
 
         for (NinjaSoul soul : this.soulList) {
-            if (ninja.targetSoulId == soul.cid) {
+            if (ninja.targetSoulId == soul.id) {
                 continue;
             }
 
             Cell cell = this.field[soul.y][soul.x];
             //if (cell.dangerValue > 0) continue;
-            int nid = getId(ninja.y, ninja.x);
-            int sid = getId(soul.y, soul.x);
+            int nid = Utility.getId(ninja.y, ninja.x);
 
-            int dist = Math.min(this.eachCellDist[nid][sid], this.eachCellDist[sid][nid]);
+            int dist = Math.min(this.eachCellDist[nid][soul.sid], this.eachCellDist[soul.sid][nid]);
             if (minDist > dist) {
                 minDist = dist;
-                minId = soul.cid;
+                minId = soul.id;
             }
         }
 
@@ -303,13 +301,12 @@ public class PlayerInfo {
     public void updateDogPosition() {
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
-        int nidA = getId(ninjaA.y, ninjaA.x);
-        int nidB = getId(ninjaB.y, ninjaB.x);
+        int nidA = Utility.getId(ninjaA.y, ninjaA.x);
+        int nidB = Utility.getId(ninjaB.y, ninjaB.x);
 
         for (Dog dog : this.dogList) {
-            int did = getId(dog.y, dog.x);
-            int distA = this.eachCellDistNonPush[did][nidA];
-            int distB = this.eachCellDistNonPush[did][nidB];
+            int distA = this.eachCellDistNonPush[dog.did][nidA];
+            int distB = this.eachCellDistNonPush[dog.did][nidB];
             int tid = (distA > distB) ? nidB : nidA;
             int targetDist = Math.min(distA, distB);
 
@@ -474,10 +471,9 @@ public class PlayerInfo {
 
         Cell cell = this.field[ninja.y][ninja.x];
 
-        int nid = getId(ninja.y, ninja.x);
+        int nid = Utility.getId(ninja.y, ninja.x);
         NinjaSoul soul = this.soulList.get(ninja.targetSoulId);
-        int sid = getId(soul.y, soul.x);
-        int targetDist = this.eachCellDist[nid][sid];
+        int targetDist = this.eachCellDist[nid][soul.sid];
 
         info.dangerValue = cell.dangerValue;
         info.targetSoulDist = targetDist;
@@ -519,13 +515,12 @@ public class PlayerInfo {
      */
     public void updateDangerValue() {
         for (Dog dog : this.dogList) {
-            int did = getId(dog.y, dog.x);
             this.field[dog.y][dog.x].dangerValue = 99999;
 
             for (int y = 1; y < Field.HEIGHT; y++) {
                 for (int x = 1; x < Field.WIDTH; x++) {
                     Cell cell = this.field[y][x];
-                    int dist = Math.max(this.eachCellDist[did][cell.id], this.eachCellDist[cell.id][did]);
+                    int dist = Math.max(this.eachCellDist[dog.did][cell.id], this.eachCellDist[cell.id][dog.did]);
 
                     if (dist <= 1) {
                         cell.dangerValue = 99999;
@@ -623,11 +618,10 @@ public class PlayerInfo {
      * すべての忍犬からの距離を合計する
      */
     public int getAllDogDist(int y, int x) {
-        int id = getId(y, x);
+        int id = Utility.getId(y, x);
         int totalDist = 0;
 
         for (Dog dog : this.dogList) {
-            int did = getId(dog.y, dog.x);
             int dist = this.calcManhattanDist(y, x, dog.y, dog.x);
             totalDist += (dist == INF) ? 0 : dist;
         }
@@ -641,11 +635,10 @@ public class PlayerInfo {
      * @return
      */
     public int getAllSoulDist(int y, int x) {
-        int id = getId(y, x);
+        int id = Utility.getId(y, x);
         int totalDist = 0;
 
         for (NinjaSoul soul : this.soulList) {
-            int sid = getId(soul.y, soul.x);
             int dist = this.calcManhattanDist(y, x, soul.y, soul.x);
             totalDist += (dist == INF) ? 0 : dist;
         }
@@ -657,14 +650,13 @@ public class PlayerInfo {
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
 
-        int nidA = getId(ninjaA.y, ninjaA.x);
-        int nidB = getId(ninjaB.y, ninjaB.x);
+        int nidA = Utility.getId(ninjaA.y, ninjaA.x);
+        int nidB = Utility.getId(ninjaB.y, ninjaB.x);
         int minDist = Integer.MAX_VALUE;
 
         for (Dog dog : this.dogList) {
-            int did = getId(dog.y, dog.x);
-            int distA = this.eachCellDistNonPush[did][nidA];
-            int distB = this.eachCellDistNonPush[did][nidB];
+            int distA = this.eachCellDistNonPush[dog.did][nidA];
+            int distB = this.eachCellDistNonPush[dog.did][nidB];
             int dist = Math.min(distA, distB);
 
             if (minDist > dist) {
@@ -779,10 +771,6 @@ public class PlayerInfo {
 
     public void removeDog(int y, int x) {
         this.field[y][x].state &= Field.DELETE_DOG;
-    }
-
-    public int getId(int y, int x) {
-        return (y * Field.WIDTH) + x;
     }
 
     public int calcManhattanDist(int y1, int x1, int y2, int x2) {

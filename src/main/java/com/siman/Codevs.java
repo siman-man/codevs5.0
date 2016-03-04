@@ -25,16 +25,6 @@ public class Codevs {
     public static int MAX_SKILL_COUNT = 8;
 
     /**
-     * 忍犬の最大値
-     */
-    public static int MAX_DOG_NUM = 255;
-
-    /**
-     * ニンジャソウルの最大数
-     */
-    public static int MAX_SOUL_NUM = 255;
-
-    /**
      * 自分のID
      */
     public static int MY_ID = 0;
@@ -195,22 +185,23 @@ public class Codevs {
 
             player.dogCount = sc.nextInt();
             player.dogList = new ArrayList<>();
-            for (int i = 0; i < player.dogCount; i++) {
+            for (int id = 0; id < player.dogCount; id++) {
                 int dogId = sc.nextInt();
                 int dogY = sc.nextInt();
                 int dogX = sc.nextInt();
 
-                Dog dog = new Dog(dogY, dogX);
+                Dog dog = new Dog(id, dogY, dogX);
                 player.dogList.add(dog);
                 player.setDog(dogY, dogX);
             }
 
             player.soulCount = sc.nextInt();
-            for (int i = 0; i < player.soulCount; i++) {
+            player.soulList = new ArrayList<>();
+            for (int id = 0; id < player.soulCount; id++) {
                 int soulY = sc.nextInt();
                 int soulX = sc.nextInt();
-                NinjaSoul soul = new NinjaSoul(soulY, soulX);
 
+                NinjaSoul soul = new NinjaSoul(id, soulY, soulX);
                 player.soulList.add(soul);
                 player.setSoul(soulY, soulX);
             }
@@ -234,6 +225,7 @@ public class Codevs {
         my.updateEachCellDist();
         my.spell(commandList);
 
+        // TODO: bug fix
         if (my.summonsAvator) {
             //my.updateDogPosition();
         }

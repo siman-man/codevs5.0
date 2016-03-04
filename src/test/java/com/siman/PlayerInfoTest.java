@@ -99,6 +99,18 @@ public class PlayerInfoTest {
     }
 
     @Test
+    public void testIsInside() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+
+        assertTrue(my.isInside(0, 0));
+        assertTrue(my.isInside(1, 1));
+        assertTrue(my.isInside(Field.HEIGHT-1, Field.WIDTH-1));
+
+        assertFalse(my.isInside(-1, 0));
+        assertFalse(my.isInside(Field.HEIGHT, Field.WIDTH));
+    }
+
+    @Test
     public void testManhattanDist() throws Exception {
         PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
         assertThat(my.calcManhattanDist(0, 0, 1, 1), is(2));
@@ -122,5 +134,33 @@ public class PlayerInfoTest {
         assertThat(my.getWallDist(1, 1), is(1));
         assertThat(my.getWallDist(5, 3), is(3));
         assertThat(my.getWallDist(10, 10), is(3));
+    }
+
+    @Test
+    public void testSetRemoveSoul() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        Cell cell = my.field[5][5];
+
+        assertFalse(Field.existSoul(cell.state));
+
+        my.setSoul(5, 5);
+        assertTrue(Field.existSoul(cell.state));
+
+        my.removeSoul(5, 5);
+        assertFalse(Field.existSoul(cell.state));
+    }
+
+    @Test
+    public void testSetRemoevDog() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        Cell cell = my.field[5][5];
+
+        assertFalse(Field.existDog(cell.state));
+
+        my.setDog(5, 5);
+        assertTrue(Field.existDog(cell.state));
+
+        my.removeDog(5, 5);
+        assertFalse(Field.existDog(cell.state));
     }
 }
