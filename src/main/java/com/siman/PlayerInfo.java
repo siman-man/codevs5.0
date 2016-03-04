@@ -46,7 +46,7 @@ public class PlayerInfo {
     /**
      * ニンジャソウルのリスト
      */
-    public NinjaSoul[] soulList;
+    public List<NinjaSoul> soulList;
 
     /**
      * フィールド
@@ -112,11 +112,13 @@ public class PlayerInfo {
      * 忍術を使用する
      */
     public void spell(CommandList commandList) {
+        int minDogDist = getMostNearDogDist();
+
         if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 1 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
             commandList.useSkill = true;
             commandList.spell = "0";
             this.highSpeedMode = true;
-        } else if (Codevs.skillCost[NinjaSkill.MY_AVATAR] <= 4 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
+        } else if (minDogDist <= 4 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
             int maxDist = Integer.MIN_VALUE;
             int maxY = -1;
             int maxX = -1;
@@ -133,10 +135,13 @@ public class PlayerInfo {
 
                     int distA = this.eachCellDistNonPush[nidA][cell.id];
                     int distB = this.eachCellDistNonPush[nidB][cell.id];
-                    int distC = getAllDogDist(y, x);
 
-                    if (maxDist < distA + distB - distC) {
-                        maxDist = distA + distB - distC;
+                    if (distA == INF || distB == INF) continue;
+                    int distC = getAllDogDist(y, x);
+                    int distD = getAllSoulDist(y, x);
+
+                    if (maxDist < distA + distB - 2 * distC + distD) {
+                        maxDist = distA + distB - 2 * distC + distD;
                         maxY = y;
                         maxX = x;
                     }
@@ -150,7 +155,7 @@ public class PlayerInfo {
                 this.avatorId = getId(maxY, maxX);
             }
         } else if (this.soulPower >= Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK]) {
-            breakFixStone(commandList);
+            //breakFixStone(commandList);
         }
     }
 
@@ -234,17 +239,17 @@ public class PlayerInfo {
         int nidA = getId(ninjaA.y, ninjaA.x);
         int nidB = getId(ninjaB.y, ninjaB.x);
 
-        for (int soulIdA = 0; soulIdA < this.soulCount; soulIdA++) {
-            NinjaSoul soulA = this.soulList[soulIdA];
+        for (NinjaSoul soulA : this.soulList) {
             Cell cellA = this.field[soulA.y][soulA.x];
             if (cellA.dangerValue > 50) continue;
             int sidA = getId(soulA.y, soulA.x);
             int distA = this.eachCellDist[nidA][sidA];
 
-            for (int soulIdB = 0; soulIdB < this.soulCount; soulIdB++) {
-                if (soulIdA == soulIdB) continue;
-                NinjaSoul soulB = this.soulList[soulIdB];
+            for (NinjaSoul soulB : this.soulList) {
+                if (soulA.cid == soulB.cid) continue;
                 Cell cellB = this.field[soulB.y][soulB.x];
+
+                if (this.eachCellDistNonPush[cellA.id][cellB.id] <= 4) continue;
                 if (cellB.dangerValue > 50) continue;
                 int sidB = getId(soulB.y, soulB.x);
                 int distB = this.eachCellDist[nidB][sidB];
@@ -253,8 +258,8 @@ public class PlayerInfo {
 
                 if (minDist > totalDist) {
                     minDist = totalDist;
-                    targetA = soulIdA;
-                    targetB = soulIdB;
+                    targetA = soulA.cid;
+                    targetB = soulB.cid;
                     minDistA = distA;
                     minDistB = distB;
                 }
@@ -271,21 +276,20 @@ public class PlayerInfo {
         int minDist = Integer.MAX_VALUE;
         int minId = -1;
 
-        for (int soulId = 0; soulId < this.soulCount; soulId++) {
-            if (ninja.targetSoulId == soulId){
+        for (NinjaSoul soul : this.soulList) {
+            if (ninja.targetSoulId == soul.cid) {
                 continue;
             }
 
-            NinjaSoul soul = this.soulList[soulId];
             Cell cell = this.field[soul.y][soul.x];
             //if (cell.dangerValue > 0) continue;
             int nid = getId(ninja.y, ninja.x);
             int sid = getId(soul.y, soul.x);
 
-            int dist = this.eachCellDist[nid][sid];
+            int dist = Math.min(this.eachCellDist[nid][sid], this.eachCellDist[sid][nid]);
             if (minDist > dist) {
                 minDist = dist;
-                minId = soulId;
+                minId = soul.cid;
             }
         }
 
@@ -351,6 +355,7 @@ public class PlayerInfo {
 
                 // 自分自身のコストは0で初期化
                 this.eachCellDist[fromCell.id][fromCell.id] = 0;
+                this.eachCellDistNonPush[fromCell.id][fromCell.id] = 0;
 
                 for (int i = 0; i < 4; i++) {
                     int ny = y + DY[i];
@@ -375,8 +380,6 @@ public class PlayerInfo {
                             } else {
                                 this.eachCellDist[fromCell.id][toCell.id] = 1;
                             }
-
-                            this.eachCellDistNonPush[fromCell.id][toCell.id] = 0;
                         } else {
                             this.eachCellDist[fromCell.id][toCell.id] = 1;
                             this.eachCellDistNonPush[fromCell.id][toCell.id] = 1;
@@ -460,6 +463,7 @@ public class PlayerInfo {
 
                 if (Field.existSoul(cell.state)) {
                     info.getSoulCount += 1;
+                    removeSoul(ninja.y, ninja.x);
                     updateTargetSoul(ninja);
                 }
             } else {
@@ -471,7 +475,7 @@ public class PlayerInfo {
         Cell cell = this.field[ninja.y][ninja.x];
 
         int nid = getId(ninja.y, ninja.x);
-        NinjaSoul soul = this.soulList[ninja.targetSoulId];
+        NinjaSoul soul = this.soulList.get(ninja.targetSoulId);
         int sid = getId(soul.y, soul.x);
         int targetDist = this.eachCellDist[nid][sid];
 
@@ -590,8 +594,8 @@ public class PlayerInfo {
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
 
-        for (int y = 1; y < Field.HEIGHT-1; y++) {
-            for (int x = 1; x < Field.WIDTH-1; x++) {
+        for (int y = 1; y < Field.HEIGHT - 1; y++) {
+            for (int x = 1; x < Field.WIDTH - 1; x++) {
                 Cell cell = this.field[y][x];
 
                 if (Field.existFixStone(cell.state)) {
@@ -622,12 +626,53 @@ public class PlayerInfo {
         int id = getId(y, x);
         int totalDist = 0;
 
-        for(Dog dog : this.dogList) {
+        for (Dog dog : this.dogList) {
             int did = getId(dog.y, dog.x);
-            totalDist += this.eachCellDistNonPush[did][id];
+            int dist = this.calcManhattanDist(y, x, dog.y, dog.x);
+            totalDist += (dist == INF) ? 0 : dist;
         }
 
         return totalDist;
+    }
+
+    /**
+     * 全てのニンジャソウルからの距離を合計する
+     *
+     * @return
+     */
+    public int getAllSoulDist(int y, int x) {
+        int id = getId(y, x);
+        int totalDist = 0;
+
+        for (NinjaSoul soul : this.soulList) {
+            int sid = getId(soul.y, soul.x);
+            int dist = this.calcManhattanDist(y, x, soul.y, soul.x);
+            totalDist += (dist == INF) ? 0 : dist;
+        }
+
+        return totalDist;
+    }
+
+    public int getMostNearDogDist() {
+        Ninja ninjaA = this.ninjaList[0];
+        Ninja ninjaB = this.ninjaList[1];
+
+        int nidA = getId(ninjaA.y, ninjaA.x);
+        int nidB = getId(ninjaB.y, ninjaB.x);
+        int minDist = Integer.MAX_VALUE;
+
+        for (Dog dog : this.dogList) {
+            int did = getId(dog.y, dog.x);
+            int distA = this.eachCellDistNonPush[did][nidA];
+            int distB = this.eachCellDistNonPush[did][nidB];
+            int dist = Math.min(distA, distB);
+
+            if (minDist > dist) {
+                minDist = dist;
+            }
+        }
+
+        return minDist;
     }
 
     /**
@@ -718,6 +763,22 @@ public class PlayerInfo {
         int x = id % Field.WIDTH;
 
         return this.field[y][x];
+    }
+
+    public void setSoul(int y, int x) {
+        this.field[y][x].state |= Field.SOUL;
+    }
+
+    public void removeSoul(int y, int x) {
+        this.field[y][x].state &= Field.DELETE_SOUL;
+    }
+
+    public void setDog(int y, int x) {
+        this.field[y][x].state |= Field.DOG;
+    }
+
+    public void removeDog(int y, int x) {
+        this.field[y][x].state &= Field.DELETE_DOG;
     }
 
     public int getId(int y, int x) {

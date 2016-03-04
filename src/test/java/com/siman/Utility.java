@@ -47,4 +47,8 @@ public class Utility {
             }
         }
     }
+
+    public static int getId(int y, int x) {
+        return (y * Field.WIDTH) + x;
+    }
 }

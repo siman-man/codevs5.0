@@ -94,7 +94,6 @@ public class Codevs {
 
         initPlayer();
         initNinja();
-        initNinjaSoulList();
         initField();
     }
 
@@ -119,20 +118,6 @@ public class Codevs {
 
             for (int id = 0; id < NINJA_NUM; id++) {
                 playerInfo.ninjaList[id] = new Ninja(id);
-            }
-        }
-    }
-
-    /**
-     * ニンジャソウル情報の初期化を行う
-     */
-    public void initNinjaSoulList() {
-        for (int playerId = 0; playerId < PLAYER_NUM; playerId++) {
-            PlayerInfo playerInfo = this.playerInfoList[playerId];
-            playerInfo.soulList = new NinjaSoul[MAX_SOUL_NUM];
-
-            for (int i = 0; i < MAX_SOUL_NUM; i++) {
-                playerInfo.soulList[i] = new NinjaSoul();
             }
         }
     }
@@ -217,17 +202,17 @@ public class Codevs {
 
                 Dog dog = new Dog(dogY, dogX);
                 player.dogList.add(dog);
-                player.field[dogY][dogX].state |= Field.DOG;
+                player.setDog(dogY, dogX);
             }
 
             player.soulCount = sc.nextInt();
             for (int i = 0; i < player.soulCount; i++) {
                 int soulY = sc.nextInt();
                 int soulX = sc.nextInt();
+                NinjaSoul soul = new NinjaSoul(soulY, soulX);
 
-                player.soulList[i].y = soulY;
-                player.soulList[i].x = soulX;
-                player.field[soulY][soulX].state |= Field.SOUL;
+                player.soulList.add(soul);
+                player.setSoul(soulY, soulX);
             }
 
             /**
@@ -250,7 +235,7 @@ public class Codevs {
         my.spell(commandList);
 
         if (my.summonsAvator) {
-            my.updateDogPosition();
+            //my.updateDogPosition();
         }
 
         my.updateDangerValue();

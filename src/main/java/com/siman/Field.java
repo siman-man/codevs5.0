@@ -31,6 +31,7 @@ public class Field {
     public static int DELETE_NINJA_A = 95;
     public static int DELETE_NINJA_B = 63;
     public static int DELETE_DOG = 495;
+    public static int DELETE_SOUL = 503;
     public static int DELETE_STONE = 507;
 
     /**
