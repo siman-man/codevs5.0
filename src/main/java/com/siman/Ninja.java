@@ -171,6 +171,9 @@ public class Ninja {
      */
     public int saveX;
 
+    public int tempSaveY;
+    public int tempSaveX;
+
     /**
      * 目標のニンジャソウルID
      */
@@ -180,6 +183,13 @@ public class Ninja {
      * 保存した目標ソウルID
      */
     public int saveTarget;
+
+    public int saveTargetDist;
+
+    /**
+     * 一時保存
+     */
+    public int tempSaveTarget;
 
     /**
      * 目的のソウルとの距離
@@ -197,6 +207,13 @@ public class Ninja {
         this.saveY = this.y;
         this.saveX = this.x;
         this.saveTarget = this.targetSoulId;
+        this.saveTargetDist = this.targetSoulDist;
+    }
+
+    public void tempSaveStatus() {
+        this.tempSaveY = this.y;
+        this.tempSaveX = this.x;
+        this.tempSaveTarget = this.targetSoulId;
     }
 
     /**
@@ -206,5 +223,15 @@ public class Ninja {
         this.y = this.saveY;
         this.x = this.saveX;
         this.targetSoulId = this.saveTarget;
+        this.targetSoulDist = this.saveTargetDist;
+    }
+
+    /**
+     *
+     */
+    public void tempRollback() {
+        this.y = this.tempSaveY;
+        this.x = this.tempSaveX;
+        this.targetSoulId = this.tempSaveTarget;
     }
 }

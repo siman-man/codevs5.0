@@ -249,6 +249,10 @@ public class Codevs {
         my.updateEachCellDist();
         my.spell(commandList);
 
+        if (my.summonsAvator) {
+            my.updateDogPosition();
+        }
+
         my.updateDangerValue();
         my.setTargetSoulId();
         my.saveNinjaStatus();

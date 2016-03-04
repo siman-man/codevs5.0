@@ -59,6 +59,11 @@ public class PlayerInfo {
     public int[][] savedField;
 
     /**
+     * 一時保存用
+     */
+    public int[][] tempSavedField;
+
+    /**
      * 任意の2点間のセルの最短距離
      */
     public int[][] eachCellDist;
@@ -91,6 +96,7 @@ public class PlayerInfo {
     public PlayerInfo() {
         this.useSkill = new int[Codevs.MAX_SKILL_COUNT];
         this.savedField = new int[Field.HEIGHT][Field.WIDTH];
+        this.tempSavedField = new int[Field.HEIGHT][Field.WIDTH];
     }
 
     /**
@@ -127,9 +133,10 @@ public class PlayerInfo {
 
                     int distA = this.eachCellDistNonPush[nidA][cell.id];
                     int distB = this.eachCellDistNonPush[nidB][cell.id];
+                    int distC = getAllDogDist(y, x);
 
-                    if (maxDist < distA + distB) {
-                        maxDist = distA + distB;
+                    if (maxDist < distA + distB - distC) {
+                        maxDist = distA + distB - distC;
                         maxY = y;
                         maxX = x;
                     }
@@ -161,11 +168,15 @@ public class PlayerInfo {
 
         for (char[] actionA : movePattern) {
             ActionInfo infoA = moveAction(ninjaA, actionA);
+
             if (!infoA.isValid()) {
                 // 状態を元に戻す
-                this.rollbackField();
-                this.rollbackNinja();
+                rollbackField();
+                rollbackNinja();
                 continue;
+            } else {
+                tempSaveField();
+                tempSaveNinja();
             }
 
             for (char[] actionB : movePattern) {
@@ -195,19 +206,17 @@ public class PlayerInfo {
                     }
                 }
 
-                // Aが行動した状態まで戻す
-                this.rollbackField();
-                this.rollbackNinja();
-                moveAction(ninjaA, actionA);
+                tempRollbackField();
+                tempRollbackNinja();
             }
 
-            this.rollbackField();
-            this.rollbackNinja();
+            rollbackField();
+            rollbackNinja();
         }
 
         // 最後に元に戻しておく
-        this.rollbackField();
-        this.rollbackNinja();
+        rollbackField();
+        rollbackNinja();
 
         return new ActionInfo[]{bestActionA, bestActionB};
     }
@@ -228,32 +237,26 @@ public class PlayerInfo {
         for (int soulIdA = 0; soulIdA < this.soulCount; soulIdA++) {
             NinjaSoul soulA = this.soulList[soulIdA];
             Cell cellA = this.field[soulA.y][soulA.x];
-            if (cellA.dangerValue > 0) continue;
+            if (cellA.dangerValue > 50) continue;
             int sidA = getId(soulA.y, soulA.x);
-            int distA_1 = this.eachCellDist[nidA][sidA];
-            //int distA_2 = this.eachCellDist[sidA][nidA];
-
-            //if (distA_1 != distA_2) continue;
+            int distA = this.eachCellDist[nidA][sidA];
 
             for (int soulIdB = 0; soulIdB < this.soulCount; soulIdB++) {
                 if (soulIdA == soulIdB) continue;
                 NinjaSoul soulB = this.soulList[soulIdB];
                 Cell cellB = this.field[soulB.y][soulB.x];
-                if (cellB.dangerValue > 0) continue;
+                if (cellB.dangerValue > 50) continue;
                 int sidB = getId(soulB.y, soulB.x);
-                int distB_1 = this.eachCellDist[nidB][sidB];
-                //int distB_2 = this.eachCellDist[sidB][nidB];
+                int distB = this.eachCellDist[nidB][sidB];
 
-                //if (distB_1 != distB_2) continue;
-
-                int totalDist = distA_1 + distB_1;
+                int totalDist = distA + distB;
 
                 if (minDist > totalDist) {
                     minDist = totalDist;
                     targetA = soulIdA;
                     targetB = soulIdB;
-                    minDistA = distA_1;
-                    minDistB = distB_1;
+                    minDistA = distA;
+                    minDistB = distB;
                 }
             }
         }
@@ -266,21 +269,28 @@ public class PlayerInfo {
 
     public void updateTargetSoul(Ninja ninja) {
         int minDist = Integer.MAX_VALUE;
+        int minId = -1;
 
         for (int soulId = 0; soulId < this.soulCount; soulId++) {
-            if (ninja.targetSoulId == soulId) continue;
+            if (ninja.targetSoulId == soulId){
+                continue;
+            }
+
             NinjaSoul soul = this.soulList[soulId];
             Cell cell = this.field[soul.y][soul.x];
-            if (cell.dangerValue > 0) continue;
+            //if (cell.dangerValue > 0) continue;
             int nid = getId(ninja.y, ninja.x);
             int sid = getId(soul.y, soul.x);
 
-            int dist = Math.min(this.eachCellDist[nid][sid], this.eachCellDist[sid][nid]);
+            int dist = this.eachCellDist[nid][sid];
             if (minDist > dist) {
                 minDist = dist;
-                ninja.targetSoulId = soulId;
+                minId = soulId;
             }
         }
+
+        ninja.targetSoulId = minId;
+        ninja.targetSoulDist = minDist;
     }
 
     /**
@@ -606,6 +616,21 @@ public class PlayerInfo {
 
 
     /**
+     * すべての忍犬からの距離を合計する
+     */
+    public int getAllDogDist(int y, int x) {
+        int id = getId(y, x);
+        int totalDist = 0;
+
+        for(Dog dog : this.dogList) {
+            int did = getId(dog.y, dog.x);
+            totalDist += this.eachCellDistNonPush[did][id];
+        }
+
+        return totalDist;
+    }
+
+    /**
      *
      */
     public void saveNinjaStatus() {
@@ -639,11 +664,47 @@ public class PlayerInfo {
     }
 
     /**
+     * 一時的にフィールドを保存
+     */
+    public void tempSaveField() {
+        for (int y = 0; y < Field.HEIGHT; y++) {
+            for (int x = 0; x < Field.WIDTH; x++) {
+                Cell cell = this.field[y][x];
+                this.tempSavedField[y][x] = cell.state;
+            }
+        }
+    }
+
+    public void tempSaveNinja() {
+        for (Ninja ninja : this.ninjaList) {
+            ninja.tempSaveStatus();
+        }
+    }
+
+    /**
+     * 一時フィールドに戻す
+     */
+    public void tempRollbackField() {
+        for (int y = 0; y < Field.HEIGHT; y++) {
+            for (int x = 0; x < Field.WIDTH; x++) {
+                Cell cell = this.field[y][x];
+                cell.state = this.tempSavedField[y][x];
+            }
+        }
+    }
+
+    /**
      * 忍者を元の位置に戻す
      */
     public void rollbackNinja() {
         for (Ninja ninja : this.ninjaList) {
             ninja.rollback();
+        }
+    }
+
+    public void tempRollbackNinja() {
+        for (Ninja ninja : this.ninjaList) {
+            ninja.tempRollback();
         }
     }
 
