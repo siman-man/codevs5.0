@@ -143,10 +143,11 @@ public class CodevsTest {
     public void testLoop() throws Exception {
         File file = new File("src/test/resources/sample.in");
         Scanner sc = new Scanner(file);
+        CommandList commandList = new CommandList();
         codevs.readTurnInfo(sc);
 
-        this.codevs.beforeProc();
-        ActionInfo[] actions = this.codevs.action();
-        this.codevs.output(actions);
+        this.codevs.beforeProc(commandList);
+        commandList.actions = this.codevs.action();
+        this.codevs.output(commandList);
     }
 }

@@ -1,5 +1,7 @@
 package main.java.com.siman;
 
+import com.sun.webkit.dom.HTMLAnchorElementImpl;
+
 import java.util.Arrays;
 
 /**
@@ -58,6 +60,16 @@ public class PlayerInfo {
     public int[][] eachCellDist;
 
     /**
+     * 任意の2点間のセルの最短距離（岩動かさない）
+     */
+    public int[][] eachCellDistNonPush;
+
+    /**
+     *
+     */
+    public boolean highSpeedMode;
+
+    /**
      * プレイヤーの術利用回数履歴
      */
     public int[] useSkill;
@@ -68,10 +80,53 @@ public class PlayerInfo {
     }
 
     /**
+     * 忍術を使用する
+     */
+    public void spell(CommandList commandList) {
+        this.highSpeedMode = false;
+
+        if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 2 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
+            commandList.useSkill = true;
+            commandList.spell = "0";
+            this.highSpeedMode = true;
+        } else if (this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
+            int maxDist = Integer.MIN_VALUE;
+            int maxY = -1;
+            int maxX = -1;
+            Ninja ninjaA = this.ninjaList[0];
+            Ninja ninjaB = this.ninjaList[1];
+            int nidA = getId(ninjaA.y, ninjaA.x);
+            int nidB = getId(ninjaB.y, ninjaB.x);
+
+            for (int y = 0; y < Field.HEIGHT; y++) {
+                for (int x = 0; x < Field.WIDTH; x++) {
+                    Cell cell = this.field[y][x];
+
+                    if (Field.isWall(cell.state) || Field.existStone(cell.state)) continue;
+
+                    int distA = this.eachCellDistNonPush[nidA][cell.id];
+                    int distB = this.eachCellDistNonPush[nidB][cell.id];
+
+                    if (maxDist < distA + distB) {
+                        maxDist = distA + distB;
+                        maxY = y;
+                        maxX = x;
+                    }
+                }
+            }
+
+            if (maxY != -1) {
+                commandList.useSkill = true;
+                commandList.spell = String.format("%d %d %d", NinjaSkill.MY_AVATAR, maxY, maxX);
+            }
+        }
+    }
+
+    /**
      * 忍者の行動を決める
      */
     public ActionInfo[] action() {
-        char[][] movePattern = Ninja.NORMAL_MOVE_PATTERN;
+        char[][] movePattern = (this.highSpeedMode) ? Ninja.SUPER_MOVE_PATTERN : Ninja.NORMAL_MOVE_PATTERN;
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
 
@@ -134,6 +189,8 @@ public class PlayerInfo {
 
     public void setTargetSoulId() {
         int minDist = Integer.MAX_VALUE;
+        int minDistA = INF;
+        int minDistB = INF;
         int targetA = 0;
         int targetB = 1;
 
@@ -149,9 +206,9 @@ public class PlayerInfo {
             if (cellA.dangerValue > 0) continue;
             int sidA = getId(soulA.y, soulA.x);
             int distA_1 = this.eachCellDist[nidA][sidA];
-            int distA_2 = this.eachCellDist[sidA][nidA];
+            //int distA_2 = this.eachCellDist[sidA][nidA];
 
-            if (distA_1 != distA_2) continue;
+            //if (distA_1 != distA_2) continue;
 
             for (int soulIdB = 0; soulIdB < this.soulCount; soulIdB++) {
                 if (soulIdA == soulIdB) continue;
@@ -160,9 +217,9 @@ public class PlayerInfo {
                 if (cellB.dangerValue > 0) continue;
                 int sidB = getId(soulB.y, soulB.x);
                 int distB_1 = this.eachCellDist[nidB][sidB];
-                int distB_2 = this.eachCellDist[sidB][nidB];
+                //int distB_2 = this.eachCellDist[sidB][nidB];
 
-                if (distB_1 != distB_2) continue;
+                //if (distB_1 != distB_2) continue;
 
                 int totalDist = distA_1 + distB_1;
 
@@ -170,12 +227,16 @@ public class PlayerInfo {
                     minDist = totalDist;
                     targetA = soulIdA;
                     targetB = soulIdB;
+                    minDistA = distA_1;
+                    minDistB = distB_1;
                 }
             }
         }
 
         ninjaA.targetSoulId = targetA;
+        ninjaA.targetSoulDist = minDistA;
         ninjaB.targetSoulId = targetB;
+        ninjaB.targetSoulDist = minDistB;
     }
 
     public void updateTargetSoul(Ninja ninja) {
@@ -202,9 +263,11 @@ public class PlayerInfo {
      */
     public void updateEachCellDist() {
         this.eachCellDist = new int[Field.CELL_COUNT][Field.CELL_COUNT];
+        this.eachCellDistNonPush = new int[Field.CELL_COUNT][Field.CELL_COUNT];
 
         for (int y = 0; y < Field.CELL_COUNT; y++) {
             Arrays.fill(this.eachCellDist[y], INF);
+            Arrays.fill(this.eachCellDistNonPush[y], INF);
         }
 
         /**
@@ -225,13 +288,26 @@ public class PlayerInfo {
                     if (Field.isWall(toCell.state)) continue;
 
                     if (canMove(y, x, i)) {
-                        int nny = ny + DY[i];
-                        int nnx = nx + DX[i];
-                        Cell nCell = this.field[nny][nnx];
 
-                        if (Field.existStone(toCell.state) && (Field.existStone(nCell.state) || Field.isWall(nCell.state))) {
+                        if (Field.existStone(toCell.state)) {
+                            int nny = ny + 2 * DY[i];
+                            int nnx = nx + 2 * DX[i];
+
+                            if (isOutside(nny, nnx)) continue;
+                            int wd = getWallDist(nny, nnx);
+
+                            Cell nCell = this.field[nny][nnx];
+
+                            if (wd <= 2 && (Field.existStone(nCell.state) || Field.isWall(nCell.state))) {
+                                this.eachCellDist[fromCell.id][toCell.id] = 99;
+                            } else {
+                                this.eachCellDist[fromCell.id][toCell.id] = 1;
+                            }
+
+                            this.eachCellDistNonPush[fromCell.id][toCell.id] = 0;
                         } else {
                             this.eachCellDist[fromCell.id][toCell.id] = 1;
+                            this.eachCellDistNonPush[fromCell.id][toCell.id] = 1;
                         }
                     }
                 }
@@ -253,6 +329,10 @@ public class PlayerInfo {
                     int distA = this.eachCellDist[i][j];
                     int distB = this.eachCellDist[i][k] + this.eachCellDist[k][j];
                     this.eachCellDist[i][j] = Math.min(distA, distB);
+
+                    int distNA = this.eachCellDistNonPush[i][j];
+                    int distNB = this.eachCellDistNonPush[i][k] + this.eachCellDistNonPush[k][j];
+                    this.eachCellDistNonPush[i][j] = Math.min(distNA, distNB);
                 }
             }
         }
@@ -375,9 +455,9 @@ public class PlayerInfo {
                     if (dist <= 1) {
                         cell.dangerValue = 99999;
                     } else if (dist <= 2) {
-                        cell.dangerValue += 50;
+                        //cell.dangerValue += 50;
                     } else if (dist <= 4) {
-                        cell.dangerValue += Math.max(cell.dangerValue, 5 - dist);
+                        //cell.dangerValue += Math.max(cell.dangerValue, 5 - dist);
                     }
                 }
             }
@@ -491,9 +571,17 @@ public class PlayerInfo {
         return (Math.abs(y1 - y2) - Math.abs(x1 - x2));
     }
 
+    public boolean isInside(int y, int x) {
+        return (0 <= y && y < Field.HEIGHT && 0 <= x && x < Field.WIDTH);
+    }
+
+    public boolean isOutside(int y, int x) {
+        return (y < 0 || Field.HEIGHT <= y || x < 0 || Field.WIDTH <= x);
+    }
+
     public int getWallDist(int y, int x) {
-        int distY = Math.min(y, Field.HEIGHT - y);
-        int distX = Math.min(x, Field.WIDTH - x);
+        int distY = Math.min(y, Field.HEIGHT - y - 1);
+        int distX = Math.min(x, Field.WIDTH - x - 1);
         return Math.min(distY, distX);
     }
 }

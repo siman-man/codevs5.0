@@ -14,10 +14,11 @@ public class Main {
 
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {
+                CommandList commandList = new CommandList();
                 codevs.readTurnInfo(sc);
-                codevs.beforeProc();
-                ActionInfo[] actions = codevs.action();
-                codevs.output(actions);
+                codevs.beforeProc(commandList);
+                commandList.actions = codevs.action();
+                codevs.output(commandList);
             }
         }
     }

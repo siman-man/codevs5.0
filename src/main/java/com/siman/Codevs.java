@@ -55,7 +55,7 @@ public class Codevs {
     /**
      * プレイヤーリスト
      */
-    public PlayerInfo[] playerInfoList;
+    public static PlayerInfo[] playerInfoList;
 
     /**
      * 残り時間(msec)
@@ -70,7 +70,7 @@ public class Codevs {
     /**
      * 忍術のコスト
      */
-    public int[] skillCost;
+    public static int[] skillCost;
 
     /**
      * フィールドの高さ
@@ -256,7 +256,7 @@ public class Codevs {
     /**
      * 思考を始める前に自前に行う処理
      */
-    public void beforeProc() {
+    public void beforeProc(CommandList commandList) {
         PlayerInfo my = this.playerInfoList[MY_ID];
         my.updateStoneStatus();
         my.updateEachCellDist();
@@ -269,8 +269,11 @@ public class Codevs {
         enemy.updateStoneStatus();
         enemy.updateEachCellDist();
         enemy.updateDangerValue();
+        enemy.setTargetSoulId();
         enemy.saveNinjaStatus();
         enemy.saveField();
+
+        my.spell(commandList);
     }
 
     /**
@@ -286,10 +289,15 @@ public class Codevs {
     /**
      * 出力
      */
-    public void output(ActionInfo[] actions) {
-        System.out.println("2");
+    public void output(CommandList commandList) {
+        if (commandList.useSkill) {
+            System.out.println(3);
+            System.out.println(commandList.spell);
+        } else {
+            System.out.println(2);
+        }
 
-        for(ActionInfo action : actions) {
+        for(ActionInfo action : commandList.actions) {
             String res = "";
 
             for(char command : action.commandList) {
@@ -300,5 +308,12 @@ public class Codevs {
         }
 
         System.out.flush();
+    }
+
+    /**
+     *  敵の情報を取得
+     */
+    public static PlayerInfo getEnemyInfo() {
+        return playerInfoList[Codevs.ENEMY_ID];
     }
 }

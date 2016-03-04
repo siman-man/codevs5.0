@@ -78,6 +78,7 @@ public class PlayerInfoTest {
         assertThat(my.eachCellDist[15][15], is(0));
         assertThat(my.eachCellDist[15][16], is(PlayerInfo.INF));
         assertThat(my.eachCellDist[15][17], is(PlayerInfo.INF));
+        assertThat(my.eachCellDist[15][18], is(27));
         assertThat(my.eachCellDist[15][29], is(1));
         assertThat(my.eachCellDist[29][15], is(1));
         assertThat(my.eachCellDist[15][75], is(8));
@@ -86,21 +87,32 @@ public class PlayerInfoTest {
 
     @Test
     public void testSetTargetSoul() throws Exception {
-        codevs.beforeProc();
+        CommandList commandList = new CommandList();
+        codevs.beforeProc(commandList);
         PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
 
         Ninja ninjaA = my.ninjaList[0];
         Ninja ninjaB = my.ninjaList[1];
 
-        assertThat(ninjaA.targetSoulId, is(1));
+        assertThat(ninjaA.targetSoulId, is(0));
         assertThat(ninjaB.targetSoulId, is(2));
     }
 
     @Test
     public void testAction() throws Exception {
-        codevs.beforeProc();
+        CommandList commandList = new CommandList();
+        codevs.beforeProc(commandList);
         PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
 
         my.action();
+    }
+
+    @Test
+    public void testWallDist() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+
+        assertThat(my.getWallDist(1, 1), is(1));
+        assertThat(my.getWallDist(5, 3), is(3));
+        assertThat(my.getWallDist(10, 10), is(3));
     }
 }

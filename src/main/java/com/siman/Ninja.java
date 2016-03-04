@@ -181,6 +181,11 @@ public class Ninja {
      */
     public int saveTarget;
 
+    /**
+     * 目的のソウルとの距離
+     */
+    public int targetSoulDist;
+
     public Ninja(int id) {
         this.id = id;
     }
