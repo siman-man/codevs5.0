@@ -11,6 +11,7 @@ public class ActionInfo {
     public int dangerValue;
     public boolean valid;
     public boolean moveStone;
+    public boolean unreach;
     public int createFixStoneCount;
     public char[] commandList;
 
@@ -20,7 +21,8 @@ public class ActionInfo {
         this.getSoulCount = 0;
         this.createFixStoneCount = 0;
         this.moveStone = false;
-        this.targetSoulDist = 9999;
+        this.unreach = false;
+        this.targetSoulDist = -1;
         this.dangerValue = 0;
     }
 
@@ -31,9 +33,10 @@ public class ActionInfo {
     public int toEval() {
         int eval = 0;
 
-        eval += 500 * this.getSoulCount;
+        eval += 5000 * this.getSoulCount;
         eval -= 3 * this.targetSoulDist;
         eval -= 50 * this.createFixStoneCount;
+        eval -= (this.moveStone)? 2 : 0;
 
         eval -= this.dangerValue;
 

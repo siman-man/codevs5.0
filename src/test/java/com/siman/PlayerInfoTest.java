@@ -75,25 +75,56 @@ public class PlayerInfoTest {
 
         my.updateEachCellDist();
 
-        assertThat(my.eachCellDist[15][15], is(0));
-        assertThat(my.eachCellDist[15][16], is(PlayerInfo.INF));
-        assertThat(my.eachCellDist[15][17], is(PlayerInfo.INF));
-        assertThat(my.eachCellDist[15][18], is(27));
-        assertThat(my.eachCellDist[15][29], is(1));
-        assertThat(my.eachCellDist[15][47], is(6));
-        assertThat(my.eachCellDist[29][15], is(1));
-        assertThat(my.eachCellDist[15][75], is(8));
-        assertThat(my.eachCellDist[75][15], is(8));
+        int id1 = Utility.getId(1, 1);
+        int id2 = Utility.getId(10, 6);
+        int id3 = Utility.getId(9, 4);
+        int id1_4 = Utility.getId(1, 4);
+        int id1_5 = Utility.getId(1, 5);
+        int id2_3 = Utility.getId(2, 3);
+        int id2_4 = Utility.getId(2, 4);
+        int id2_5 = Utility.getId(2, 5);
+        int id3_3 = Utility.getId(3, 3);
+        int id3_4 = Utility.getId(3, 4);
+        int id3_5 = Utility.getId(3, 5);
+
+        assertThat(my.eachCellDist[id1][id1], is(0));
+        //assertThat(my.eachCellDist[id2_3][id2_4], is(3));
+        assertThat(my.eachCellDist[id2_4][id2_5], is(3));
+        assertThat(my.eachCellDist[id2_4][id2_3], is(PlayerInfo.INF));
+        //assertThat(my.eachCellDist[id2_5][id2_4], is(3));
+
+        assertThat(my.eachCellDist[id2_5][id1_4], is(2));
+        //assertThat(my.eachCellDist[id2_3][id1_4], is(PlayerInfo.INF));
+        //assertThat(my.eachCellDist[id3_4][id1_4], is(PlayerInfo.INF));
+        //assertThat(my.eachCellDist[id3_4][id1_5], is(PlayerInfo.INF));
+        //assertThat(my.eachCellDist[id3_5][id1_5], is(PlayerInfo.INF));
+        //assertThat(my.eachCellDist[id3_4][id2_4], is(1));
+        //assertThat(my.eachCellDist[id2_4][id1_4], is(1));
+        //assertThat(my.eachCellDist[id3_5][id1_4], is(PlayerInfo.INF));
+        //assertThat(my.eachCellDist[id3_3][id1_4], is(PlayerInfo.INF));
+
+        assertThat(my.eachCellDist[id1][16], is(PlayerInfo.INF));
+        assertThat(my.eachCellDist[id1][17], is(PlayerInfo.INF));
+        assertThat(my.eachCellDist[id1][18], is(27));
+        assertThat(my.eachCellDist[id1][29], is(1));
+        assertThat(my.eachCellDist[id1][47], is(6));
+        assertThat(my.eachCellDist[29][id1], is(1));
+        assertThat(my.eachCellDist[id1][75], is(8));
+        assertThat(my.eachCellDist[75][id1], is(8));
         assertThat(my.eachCellDist[131][145], is(1));
         assertThat(my.eachCellDist[145][131], is(1));
         assertThat(my.eachCellDist[130][145], is(2));
         assertThat(my.eachCellDist[130][146], is(3));
-        //assertThat(my.eachCellDist[146][130], is(3));
+        //assertThat(my.eachCellDist[id2][id3], is(3));
         assertThat(my.eachCellDist[144][145], is(1));
         assertThat(my.eachCellDist[145][144], is(1));
         assertThat(my.eachCellDist[144][146], is(2));
         //assertThat(my.eachCellDist[146][144], is(4));
 
+        assertThat(my.eachCellDistNonPush[id2_3][id1_4], is(24));
+        assertThat(my.eachCellDistNonPush[id3_4][id1_4], is(22));
+        assertThat(my.eachCellDistNonPush[id3_4][id1_5], is(21));
+        assertThat(my.eachCellDistNonPush[id3_5][id1_5], is(20));
         assertThat(my.eachCellDistNonPush[15][15], is(0));
         assertThat(my.eachCellDistNonPush[15][16], is(PlayerInfo.INF));
         assertThat(my.eachCellDistNonPush[15][17], is(PlayerInfo.INF));
@@ -266,25 +297,99 @@ public class PlayerInfoTest {
         ninja.targetSoulId = 0;
 
         assertFalse(Field.existStone(my.field[1][2].state));
-        assertThat(my.getMaxNinjaEval(ninja), is(473));
+        assertThat(my.getEnemyMaxNinjaEval(ninja).toEval(), is(4973));
 
         my.setStone(1, 2);
         assertTrue(Field.existStone(my.field[1][2].state));
-        assertThat(my.getMaxNinjaEval(ninja), is(-6));
+        assertThat(my.getEnemyMaxNinjaEval(ninja).toEval(), is(-6));
 
         my.removeStone(1, 2);
         my.setStone(2, 1);
-        assertThat(my.getMaxNinjaEval(ninja), is(473));
+        assertThat(my.getEnemyMaxNinjaEval(ninja).toEval(), is(4973));
     }
 
     @Test
     public void testFallRockAttack() throws Exception {
         PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
         CommandList commandList = new CommandList();
+        Codevs.skillCost[NinjaSkill.ENEMY_ROCKFALL] = 3;
         codevs.beforeProc(commandList);
         Utility.readFieldInfo(my, "src/test/resources/fields/rockfall_field.in");
 
         assertTrue(commandList.useSkill);
         assertThat(commandList.spell, is("2 14 1"));
+    }
+
+    @Test
+    public void testUpdateDangerValue() throws Exception {
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        Utility.readPlayerInfo(my, "src/test/resources/fields/dog.in");
+        CommandList commandList = new CommandList();
+
+        assertThat(my.field[13][2].dangerValue, is(0));
+
+        codevs.beforeProc(commandList);
+
+        assertThat(my.field[13][2].dangerValue, is(my.DETH));
+    }
+
+    @Test
+    public void testUpdateDogTarget() throws Exception {
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        Utility.readPlayerInfo(my, "src/test/resources/fields/dog.in");
+        CommandList commandList = new CommandList();
+        codevs.beforeProc(commandList);
+
+        Ninja ninjaA = my.ninjaList[0];
+        Ninja ninjaB = my.ninjaList[1];
+
+        my.updateDogTarget();
+
+        Dog dog0 = my.dogList.get(0);
+        Dog dog9 = my.dogList.get(9);
+
+        assertThat(my.dogCount, is(10));
+        assertThat(dog0.targetId, is(ninjaA.nid));
+        assertThat(dog0.targetDist, is(5));
+        assertThat(dog9.targetId, is(ninjaB.nid));
+        assertThat(dog9.targetDist, is(10));
+
+        my.summonsAvator = true;
+        my.avatorId = Utility.getId(1, 1);
+
+        my.updateDogTarget();
+        assertThat(dog0.targetId, is(my.avatorId));
+        assertThat(dog0.targetDist, is(7));
+        assertThat(dog9.targetId, is(my.avatorId));
+        assertThat(dog9.targetDist, is(17));
+    }
+
+    @Test
+    public void testUpdateDogPosition() throws Exception {
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        Utility.readPlayerInfo(my, "src/test/resources/fields/dog.in");
+        CommandList commandList = new CommandList();
+        codevs.beforeProc(commandList);
+
+        my.summonsAvator = true;
+        my.avatorId = Utility.getId(1, 1);
+
+        my.updateDogPosition();
+
+        Dog dog0 = my.dogList.get(0);
+        assertThat(dog0.y, is(2));
+        assertThat(dog0.x, is(6));
+
+        Dog dog7 = my.dogList.get(7);
+        assertThat(dog7.y, is(13));
+        assertThat(dog7.x, is(4));
+
+        Dog dog8 = my.dogList.get(8);
+        assertThat(dog8.y, is(14));
+        assertThat(dog8.x, is(1));
+
+        Dog dog9 = my.dogList.get(9);
+        assertThat(dog9.y, is(13));
+        assertThat(dog9.x, is(5));
     }
 }

@@ -14,6 +14,8 @@ public class Direction {
                 return 2;
             case 'L':
                 return 3;
+            case 'N':
+                return 4;
             default:
                 throw new RuntimeException("予期せぬ入力");
         }
@@ -29,6 +31,8 @@ public class Direction {
                 return 'D';
             case 3:
                 return 'L';
+            case 4:
+                return 'N';
             default:
                 throw new RuntimeException("予期せぬ入力");
         }

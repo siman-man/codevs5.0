@@ -7,6 +7,9 @@ public class Ninja {
 
     // 通常時
     public static char[][] NORMAL_MOVE_PATTERN = {
+            // 0マス
+            {'N'},
+
             // 1マス移動
             {'U'},
             {'R'},
@@ -150,6 +153,11 @@ public class Ninja {
      * ID
      */
     public int id;
+
+    /**
+     * 今いるセルの位置
+     */
+    public int nid;
 
     /**
      * 現在のy座標

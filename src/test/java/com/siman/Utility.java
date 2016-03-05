@@ -54,6 +54,8 @@ public class Utility {
         player.soulPower = sc.nextInt();
         player.soulList = new ArrayList<>();
         player.dogList = new ArrayList<>();
+        int soulCount = 0;
+        int dogCount = 0;
 
         for (int y = 0; y < Field.HEIGHT; y++) {
             String line = sc.next();
@@ -71,17 +73,18 @@ public class Utility {
                 cell.state |= Field.toInteger(type);
 
                 if (type == 'S') {
-                    NinjaSoul soul = new NinjaSoul(cell.id, y, x);
+                    NinjaSoul soul = new NinjaSoul(soulCount++, y, x);
                     player.soulList.add(soul);
                     player.setSoul(y, x);
                 }
                 if (type == 'D') {
-                    Dog dog = new Dog(cell.id, y, x);
+                    Dog dog = new Dog(dogCount++, y, x);
                     player.dogList.add(dog);
                     player.setDog(y, x);
                 }
                 if (type == 'A') {
                     Ninja ninja = new Ninja(0);
+                    ninja.nid = getId(y, x);
                     ninja.y = y;
                     ninja.x = x;
 
@@ -90,6 +93,7 @@ public class Utility {
                 }
                 if (type == 'B') {
                     Ninja ninja = new Ninja(0);
+                    ninja.nid = getId(y, x);
                     ninja.y = y;
                     ninja.x = x;
 

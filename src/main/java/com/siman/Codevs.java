@@ -1,5 +1,7 @@
 package main.java.com.siman;
 
+import test.java.com.siman.Utility;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -177,6 +179,7 @@ public class Codevs {
 
                 Ninja ninja = player.ninjaList[id];
 
+                ninja.nid = Utility.getId(ninjaY, ninjaX);
                 ninja.y = ninjaY;
                 ninja.x = ninjaX;
 
@@ -236,9 +239,8 @@ public class Codevs {
 
         my.spell(commandList);
 
-        // TODO: bug fix
         if (my.summonsAvator) {
-            //my.updateDogPosition();
+            my.updateDogPosition();
         }
 
         my.updateDangerValue();
