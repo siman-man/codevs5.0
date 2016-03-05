@@ -89,7 +89,7 @@ public class Field {
      * @return true(石が存在している)
      */
     public static boolean existStone(int state) {
-        return (state & STONE) == STONE;
+        return ((state & STONE) == STONE || existFixStone(state));
     }
 
     /**
@@ -129,6 +129,15 @@ public class Field {
      */
     public static boolean existFixStone(int state) {
         return (state & FIX_STONE) == FIX_STONE;
+    }
+
+    /**
+     * 固定物かどうかを調べる(石、壁)
+     * @param state フィールドの状態
+     * @return true(固定物)
+     */
+    public static boolean existSolidObject(int state) {
+        return (existStone(state) || isWall(state));
     }
 
     /**

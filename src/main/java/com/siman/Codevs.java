@@ -268,10 +268,10 @@ public class Codevs {
             System.out.println(2);
         }
 
-        for(ActionInfo action : commandList.actions) {
+        for (ActionInfo action : commandList.actions) {
             String res = "";
 
-            for(char command : action.commandList) {
+            for (char command : action.commandList) {
                 res += command;
             }
 
@@ -282,7 +282,7 @@ public class Codevs {
     }
 
     /**
-     *  敵の情報を取得
+     * 敵の情報を取得
      */
     public static PlayerInfo getEnemyInfo() {
         return playerInfoList[Codevs.ENEMY_ID];

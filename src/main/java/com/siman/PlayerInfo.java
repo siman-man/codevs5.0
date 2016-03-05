@@ -196,8 +196,8 @@ public class PlayerInfo {
                     //eval -= this.eachCellDist[nidA][nidB];
                     eval += calcManhattanDist(ninjaA.y, ninjaA.x, ninjaB.y, ninjaB.x);
 
-                    eval += 200 * infoA.getSoulCount;
-                    eval += 200 * infoB.getSoulCount;
+                    eval += 500 * infoA.getSoulCount;
+                    eval += 500 * infoB.getSoulCount;
 
                     eval -= infoA.dangerValue;
                     eval -= infoB.dangerValue;
@@ -225,6 +225,31 @@ public class PlayerInfo {
         rollbackNinja();
 
         return new ActionInfo[]{bestActionA, bestActionB};
+    }
+
+    public int getMaxNinjaEval(Ninja ninja) {
+        int maxEval = Integer.MIN_VALUE;
+        ActionInfo maxAction = new ActionInfo();
+        tempSaveField();
+        tempSaveNinja();
+
+        for (char[] action : Ninja.NORMAL_MOVE_PATTERN) {
+            ActionInfo info = moveAction(ninja, action);
+
+            if (info.isValid()) {
+                int eval = info.toEval();
+
+                if (maxEval < eval) {
+                    maxEval = eval;
+                    maxAction = info;
+                }
+            }
+
+            tempRollbackField();
+            tempRollbackNinja();
+        }
+
+        return maxEval;
     }
 
     public void setTargetSoulId() {
@@ -362,19 +387,15 @@ public class PlayerInfo {
                     if (Field.isWall(toCell.state)) continue;
 
                     if (canMove(y, x, i)) {
-
                         if (Field.existStone(toCell.state)) {
                             int nny = ny + 2 * DY[i];
                             int nnx = nx + 2 * DX[i];
 
                             if (isOutside(nny, nnx)) continue;
-                            int wd = getWallDist(nny, nnx);
 
                             Cell nCell = this.field[nny][nnx];
 
-                            if (wd <= 2 && (Field.existStone(nCell.state) || Field.isWall(nCell.state))) {
-                                this.eachCellDist[fromCell.id][toCell.id] = 99;
-                            } else {
+                            if (!Field.existStone(nCell.state) && !Field.isWall(nCell.state)) {
                                 this.eachCellDist[fromCell.id][toCell.id] = 1;
                             }
                         } else {
@@ -415,28 +436,28 @@ public class PlayerInfo {
      * 事前にcanMove()を使用して有効な移動かどうかを判定しておくこと
      */
     public void move(Ninja ninja, int direct) {
-        Cell cell = this.field[ninja.y][ninja.x];
+        Cell fromCell = this.field[ninja.y][ninja.x];
 
         int ny = ninja.y + DY[direct];
         int nx = ninja.x + DX[direct];
 
-        Cell ncell = this.field[ny][nx];
+        Cell toCell = this.field[ny][nx];
 
         // 忍者の位置を更新
         ninja.y = ny;
         ninja.x = nx;
-        cell.state &= (ninja.id == 0) ? Field.DELETE_NINJA_A : Field.DELETE_NINJA_B;
-        ncell.state |= (ninja.id == 0) ? Field.NINJA_A : Field.NINJA_B;
+        fromCell.state &= ((ninja.id == 0) ? Field.DELETE_NINJA_A : Field.DELETE_NINJA_B);
+        toCell.state |= ((ninja.id == 0) ? Field.NINJA_A : Field.NINJA_B);
 
         // 石が存在する場合は石を押す
-        if (Field.existStone(ncell.state)) {
+        if (Field.existStone(toCell.state)) {
             int nny = ny + DY[direct];
             int nnx = nx + DX[direct];
 
             Cell nncell = this.field[nny][nnx];
 
-            ncell.state &= Field.DELETE_STONE;
-            nncell.state |= Field.STONE;
+            removeStone(ny, nx);
+            setStone(nny, nnx);
         }
     }
 
@@ -454,18 +475,29 @@ public class PlayerInfo {
             int direct = Direction.toInteger(command);
 
             if (canMove(ninja.y, ninja.x, direct)) {
-                move(ninja, direct);
+                int ny = ninja.y + DY[direct];
+                int nx = ninja.x + DX[direct];
+                Cell toCell = this.field[ny][nx];
+                boolean moveStone = Field.existStone(toCell.state);
 
+                move(ninja, direct);
                 Cell cell = this.field[ninja.y][ninja.x];
+                int nny = ninja.y + DY[direct];
+                int nnx = ninja.x + DX[direct];
+                Cell nextCell = this.field[nny][nnx];
 
                 if (Field.existSoul(cell.state)) {
                     info.getSoulCount += 1;
                     removeSoul(ninja.y, ninja.x);
                     updateTargetSoul(ninja);
                 }
+                if (moveStone && Field.existFixStone(nextCell.state)) {
+                    info.moveStone = true;
+                    info.createFixStoneCount += 1;
+                }
             } else {
                 info.valid = false;
-                return info;
+                break;
             }
         }
 
@@ -475,6 +507,8 @@ public class PlayerInfo {
         NinjaSoul soul = this.soulList.get(ninja.targetSoulId);
         int targetDist = this.eachCellDist[nid][soul.sid];
 
+        info.ninjaY = ninja.y;
+        info.ninjaX = ninja.x;
         info.dangerValue = cell.dangerValue;
         info.targetSoulDist = targetDist;
         info.commandList = commandList.clone();
@@ -551,32 +585,40 @@ public class PlayerInfo {
             for (int x = 1; x < Field.WIDTH - 1; x++) {
                 Cell cell = this.field[y][x];
 
-                if (Field.existStone(cell.state)) {
-                    int uy = y + DY[0];
-                    int ux = x + DX[0];
-                    Cell cellU = this.field[uy][ux];
-
-                    int ry = y + DY[1];
-                    int rx = x + DX[1];
-                    Cell cellR = this.field[ry][rx];
-
-                    int dy = y + DY[2];
-                    int dx = x + DX[2];
-                    Cell cellD = this.field[dy][dx];
-
-                    int ly = y + DY[3];
-                    int lx = x + DX[3];
-                    Cell cellL = this.field[ly][lx];
-
-                    boolean existV = Field.existStone(cellU.state) || Field.existStone(cellD.state);
-                    boolean existH = Field.existStone(cellR.state) || Field.existStone(cellL.state);
-
-                    if (existV && existH) {
-                        cell.state |= Field.FIX_STONE;
-                    }
+                if (Field.existStone(cell.state) && isFixStone(y, x)) {
+                    cell.state |= Field.FIX_STONE;
                 }
             }
         }
+    }
+
+    /**
+     * 指定された石が固定石かどうかを調べる
+     *
+     * @param y 石のy座標
+     * @param x 石のx座標
+     */
+    public boolean isFixStone(int y, int x) {
+        int uy = y + DY[0];
+        int ux = x + DX[0];
+        Cell cellU = this.field[uy][ux];
+
+        int ry = y + DY[1];
+        int rx = x + DX[1];
+        Cell cellR = this.field[ry][rx];
+
+        int dy = y + DY[2];
+        int dx = x + DX[2];
+        Cell cellD = this.field[dy][dx];
+
+        int ly = y + DY[3];
+        int lx = x + DX[3];
+        Cell cellL = this.field[ly][lx];
+
+        boolean existV = Field.existSolidObject(cellU.state) || Field.existSolidObject(cellD.state);
+        boolean existH = Field.existSolidObject(cellR.state) || Field.existSolidObject(cellL.state);
+
+        return (existV && existH);
     }
 
     /**
@@ -668,7 +710,7 @@ public class PlayerInfo {
     }
 
     /**
-     *
+     * 忍者の状態を保存する
      */
     public void saveNinjaStatus() {
         for (int ninjaId = 0; ninjaId < Codevs.NINJA_NUM; ninjaId++) {
@@ -712,6 +754,9 @@ public class PlayerInfo {
         }
     }
 
+    /**
+     * 忍者の状態を一時的に保存
+     */
     public void tempSaveNinja() {
         for (Ninja ninja : this.ninjaList) {
             ninja.tempSaveStatus();
@@ -739,6 +784,9 @@ public class PlayerInfo {
         }
     }
 
+    /**
+     * 一時保存した状態に戻す
+     */
     public void tempRollbackNinja() {
         for (Ninja ninja : this.ninjaList) {
             ninja.tempRollback();
@@ -771,6 +819,14 @@ public class PlayerInfo {
 
     public void removeDog(int y, int x) {
         this.field[y][x].state &= Field.DELETE_DOG;
+    }
+
+    public void setStone(int y, int x) {
+        this.field[y][x].state |= (isFixStone(y, x)) ? Field.FIX_STONE : Field.STONE;
+    }
+
+    public void removeStone(int y, int x) {
+        this.field[y][x].state &= Field.DELETE_STONE;
     }
 
     public int calcManhattanDist(int y1, int x1, int y2, int x2) {

@@ -80,9 +80,31 @@ public class PlayerInfoTest {
         assertThat(my.eachCellDist[15][17], is(PlayerInfo.INF));
         assertThat(my.eachCellDist[15][18], is(27));
         assertThat(my.eachCellDist[15][29], is(1));
+        assertThat(my.eachCellDist[15][47], is(6));
         assertThat(my.eachCellDist[29][15], is(1));
         assertThat(my.eachCellDist[15][75], is(8));
         assertThat(my.eachCellDist[75][15], is(8));
+        assertThat(my.eachCellDist[131][145], is(1));
+        assertThat(my.eachCellDist[145][131], is(1));
+        assertThat(my.eachCellDist[130][145], is(2));
+        assertThat(my.eachCellDist[130][146], is(3));
+        assertThat(my.eachCellDist[146][130], is(3));
+        assertThat(my.eachCellDist[144][145], is(1));
+        assertThat(my.eachCellDist[145][144], is(1));
+        assertThat(my.eachCellDist[144][146], is(2));
+        assertThat(my.eachCellDist[146][144], is(4));
+
+        assertThat(my.eachCellDistNonPush[15][15], is(0));
+        assertThat(my.eachCellDistNonPush[15][16], is(PlayerInfo.INF));
+        assertThat(my.eachCellDistNonPush[15][17], is(PlayerInfo.INF));
+        assertThat(my.eachCellDistNonPush[15][18], is(27));
+        assertThat(my.eachCellDistNonPush[15][29], is(1));
+        assertThat(my.eachCellDistNonPush[15][47], is(8));
+        assertThat(my.eachCellDistNonPush[29][15], is(1));
+        assertThat(my.eachCellDistNonPush[15][75], is(8));
+        assertThat(my.eachCellDistNonPush[75][15], is(8));
+        assertThat(my.eachCellDistNonPush[144][145], is(PlayerInfo.INF));
+        assertThat(my.eachCellDistNonPush[144][146], is(PlayerInfo.INF));
     }
 
     @Test
@@ -94,8 +116,8 @@ public class PlayerInfoTest {
         Ninja ninjaA = my.ninjaList[0];
         Ninja ninjaB = my.ninjaList[1];
 
-        assertThat(ninjaA.targetSoulId, is(0));
-        assertThat(ninjaB.targetSoulId, is(2));
+        assertThat(ninjaA.targetSoulId, is(1));
+        assertThat(ninjaB.targetSoulId, is(3));
     }
 
     @Test
@@ -104,7 +126,7 @@ public class PlayerInfoTest {
 
         assertTrue(my.isInside(0, 0));
         assertTrue(my.isInside(1, 1));
-        assertTrue(my.isInside(Field.HEIGHT-1, Field.WIDTH-1));
+        assertTrue(my.isInside(Field.HEIGHT - 1, Field.WIDTH - 1));
 
         assertFalse(my.isInside(-1, 0));
         assertFalse(my.isInside(Field.HEIGHT, Field.WIDTH));
@@ -162,5 +184,74 @@ public class PlayerInfoTest {
 
         my.removeDog(5, 5);
         assertFalse(Field.existDog(cell.state));
+    }
+
+    @Test
+    public void testIsFixStone() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+
+        assertTrue(my.isFixStone(1, 1));
+        assertTrue(my.isFixStone(12, 4));
+    }
+
+    @Test
+    public void testSetRemoveStone() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        Cell cell = my.field[5][5];
+
+        assertFalse(Field.existStone(cell.state));
+
+        my.setStone(5, 5);
+        assertTrue(Field.existStone(cell.state));
+
+        my.removeStone(5, 5);
+        assertFalse(Field.existStone(cell.state));
+    }
+    @Test
+    public void testMoveAction() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        CommandList commandList = new CommandList();
+        codevs.beforeProc(commandList);
+        Utility.readFieldInfo(my, "src/test/resources/fields/eval_field.in");
+
+        Ninja ninja = my.ninjaList[0];
+
+        ninja.y = 1;
+        ninja.x = 3;
+        ninja.targetSoulId = 0;
+
+        char[] action = {'L', 'L'};
+
+        my.setStone(1, 2);
+        ActionInfo info = my.moveAction(ninja, action);
+
+        assertThat(info.ninjaY, is(1));
+        assertThat(info.ninjaX, is(2));
+        assertTrue(info.moveStone);
+    }
+
+    @Test
+    public void testGetMaxEval() throws Exception {
+        PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        CommandList commandList = new CommandList();
+        codevs.beforeProc(commandList);
+        Utility.readFieldInfo(my, "src/test/resources/fields/eval_field.in");
+
+        Ninja ninja = my.ninjaList[0];
+
+        ninja.y = 1;
+        ninja.x = 3;
+        ninja.targetSoulId = 0;
+
+        assertFalse(Field.existStone(my.field[1][2].state));
+        assertThat(my.getMaxNinjaEval(ninja), is(473));
+
+        my.setStone(1, 2);
+        assertTrue(Field.existStone(my.field[1][2].state));
+        assertThat(my.getMaxNinjaEval(ninja), is(-6));
+
+        my.removeStone(1, 2);
+        my.setStone(2, 1);
+        assertThat(my.getMaxNinjaEval(ninja), is(473));
     }
 }

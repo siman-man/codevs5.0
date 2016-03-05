@@ -42,6 +42,7 @@ public class FieldTest {
     @Test
     public void testExistStone() throws Exception {
         assertTrue(Field.existStone(Field.FLOOR | Field.STONE));
+        assertTrue(Field.existStone(Field.FLOOR | Field.FIX_STONE));
         assertTrue(Field.existStone(Field.FLOOR | Field.STONE | Field.SOUL));
 
         assertFalse(Field.existStone(Field.WALL));
@@ -50,8 +51,30 @@ public class FieldTest {
     }
 
     @Test
+    public void testExistFixStone() throws Exception {
+        assertTrue(Field.existFixStone(Field.FLOOR | Field.FIX_STONE));
+        assertTrue(Field.existFixStone(Field.FLOOR | Field.FIX_STONE | Field.SOUL));
+
+        assertFalse(Field.existFixStone(Field.WALL));
+        assertFalse(Field.existFixStone(Field.STONE));
+        assertFalse(Field.existFixStone(Field.FLOOR));
+        assertFalse(Field.existFixStone(Field.FLOOR | Field.DOG));
+    }
+
+    @Test
+    public void testExistSolidObject() throws Exception {
+        assertTrue(Field.existSolidObject(Field.FLOOR | Field.FIX_STONE));
+        assertTrue(Field.existSolidObject(Field.FLOOR | Field.FIX_STONE | Field.SOUL));
+        assertTrue(Field.existSolidObject(Field.WALL));
+
+        assertFalse(Field.existSolidObject(Field.FLOOR));
+        assertFalse(Field.existSolidObject(Field.FLOOR | Field.DOG));
+    }
+
+    @Test
     public void testExistSoul() throws Exception {
         assertTrue(Field.existSoul(Field.FLOOR | Field.SOUL));
+        assertTrue(Field.existSoul(Field.FLOOR | Field.STONE | Field.SOUL));
         assertTrue(Field.existSoul(Field.FLOOR | Field.STONE | Field.SOUL));
 
         assertFalse(Field.existSoul(Field.WALL));
@@ -65,6 +88,7 @@ public class FieldTest {
         assertTrue(Field.existNinja(Field.FLOOR | Field.NINJA_A | Field.NINJA_B));
 
         assertFalse(Field.existNinja(Field.WALL));
+        assertFalse(Field.existNinja(Field.SOUL));
         assertFalse(Field.existNinja(Field.FLOOR | Field.STONE));
     }
 
@@ -73,6 +97,7 @@ public class FieldTest {
         assertTrue(Field.isMovableObject(Field.FLOOR));
         assertTrue(Field.isMovableObject(Field.SOUL));
 
+        assertFalse(Field.isMovableObject(Field.SOUL | Field.STONE));
         assertFalse(Field.isMovableObject(Field.NINJA_A));
         assertFalse(Field.isMovableObject(Field.NINJA_B));
         assertFalse(Field.isMovableObject(Field.WALL));
