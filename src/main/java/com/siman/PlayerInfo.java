@@ -126,9 +126,9 @@ public class PlayerInfo {
             }
         }
 
-        if (minDogDist <= 4 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
+        if (minDogDist <= 5 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
             summonAvator(commandList);
-        } else if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 1 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
+        } else if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 2 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
             commandList.useSkill = true;
             commandList.spell = "0";
             this.highSpeedMode = true;
