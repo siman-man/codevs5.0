@@ -136,7 +136,7 @@ public class PlayerInfo {
             }
         }
 
-        if (minDogDist <= 4 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
+        if (minDogDist <= 6 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
             summonAvator(commandList);
         } else if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 2 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
             commandList.useSkill = true;
@@ -170,8 +170,8 @@ public class PlayerInfo {
                 int distC = getAllDogDist(y, x);
                 int distD = getAllSoulDist(y, x);
 
-                if (maxDist < distA + distB - distC + 2 * distD) {
-                    maxDist = distA + distB - distC + 2 * distD;
+                if (maxDist < distA + distB - 2 * distC + distD) {
+                    maxDist = distA + distB - 2 * distC + distD;
                     maxY = y;
                     maxX = x;
                 }
@@ -179,7 +179,6 @@ public class PlayerInfo {
         }
 
         if (maxY != -1) {
-            Cell cell = this.field[maxY][maxX];
             commandList.useSkill = true;
             commandList.spell = NinjaSkill.summonMyAvator(maxY, maxX);
             this.summonsAvator = true;
@@ -839,6 +838,21 @@ public class PlayerInfo {
         }
 
         return minDist;
+    }
+
+    /**
+     * 忍犬の状態を保存する
+     */
+    public void saveDogStatus() {
+        for (Dog dog : this.dogList) {
+            dog.saveStatus();
+        }
+    }
+
+    public void rollbackDogStatus() {
+        for (Dog dog : this.dogList) {
+            dog.rollback();
+        }
     }
 
     /**
