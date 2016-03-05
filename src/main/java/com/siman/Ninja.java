@@ -234,4 +234,8 @@ public class Ninja {
         this.x = this.tempSaveX;
         this.targetSoulId = this.tempSaveTarget;
     }
+
+    public String toString() {
+        return String.format("ninja.y = %d, ninja.x = %d", this.y, this.x);
+    }
 }

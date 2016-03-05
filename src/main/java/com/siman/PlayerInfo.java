@@ -115,48 +115,65 @@ public class PlayerInfo {
     public void spell(CommandList commandList) {
         int minDogDist = getMostNearDogDist();
 
-        if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 1 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
+        if (this.soulPower >= Codevs.skillCost[NinjaSkill.ENEMY_ROCKFALL]) {
+            fallRockAttack(commandList);
+
+            if (commandList.useSkill && commandList.eval >= 1000) {
+                return;
+            }
+            if (Codevs.skillCost[NinjaSkill.ENEMY_ROCKFALL] <= 3 && commandList.eval >= 350) {
+                return;
+            }
+        }
+
+        if (minDogDist <= 4 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
+            summonAvator(commandList);
+        } else if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 1 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
             commandList.useSkill = true;
             commandList.spell = "0";
             this.highSpeedMode = true;
-        } else if (minDogDist <= 4 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
-            int maxDist = Integer.MIN_VALUE;
-            int maxY = -1;
-            int maxX = -1;
-            Ninja ninjaA = this.ninjaList[0];
-            Ninja ninjaB = this.ninjaList[1];
-            int nidA = Utility.getId(ninjaA.y, ninjaA.x);
-            int nidB = Utility.getId(ninjaB.y, ninjaB.x);
-
-            for (int y = 0; y < Field.HEIGHT; y++) {
-                for (int x = 0; x < Field.WIDTH; x++) {
-                    Cell cell = this.field[y][x];
-
-                    if (Field.isWall(cell.state) || Field.existStone(cell.state)) continue;
-
-                    int distA = this.eachCellDistNonPush[nidA][cell.id];
-                    int distB = this.eachCellDistNonPush[nidB][cell.id];
-
-                    if (distA == INF || distB == INF) continue;
-                    int distC = getAllDogDist(y, x);
-                    int distD = getAllSoulDist(y, x);
-
-                    if (maxDist < distA + distB - 2 * distC + distD) {
-                        maxDist = distA + distB - 2 * distC + distD;
-                        maxY = y;
-                        maxX = x;
-                    }
-                }
-            }
-
-            if (maxY != -1) {
-                commandList.useSkill = true;
-                commandList.spell = String.format("%d %d %d", NinjaSkill.MY_AVATAR, maxY, maxX);
-                this.summonsAvator = true;
-                this.avatorId = Utility.getId(maxY, maxX);
-            }
         } else if (this.soulPower >= Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK]) {
             //breakFixStone(commandList);
+        }
+
+    }
+
+    public void summonAvator(CommandList commandList) {
+        int maxDist = Integer.MIN_VALUE;
+        int maxY = -1;
+        int maxX = -1;
+        Ninja ninjaA = this.ninjaList[0];
+        Ninja ninjaB = this.ninjaList[1];
+        int nidA = Utility.getId(ninjaA.y, ninjaA.x);
+        int nidB = Utility.getId(ninjaB.y, ninjaB.x);
+
+        for (int y = 0; y < Field.HEIGHT; y++) {
+            for (int x = 0; x < Field.WIDTH; x++) {
+                Cell cell = this.field[y][x];
+
+                if (Field.isWall(cell.state) || Field.existStone(cell.state)) continue;
+
+                int distA = this.eachCellDistNonPush[nidA][cell.id];
+                int distB = this.eachCellDistNonPush[nidB][cell.id];
+
+                if (distA == INF || distB == INF) continue;
+                int distC = getAllDogDist(y, x);
+                int distD = getAllSoulDist(y, x);
+
+                if (maxDist < distA + distB - 2 * distC + distD) {
+                    maxDist = distA + distB - 2 * distC + distD;
+                    maxY = y;
+                    maxX = x;
+                }
+            }
+        }
+
+        if (maxY != -1) {
+            Cell cell = this.field[maxY][maxX];
+            commandList.useSkill = true;
+            commandList.spell = NinjaSkill.summonMyAvator(maxY, maxX);
+            this.summonsAvator = true;
+            this.avatorId = Utility.getId(maxY, maxX);
         }
     }
 
@@ -229,7 +246,6 @@ public class PlayerInfo {
 
     public int getMaxNinjaEval(Ninja ninja) {
         int maxEval = Integer.MIN_VALUE;
-        ActionInfo maxAction = new ActionInfo();
         tempSaveField();
         tempSaveNinja();
 
@@ -241,7 +257,6 @@ public class PlayerInfo {
 
                 if (maxEval < eval) {
                     maxEval = eval;
-                    maxAction = info;
                 }
             }
 
@@ -358,6 +373,7 @@ public class PlayerInfo {
 
     /**
      * 任意の2点間のセルの距離を更新する
+     * TODO : 性能をもっと良くする
      */
     public void updateEachCellDist() {
         this.eachCellDist = new int[Field.CELL_COUNT][Field.CELL_COUNT];
@@ -655,10 +671,57 @@ public class PlayerInfo {
         }
     }
 
+    /**
+     * 相手の嫌なところに岩を落とす
+     */
+    public void fallRockAttack(CommandList commandList) {
+        int minEval = Integer.MAX_VALUE;
+        int minY = -1;
+        int minX = -1;
+        PlayerInfo enemy = Codevs.getEnemyInfo();
+
+        for (Ninja ninja : enemy.ninjaList) {
+            int basicEval = enemy.getMaxNinjaEval(ninja);
+
+            for (int y = -2; y <= 2; y++) {
+                for (int x = -2; x <= 2; x++) {
+                    int ny = ninja.y + y;
+                    int nx = ninja.x + x;
+
+                    if (isOutside(ny, nx)) continue;
+
+                    Cell cell = enemy.field[ny][nx];
+                    if (Field.isWall(cell.state)) continue;
+
+                    if (Field.isStonePuttable(cell.state)) {
+                        enemy.setStone(ny, nx);
+
+                        int eval = enemy.getMaxNinjaEval(ninja);
+                        int diff = eval - basicEval;
+
+                        if (minEval > diff) {
+                            minEval = diff;
+                            minY = ny;
+                            minX = nx;
+                        }
+
+                        enemy.removeStone(ny, nx);
+                    }
+                }
+            }
+        }
+
+        if (minY != -1 && minEval < -100) {
+            commandList.useSkill = true;
+            commandList.spell = NinjaSkill.fallrockEnemy(minY, minX);
+            commandList.eval = -minEval;
+        }
+    }
 
     /**
      * すべての忍犬からの距離を合計する
      */
+
     public int getAllDogDist(int y, int x) {
         int id = Utility.getId(y, x);
         int totalDist = 0;

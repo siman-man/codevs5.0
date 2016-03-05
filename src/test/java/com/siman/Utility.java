@@ -51,4 +51,21 @@ public class Utility {
     public static int getId(int y, int x) {
         return (y * Field.WIDTH) + x;
     }
+
+    public static void showField(Cell[][] field) {
+        for(int y = 0; y < Field.HEIGHT; y++) {
+            for(int x = 0; x < Field.WIDTH; x++) {
+                Cell cell = field[y][x];
+
+                if (Field.isWall(cell.state)) {
+                    System.err.print('W');
+                } else if (Field.isFloor(cell.state)) {
+                    System.err.print('_');
+                } else if (Field.existStone(cell.state)) {
+                    System.err.print('O');
+                }
+            }
+            System.err.println("");
+        }
+    }
 }

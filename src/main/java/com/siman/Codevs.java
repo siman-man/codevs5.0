@@ -223,17 +223,6 @@ public class Codevs {
         my.clean();
         my.updateStoneStatus();
         my.updateEachCellDist();
-        my.spell(commandList);
-
-        // TODO: bug fix
-        if (my.summonsAvator) {
-            //my.updateDogPosition();
-        }
-
-        my.updateDangerValue();
-        my.setTargetSoulId();
-        my.saveNinjaStatus();
-        my.saveField();
 
         PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
         enemy.clean();
@@ -245,6 +234,17 @@ public class Codevs {
         enemy.saveNinjaStatus();
         enemy.saveField();
 
+        my.spell(commandList);
+
+        // TODO: bug fix
+        if (my.summonsAvator) {
+            //my.updateDogPosition();
+        }
+
+        my.updateDangerValue();
+        my.setTargetSoulId();
+        my.saveNinjaStatus();
+        my.saveField();
     }
 
     /**

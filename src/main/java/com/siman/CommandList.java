@@ -7,8 +7,10 @@ public class CommandList {
     public String spell;
     public boolean useSkill;
     public ActionInfo[] actions;
+    public int eval;
 
     public CommandList() {
+        this.eval = 0;
         this.useSkill = false;
         this.spell = "";
     }

@@ -32,7 +32,7 @@ public class Field {
     public static int DELETE_NINJA_B = 63;
     public static int DELETE_DOG = 495;
     public static int DELETE_SOUL = 503;
-    public static int DELETE_STONE = 507;
+    public static int DELETE_STONE = 379;
 
     /**
      * フィールドの入力を数値に変換する、一部はテストで使用
@@ -158,5 +158,12 @@ public class Field {
      */
     public static boolean isDogMovableObject(int state) {
         return !(existDog(state) || existStone(state) || isWall(state));
+    }
+
+    /**
+     * 石が落とせるかどうかを判定
+     */
+    public static boolean isStonePuttable(int state) {
+        return state == FLOOR;
     }
 }

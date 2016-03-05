@@ -12,4 +12,12 @@ public class NinjaSkill {
     public static int MY_AVATAR = 5;
     public static int ENEMY_AVATAR = 6;
     public static int ROTATION_ZAN = 7;
+
+    public static String fallrockEnemy(int y, int x) {
+        return String.format("%d %d %d", ENEMY_ROCKFALL, y, x);
+    }
+
+    public static String summonMyAvator(int y, int x) {
+        return String.format("%d %d %d", MY_AVATAR, y, x);
+    }
 }
