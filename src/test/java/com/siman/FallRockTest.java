@@ -80,7 +80,7 @@ public class FallRockTest {
 
         Ninja ninja = enemy.ninjaList[0];
         enemy.setStone(4, 9);
-        ActionInfo bestAction = enemy.getEnemyMaxNinjaEval(ninja);
+        ActionInfo bestAction = enemy.getMaxNinjaEval(ninja);
 
         assertTrue(Field.existNinja(enemy.field[5][9].state));
         assertFalse(enemy.canMove(5, 9, 0));

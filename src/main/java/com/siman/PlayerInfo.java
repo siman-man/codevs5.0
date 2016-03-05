@@ -136,14 +136,14 @@ public class PlayerInfo {
             }
         }
 
-        if (minDogDist <= 2 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
+        if (minDogDist <= 4 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
             summonAvator(commandList);
         } else if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 2 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
             commandList.useSkill = true;
             commandList.spell = "0";
             this.highSpeedMode = true;
-        } else if (this.soulPower >= Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK]) {
-            //breakFixStone(commandList);
+        } else if (Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK] <= 3 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK]) {
+            breakFixStone(commandList);
         }
 
     }
@@ -170,8 +170,8 @@ public class PlayerInfo {
                 int distC = getAllDogDist(y, x);
                 int distD = getAllSoulDist(y, x);
 
-                if (maxDist < distD) {
-                    maxDist = distD;
+                if (maxDist < distA + distB - distC + 2 * distD) {
+                    maxDist = distA + distB - distC + 2 * distD;
                     maxY = y;
                     maxX = x;
                 }
@@ -191,15 +191,19 @@ public class PlayerInfo {
      * 忍者の行動を決める
      */
     public ActionInfo[] action() {
-        char[][] movePattern = (this.highSpeedMode) ? Ninja.SUPER_MOVE_PATTERN : Ninja.NORMAL_MOVE_PATTERN;
+        String[] movePattern = (this.highSpeedMode) ? Ninja.SUPER_MOVE_PATTERN : Ninja.NORMAL_MOVE_PATTERN;
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
+
 
         int maxEval = Integer.MIN_VALUE;
         ActionInfo bestActionA = new ActionInfo();
         ActionInfo bestActionB = new ActionInfo();
 
-        for (char[] actionA : movePattern) {
+        saveField();
+        saveNinjaStatus();
+
+        for (String actionA : movePattern) {
             ActionInfo infoA = moveAction(ninjaA, actionA);
 
             if (!infoA.isValid()) {
@@ -212,25 +216,18 @@ public class PlayerInfo {
                 tempSaveNinja();
             }
 
-            for (char[] actionB : movePattern) {
+            int evalA = infoA.toEval();
+
+            for (String actionB : movePattern) {
                 ActionInfo infoB = moveAction(ninjaB, actionB);
 
                 if (infoB.isValid()) {
-                    int eval = 0;
+                    int eval = evalA + infoB.toEval();
                     int nidA = Utility.getId(ninjaA.y, ninjaA.x);
                     int nidB = Utility.getId(ninjaB.y, ninjaB.x);
 
                     //eval -= this.eachCellDist[nidA][nidB];
-                    eval += calcManhattanDist(ninjaA.y, ninjaA.x, ninjaB.y, ninjaB.x);
-
-                    eval += 5000 * infoA.getSoulCount;
-                    eval += 5000 * infoB.getSoulCount;
-
-                    eval -= infoA.dangerValue;
-                    eval -= infoB.dangerValue;
-
-                    eval -= 3 * infoA.targetSoulDist;
-                    eval -= 3 * infoB.targetSoulDist;
+                    //eval += calcManhattanDist(ninjaA.y, ninjaA.x, ninjaB.y, ninjaB.x);
 
                     if (maxEval < eval) {
                         maxEval = eval;
@@ -254,13 +251,13 @@ public class PlayerInfo {
         return new ActionInfo[]{bestActionA, bestActionB};
     }
 
-    public ActionInfo getEnemyMaxNinjaEval(Ninja ninja) {
+    public ActionInfo getMaxNinjaEval(Ninja ninja) {
         int maxEval = Integer.MIN_VALUE;
         ActionInfo bestAction = new ActionInfo();
         tempSaveField();
         tempSaveNinja();
 
-        for (char[] action : Ninja.NORMAL_MOVE_PATTERN) {
+        for (String action : Ninja.NORMAL_MOVE_PATTERN) {
             ActionInfo info = moveAction(ninja, action);
 
             if (info.isValid() && !info.unreach) {
@@ -294,16 +291,14 @@ public class PlayerInfo {
 
         for (NinjaSoul soulA : this.soulList) {
             Cell cellA = this.field[soulA.y][soulA.x];
-            //if (cellA.dangerValue > 100) continue;
-            int distA = this.eachCellDist[nidA][soulA.sid];
+            int distA = this.eachCellDist[nidA][soulA.sid] + cellA.dogValue;
 
             for (NinjaSoul soulB : this.soulList) {
                 if (soulA.id == soulB.id) continue;
                 Cell cellB = this.field[soulB.y][soulB.x];
 
-                if (this.eachCellDistNonPush[cellA.id][cellB.id] <= 4) continue;
-                //if (cellB.dangerValue > 100) continue;
-                int distB = this.eachCellDist[nidB][soulB.sid];
+                if (this.eachCellDistNonPush[cellA.id][cellB.id] <= 8) continue;
+                int distB = this.eachCellDist[nidB][soulB.sid] + cellB.dogValue;
 
                 int totalDist = distA + distB;
 
@@ -528,10 +523,10 @@ public class PlayerInfo {
      * @param commandList 移動リスト
      * @return
      */
-    public ActionInfo moveAction(Ninja ninja, char[] commandList) {
+    public ActionInfo moveAction(Ninja ninja, String commandList) {
         ActionInfo info = new ActionInfo();
 
-        for (char command : commandList) {
+        for (char command : commandList.toCharArray()) {
             int direct = Direction.toInteger(command);
 
             if (canMove(ninja.y, ninja.x, direct)) {
@@ -549,14 +544,22 @@ public class PlayerInfo {
 
                 if (Field.existSoul(toCell.state)) {
                     info.getSoulCount += 1;
+                    this.removeSoul(ny, nx);
                     removeSoul(ninja.y, ninja.x);
                     updateTargetSoul(ninja);
                 }
-                if (moveStone && Field.existFixStone(nextCell.state)) {
+                if (moveStone) {
                     info.moveStone = true;
-                    info.createFixStoneCount += 1;
+
+                    if (Field.existFixStone(nextCell.state)) {
+                        info.createFixStoneCount += 1;
+                    }
+                    if (Field.existSoul(nextCell.state)) {
+                        info.soulHide = true;
+                    }
                 }
 
+                /*
                 int nnny = nny + DY[direct];
                 int nnnx = nnx + DX[direct];
 
@@ -568,6 +571,7 @@ public class PlayerInfo {
                         info.createFixStoneCount += 1;
                     }
                 }
+                */
             } else {
                 info.valid = false;
                 break;
@@ -588,7 +592,7 @@ public class PlayerInfo {
         info.ninjaX = ninja.x;
         info.dangerValue = cell.dangerValue;
         info.targetSoulDist = targetDist;
-        info.commandList = commandList.clone();
+        info.commandList = commandList;
 
         return info;
     }
@@ -637,8 +641,9 @@ public class PlayerInfo {
                         cell.dangerValue = DETH;
                     } else if (dist <= 2) {
                         //cell.dangerValue += 50;
-                    } else if (dist <= 6) {
-                        cell.dangerValue += Math.max(cell.dangerValue, 10 - dist);
+                    } else if (dist <= 9) {
+                        cell.dogValue += 10 - dist;
+                        //cell.dangerValue += Math.max(cell.dangerValue, 10 - dist);
                     }
                 }
             }
@@ -745,7 +750,7 @@ public class PlayerInfo {
         PlayerInfo enemy = Codevs.getEnemyInfo();
 
         for (Ninja ninja : enemy.ninjaList) {
-            ActionInfo baseAction = enemy.getEnemyMaxNinjaEval(ninja);
+            ActionInfo baseAction = enemy.getMaxNinjaEval(ninja);
             int basicEval = baseAction.toEval();
 
             for (int y = -2; y <= 2; y++) {
@@ -761,7 +766,7 @@ public class PlayerInfo {
                     if (Field.isStonePuttable(cell.state)) {
                         enemy.setStone(ny, nx);
 
-                        ActionInfo bestAction = enemy.getEnemyMaxNinjaEval(ninja);
+                        ActionInfo bestAction = enemy.getMaxNinjaEval(ninja);
                         int diff = bestAction.toEval() - basicEval;
 
                         if (minEval > diff && !bestAction.unreach) {
@@ -791,7 +796,7 @@ public class PlayerInfo {
         int totalDist = 0;
 
         for (Dog dog : this.dogList) {
-            int dist = this.calcManhattanDist(y, x, dog.y, dog.x);
+            int dist = this.eachCellDistNonPush[dog.did][id];
             totalDist += (dist == INF) ? 0 : dist;
         }
 
@@ -808,7 +813,7 @@ public class PlayerInfo {
         int totalDist = 0;
 
         for (NinjaSoul soul : this.soulList) {
-            int dist = this.calcManhattanDist(y, x, soul.y, soul.x);
+            int dist = this.eachCellDistNonPush[soul.sid][id];
             totalDist += (dist == INF) ? 0 : dist;
         }
 

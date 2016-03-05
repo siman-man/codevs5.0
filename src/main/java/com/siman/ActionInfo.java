@@ -12,15 +12,17 @@ public class ActionInfo {
     public boolean valid;
     public boolean moveStone;
     public boolean unreach;
+    public boolean soulHide;
     public int createFixStoneCount;
-    public char[] commandList;
+    public String commandList;
 
     public ActionInfo() {
-        this.commandList = new char[]{'N'};
+        this.commandList = "N";
         this.valid = true;
         this.getSoulCount = 0;
         this.createFixStoneCount = 0;
         this.moveStone = false;
+        this.soulHide = false;
         this.unreach = false;
         this.targetSoulDist = -1;
         this.dangerValue = 0;
@@ -36,7 +38,8 @@ public class ActionInfo {
         eval += 5000 * this.getSoulCount;
         eval -= 3 * this.targetSoulDist;
         eval -= 50 * this.createFixStoneCount;
-        eval -= (this.moveStone)? 2 : 0;
+        eval -= (this.moveStone)? 1 : 0;
+        eval -= (this.soulHide)? 10 : 0;
 
         eval -= this.dangerValue;
 

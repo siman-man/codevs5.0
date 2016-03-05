@@ -10,7 +10,7 @@ import java.util.Scanner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-public class EvalTest {
+public class DogTest {
     Codevs codevs;
 
     @Before
@@ -21,19 +21,23 @@ public class EvalTest {
 
     @Test
     public void case1() throws Exception {
-        File file = new File("src/test/resources/sample2.in");
+        File file = new File("src/test/resources/dog/sample1.in");
         Scanner sc = new Scanner(file);
         this.codevs.readTurnInfo(sc);
         PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        assertTrue(Field.existStone(my.field[3][3].state));
-        ActionInfo[] actions = my.action();
+        Dog dog0 = my.dogList.get(0);
+        assertThat(dog0.y, is(3));
+        assertThat(dog0.x, is(2));
 
-        ActionInfo actionA = actions[0];
+        Dog dog12 = my.dogList.get(12);
+        assertThat(dog12.y, is(3));
+        assertThat(dog12.x, is(1));
 
-        assertThat(actionA.ninjaY, is(4));
-        assertThat(actionA.ninjaX, is(2));
+        Dog dog14 = my.dogList.get(14);
+        assertThat(dog14.y, is(5));
+        assertThat(dog14.x, is(1));
     }
 }

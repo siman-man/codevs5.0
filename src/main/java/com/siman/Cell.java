@@ -29,6 +29,11 @@ public class Cell {
      */
     public int dangerValue;
 
+    /**
+     * 忍犬の密集度合い
+     */
+    public int dogValue;
+
     public Cell(int id) {
         this.id = id;
         this.y = id / Field.WIDTH;
@@ -41,6 +46,7 @@ public class Cell {
     public void clear() {
         this.state = 0;
         this.dangerValue = 0;
+        this.dogValue = 0;
     }
 
     /**

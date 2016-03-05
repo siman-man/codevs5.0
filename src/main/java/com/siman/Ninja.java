@@ -6,147 +6,150 @@ package main.java.com.siman;
 public class Ninja {
 
     // 通常時
-    public static char[][] NORMAL_MOVE_PATTERN = {
+    public static String[] NORMAL_MOVE_PATTERN = {
             // 0マス
-            {'N'},
+            "N",
 
             // 1マス移動
-            {'U'},
-            {'R'},
-            {'D'},
-            {'L'},
+            "U",
+            "R",
+            "D",
+            "L",
 
             // 2マス移動
-            {'U', 'U'},
-            {'U', 'R'},
-            {'U', 'D'},
-            {'U', 'L'},
+            "UU",
+            "UR",
+            "UD",
+            "UL",
 
-            {'R', 'U'},
-            {'R', 'R'},
-            {'R', 'D'},
-            {'R', 'L'},
+            "RU",
+            "RR",
+            "RD",
+            "RL",
 
-            {'D', 'U'},
-            {'D', 'R'},
-            {'D', 'D'},
-            {'D', 'L'},
+            "DU",
+            "DR",
+            "DD",
+            "DL",
 
-            {'L', 'U'},
-            {'L', 'R'},
-            {'L', 'D'},
-            {'L', 'L'},
+            "LU",
+            "LR",
+            "LD",
+            "LL",
     };
 
     // 超高速使用時
-    public static char[][] SUPER_MOVE_PATTERN = {
+    public static String[] SUPER_MOVE_PATTERN = {
+            // 0マス
+            "N",
+
             // 1マス移動
-            {'U'},
-            {'R'},
-            {'D'},
-            {'L'},
+            "U",
+            "R",
+            "D",
+            "L",
 
             // 2マス移動
-            {'U', 'U'},
-            {'U', 'R'},
-            {'U', 'D'},
-            {'U', 'L'},
+            "UU",
+            "UR",
+            "UD",
+            "UL",
 
-            {'R', 'U'},
-            {'R', 'R'},
-            {'R', 'D'},
-            {'R', 'L'},
+            "RU",
+            "RR",
+            "RD",
+            "RL",
 
-            {'D', 'U'},
-            {'D', 'R'},
-            {'D', 'D'},
-            {'D', 'L'},
+            "DU",
+            "DR",
+            "DD",
+            "DL",
 
-            {'L', 'U'},
-            {'L', 'R'},
-            {'L', 'D'},
-            {'L', 'L'},
+            "LU",
+            "LR",
+            "LD",
+            "LL",
 
             // 3マス移動
-            {'U', 'U', 'U'},
-            {'U', 'U', 'R'},
-            {'U', 'U', 'D'},
-            {'U', 'U', 'L'},
+            "UUU",
+            "UUR",
+            "UUD",
+            "UUL",
 
-            {'U', 'R', 'U'},
-            {'U', 'R', 'R'},
-            {'U', 'R', 'D'},
-            {'U', 'R', 'L'},
+            "URU",
+            "URR",
+            "URD",
+            "URL",
 
-            {'U', 'D', 'U'},
-            {'U', 'D', 'R'},
-            {'U', 'D', 'D'},
-            {'U', 'D', 'L'},
+            "UDU",
+            "UDR",
+            "UDD",
+            "UDL",
 
-            {'U', 'L', 'U'},
-            {'U', 'L', 'R'},
-            {'U', 'L', 'D'},
-            {'U', 'L', 'L'},
+            "ULU",
+            "ULR",
+            "ULD",
+            "ULL",
 
-            {'R', 'U', 'U'},
-            {'R', 'U', 'R'},
-            {'R', 'U', 'D'},
-            {'R', 'U', 'L'},
+            "RUU",
+            "RUR",
+            "RUD",
+            "RUL",
 
-            {'R', 'R', 'U'},
-            {'R', 'R', 'R'},
-            {'R', 'R', 'D'},
-            {'R', 'R', 'L'},
+            "RRU",
+            "RRR",
+            "RRD",
+            "RRL",
 
-            {'R', 'D', 'U'},
-            {'R', 'D', 'R'},
-            {'R', 'D', 'D'},
-            {'R', 'D', 'L'},
+            "RDU",
+            "RDR",
+            "RDD",
+            "RDL",
 
-            {'R', 'L', 'U'},
-            {'R', 'L', 'R'},
-            {'R', 'L', 'D'},
-            {'R', 'L', 'L'},
+            "RLU",
+            "RLR",
+            "RLD",
+            "RLL",
 
-            {'D', 'U', 'U'},
-            {'D', 'U', 'R'},
-            {'D', 'U', 'D'},
-            {'D', 'U', 'L'},
+            "DUU",
+            "DUR",
+            "DUD",
+            "DUL",
 
-            {'D', 'R', 'U'},
-            {'D', 'R', 'R'},
-            {'D', 'R', 'D'},
-            {'D', 'R', 'L'},
+            "DRU",
+            "DRR",
+            "DRD",
+            "DRL",
 
-            {'D', 'D', 'U'},
-            {'D', 'D', 'R'},
-            {'D', 'D', 'D'},
-            {'D', 'D', 'L'},
+            "DDU",
+            "DDR",
+            "DDD",
+            "DDL",
 
-            {'D', 'L', 'U'},
-            {'D', 'L', 'R'},
-            {'D', 'L', 'D'},
-            {'D', 'L', 'L'},
+            "DLU",
+            "DLR",
+            "DLD",
+            "DLL",
 
-            {'L', 'U', 'U'},
-            {'L', 'U', 'R'},
-            {'L', 'U', 'D'},
-            {'L', 'U', 'L'},
+            "LUU",
+            "LUR",
+            "LUD",
+            "LUL",
 
-            {'L', 'R', 'U'},
-            {'L', 'R', 'R'},
-            {'L', 'R', 'D'},
-            {'L', 'R', 'L'},
+            "LRU",
+            "LRR",
+            "LRD",
+            "LRL",
 
-            {'L', 'D', 'U'},
-            {'L', 'D', 'R'},
-            {'L', 'D', 'D'},
-            {'L', 'D', 'L'},
+            "LDU",
+            "LDR",
+            "LDD",
+            "LDL",
 
-            {'L', 'L', 'U'},
-            {'L', 'L', 'R'},
-            {'L', 'L', 'D'},
-            {'L', 'L', 'L'},
+            "LLU",
+            "LLR",
+            "LLD",
+            "LLL",
     };
 
     /**
@@ -197,7 +200,9 @@ public class Ninja {
     /**
      * 一時保存
      */
-    public int tempSaveTarget;
+    public int tempSaveTargetId;
+
+    public int tempSaveTargetDist;
 
     /**
      * 目的のソウルとの距離
@@ -221,7 +226,8 @@ public class Ninja {
     public void tempSaveStatus() {
         this.tempSaveY = this.y;
         this.tempSaveX = this.x;
-        this.tempSaveTarget = this.targetSoulId;
+        this.tempSaveTargetId = this.targetSoulId;
+        this.tempSaveTargetDist = this.targetSoulDist;
     }
 
     /**
@@ -240,7 +246,8 @@ public class Ninja {
     public void tempRollback() {
         this.y = this.tempSaveY;
         this.x = this.tempSaveX;
-        this.targetSoulId = this.tempSaveTarget;
+        this.targetSoulId = this.tempSaveTargetId;
+        this.targetSoulDist = this.tempSaveTargetDist;
     }
 
     public String toString() {

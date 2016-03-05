@@ -41,10 +41,6 @@ public class Codevs {
      */
     public int turn;
 
-    public final int DY[] = {-1, 0, 1, 0};
-    public final int DX[] = {0, 1, 0, -1};
-    public final char DS[] = {'L', 'U', 'R', 'D'};
-
     /**
      * プレイヤーリスト
      */
@@ -271,13 +267,7 @@ public class Codevs {
         }
 
         for (ActionInfo action : commandList.actions) {
-            String res = "";
-
-            for (char command : action.commandList) {
-                res += command;
-            }
-
-            System.out.println(res);
+            System.out.println(action.commandList);
         }
 
         System.out.flush();

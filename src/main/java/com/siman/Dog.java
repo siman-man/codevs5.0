@@ -26,6 +26,6 @@ public class Dog {
 class DogComparator implements Comparator<Dog> {
     @Override
     public int compare(Dog dogA, Dog dogB) {
-        return dogA.targetDist - dogB.targetDist;
+        return (100 * dogA.targetDist + dogA.id) - (100 * dogB.targetDist + dogB.id);
     }
 }
