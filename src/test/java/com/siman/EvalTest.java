@@ -45,4 +45,26 @@ public class EvalTest {
         assertThat(my.getAliveCellCount(1, 1), is(2));
         assertThat(my.getAliveCellCount(15, 1), is(2));
     }
+
+    @Test
+    public void case3() throws Exception {
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(my, "src/test/resources/eval/sample3.in");
+
+        my.updateEachCellDist();
+        my.updateDogValue();
+
+        assertThat(my.getAliveCellCount(10, 8), is(3));
+    }
+
+    @Test
+    public void case4() throws Exception {
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(my, "src/test/resources/eval/sample4.in");
+
+        my.updateEachCellDist();
+        my.updateDogValue();
+
+        assertThat(my.getAliveCellCount(5, 9), is(1));
+    }
 }

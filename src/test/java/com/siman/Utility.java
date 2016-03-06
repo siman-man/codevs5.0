@@ -74,11 +74,13 @@ public class Utility {
 
                 if (type == 'S') {
                     NinjaSoul soul = new NinjaSoul(soulCount++, y, x);
+                    soul.sid = getId(y, x);
                     player.soulList.add(soul);
                     player.setSoul(y, x);
                 }
                 if (type == 'D') {
                     Dog dog = new Dog(dogCount++, y, x);
+                    dog.did = getId(y, x);
                     player.dogList.add(dog);
                     player.setDog(y, x);
                 }

@@ -36,6 +36,11 @@ public class Cell {
      */
     public int dogValue;
 
+    /**
+     * このセルから一番近い忍犬の距離
+     */
+    public int dogDist;
+
     public int soulValue;
 
     public Cell(int id) {
@@ -50,6 +55,7 @@ public class Cell {
     public void clear() {
         this.state = 0;
         this.dangerValue = 0;
+        this.dogDist = PlayerInfo.INF;
         this.dogValue = 0;
         this.soulValue = 0;
         this.saveDangerValue = 0;
