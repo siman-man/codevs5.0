@@ -36,4 +36,13 @@ public class EvalTest {
         assertThat(actionA.ninjaY, is(4));
         assertThat(actionA.ninjaX, is(2));
     }
+
+    @Test
+    public void case2() throws Exception {
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(my, "src/test/resources/eval/sample2.in");
+
+        assertThat(my.getAliveCellCount(1, 1), is(2));
+        assertThat(my.getAliveCellCount(15, 1), is(2));
+    }
 }
