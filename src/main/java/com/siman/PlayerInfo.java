@@ -317,16 +317,14 @@ public class PlayerInfo {
      */
     public void setTargetSoulId() {
         int minDist = Integer.MAX_VALUE;
-        int minDistA = INF;
-        int minDistB = INF;
         int targetA = 0;
         int targetB = 1;
 
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
 
-        int nidA = Utility.getId(ninjaA.y, ninjaA.x);
-        int nidB = Utility.getId(ninjaB.y, ninjaB.x);
+        int nidA = ninjaA.getNID();
+        int nidB = ninjaB.getNID();
 
         for (NinjaSoul soulA : this.soulList) {
             Cell cellA = this.field[soulA.y][soulA.x];
@@ -345,40 +343,36 @@ public class PlayerInfo {
                     minDist = totalDist;
                     targetA = soulA.id;
                     targetB = soulB.id;
-                    minDistA = distA;
-                    minDistB = distB;
                 }
             }
         }
 
         ninjaA.targetSoulId = targetA;
-        ninjaA.targetSoulDist = minDistA;
         ninjaB.targetSoulId = targetB;
-        ninjaB.targetSoulDist = minDistB;
     }
 
+    /**
+     * 次に狙うニンジャソウルの場所を決める
+     * @param ninja
+     */
     public void updateTargetSoul(Ninja ninja) {
         int minDist = Integer.MAX_VALUE;
-        int minId = -1;
+        int nextTargetId = -1;
+        int nid = ninja.getNID();
 
         for (NinjaSoul soul : this.soulList) {
             if (ninja.targetSoulId == soul.id) {
                 continue;
             }
 
-            Cell cell = this.field[soul.y][soul.x];
-            //if (cell.dangerValue > 0) continue;
-            int nid = Utility.getId(ninja.y, ninja.x);
-
             int dist = this.eachCellDistDogBlock[nid][soul.sid];
             if (minDist > dist) {
                 minDist = dist;
-                minId = soul.id;
+                nextTargetId = soul.id;
             }
         }
 
-        ninja.targetSoulId = minId;
-        ninja.targetSoulDist = minDist;
+        ninja.targetSoulId = nextTargetId;
     }
 
     /**
@@ -473,7 +467,7 @@ public class PlayerInfo {
 
                 if (canMove(curY, curX, i) && !Field.existDog(ncell.state)) {
 
-                    if (Field.existStone(ncell.state) && getAroundStoneCount(ny, nx) >= 2){
+                    if (Field.existStone(ncell.state) && getAroundStoneCount(ny, nx) >= 2) {
                     } else {
                         queueY.add(ny);
                         queueX.add(nx);
@@ -500,20 +494,13 @@ public class PlayerInfo {
         return false;
     }
 
-    public boolean isExistAroundStone(int y, int x) {
-        for (int i = 0; i < 4; i++) {
-            int ny = y + DY[i];
-            int nx = x + DX[i];
-            Cell cell = this.field[ny][nx];
-
-            if (Field.existStone(cell.state)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
+    /**
+     * 周囲8マスに存在している犬の数を調べる
+     *
+     * @param cy 調べる起点となる座標
+     * @param cx 調べる起点となる座標
+     * @return
+     */
     public int getCircleDogCount(int cy, int cx) {
         int dogCnt = 0;
 
@@ -535,10 +522,17 @@ public class PlayerInfo {
         return dogCnt;
     }
 
+    /**
+     * 指定された座標の周りにある床の数を調べる
+     *
+     * @param y
+     * @param x
+     * @return
+     */
     public int getAroundFloorCount(int y, int x) {
         int floorCount = 0;
 
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) {
             int ny = y + DY[i];
             int nx = x + DX[i];
             Cell cell = this.field[ny][nx];
@@ -551,10 +545,17 @@ public class PlayerInfo {
         return floorCount;
     }
 
+    /**
+     * 自分の周りにある石の数を調べる
+     *
+     * @param y
+     * @param x
+     * @return
+     */
     public int getAroundStoneCount(int y, int x) {
         int stoneCnt = 0;
 
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) {
             int ny = y + DY[i];
             int nx = x + DX[i];
             Cell cell = this.field[ny][nx];
@@ -625,6 +626,7 @@ public class PlayerInfo {
         updateDogTarget(moveStone);
         PriorityQueue<Dog> pque = new PriorityQueue<Dog>(255, new DogComparator());
 
+        // 忍者への最短距離が短いやつから処理をしていく
         for (Dog dog : this.dogList) {
             pque.add(dog);
         }
@@ -720,6 +722,7 @@ public class PlayerInfo {
             }
         }
 
+        // ワーシャル - フロイドで全ての最短距離を求める
         for (int k = 0; k < Field.CELL_COUNT; k++) {
             Cell cellK = getCell(k);
             if (Field.isWall(cellK.state)) continue;
@@ -768,9 +771,7 @@ public class PlayerInfo {
         }
 
         int aliveCellCount = getAliveCellCount(ninja.y, ninja.x);
-        int stoneCount = 0;
         int fixStoneCount = 0;
-        int floorCount = 0;
         int dogCount = 0;
 
         for (int i = 0; i < 4; i++) {
@@ -831,15 +832,13 @@ public class PlayerInfo {
             int nny = ny + DY[direct];
             int nnx = nx + DX[direct];
 
-            Cell nncell = this.field[nny][nnx];
-
             removeStone(ny, nx);
             setStone(nny, nnx);
         }
     }
 
     /**
-     * 忍者が行動する
+     * 忍者を実際に行動させてそれを評価する。
      *
      * @param ninja       移動する忍者
      * @param commandList 移動リスト
@@ -857,48 +856,32 @@ public class PlayerInfo {
                 Cell toCell = this.field[ny][nx];
                 boolean moveStone = Field.existStone(toCell.state);
 
+                // 実際に移動する
                 move(ninja, direct);
-                int nny = ny + DY[direct];
-                int nnx = nx + DX[direct];
-                Cell nextCell = this.field[nny][nnx];
 
+                // ニンジャソウルをゲット出来たかどうかを調べる
                 if (Field.existSoul(toCell.state)) {
                     info.getSoulCount += 1;
-                    this.removeSoul(ny, nx);
-                    removeSoul(ninja.y, ninja.x);
+                    removeSoul(ny, nx);
+                    // 次に狙うニンジャソウルの場所を決める
                     updateTargetSoul(ninja);
                 }
+                // 石を動かした場合
                 if (moveStone) {
                     info.moveStone = true;
 
-                    if (Field.existFixStone(nextCell.state)) {
-                        info.createFixStoneCount += 1;
-                    }
-                    if (getNoMoveCount(nny, nnx) > 0 && Field.existSoul(nextCell.state)) {
-                        info.soulHide = true;
+                    // 同じ方向にもう一度進めなくなった場合
+                    if (!canMove(ny, nx, direct)) {
+                        info.notMoveNextCell = true;
                     }
                 }
-
-                /*
-                int nnny = nny + DY[direct];
-                int nnnx = nnx + DX[direct];
-
-                if (isInside(nnny, nnnx)) {
-                    Cell nexNexCell = this.field[nny][nnx];
-
-                    if (moveStone && Field.existStone(nexNexCell.state)) {
-                        info.moveStone = true;
-                        info.createFixStoneCount += 1;
-                    }
-                }
-                */
             } else {
                 info.valid = false;
                 break;
             }
         }
 
-        int nid = Utility.getId(ninja.y, ninja.x);
+        int nid = ninja.getNID();
         NinjaSoul soul = this.soulList.get(ninja.targetSoulId);
         int targetDist = this.eachCellDistDogBlock[nid][soul.sid];
 
@@ -942,6 +925,9 @@ public class PlayerInfo {
         }
     }
 
+    /**
+     * 忍犬の密集度を調べる
+     */
     public void updateDogValue() {
         for (Dog dog : this.dogList) {
             for (int y = 1; y < Field.HEIGHT; y++) {
@@ -1082,6 +1068,7 @@ public class PlayerInfo {
         PlayerInfo enemy = Codevs.getEnemyInfo();
 
         for (Ninja ninja : enemy.ninjaList) {
+            // 相手の忍者がいま選択できる一番良い行動を調べる
             ActionInfo baseAction = enemy.getMaxNinjaEval(ninja);
             int basicEval = baseAction.baseEval + baseAction.toEval();
 

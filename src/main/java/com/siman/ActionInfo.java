@@ -12,8 +12,7 @@ public class ActionInfo {
     public boolean valid;
     public boolean moveStone;
     public boolean unreach;
-    public boolean soulHide;
-    public int createFixStoneCount;
+    public boolean notMoveNextCell;
     public String commandList;
 
     public ActionInfo() {
@@ -21,9 +20,8 @@ public class ActionInfo {
         this.valid = true;
         this.getSoulCount = 0;
         this.baseEval = 0;
-        this.createFixStoneCount = 0;
+        this.notMoveNextCell = false;
         this.moveStone = false;
-        this.soulHide = false;
         this.unreach = false;
         this.targetSoulDist = -1;
     }
@@ -41,9 +39,7 @@ public class ActionInfo {
 
         eval += 5000 * this.getSoulCount;
         eval -= 5 * this.targetSoulDist;
-        eval -= 50 * this.createFixStoneCount;
-        eval -= (this.moveStone)? 1 : 0;
-        eval -= (this.soulHide)? 100 : 0;
+        eval -= (this.notMoveNextCell)? 50 : 0;
 
         return eval;
     }

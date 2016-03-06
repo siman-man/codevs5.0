@@ -182,7 +182,14 @@ public class Ninja {
      */
     public int saveX;
 
+    /**
+     * 一時保存
+     */
     public int tempSaveY;
+
+    /**
+     * 一時保存用
+     */
     public int tempSaveX;
 
     /**
@@ -195,39 +202,40 @@ public class Ninja {
      */
     public int saveTarget;
 
-    public int saveTargetDist;
-
     /**
      * 一時保存
      */
     public int tempSaveTargetId;
-
-    public int tempSaveTargetDist;
-
-    /**
-     * 目的のソウルとの距離
-     */
-    public int targetSoulDist;
 
     public Ninja(int id) {
         this.id = id;
     }
 
     /**
+     * 忍者がいまいる座標のセルIDを返す
+     * @return
+     */
+    public int getNID() {
+        return (Field.WIDTH * this.y) + this.x;
+    }
+
+    /**
      * 現在の状態を保存
+     * 保存する値
+     *   - 現在のy座標
+     *   - 現在のx座標
+     *   - 狙っているニンジャソウルのID
      */
     public void saveStatus() {
         this.saveY = this.y;
         this.saveX = this.x;
         this.saveTarget = this.targetSoulId;
-        this.saveTargetDist = this.targetSoulDist;
     }
 
     public void tempSaveStatus() {
         this.tempSaveY = this.y;
         this.tempSaveX = this.x;
         this.tempSaveTargetId = this.targetSoulId;
-        this.tempSaveTargetDist = this.targetSoulDist;
     }
 
     /**
@@ -237,7 +245,6 @@ public class Ninja {
         this.y = this.saveY;
         this.x = this.saveX;
         this.targetSoulId = this.saveTarget;
-        this.targetSoulDist = this.saveTargetDist;
     }
 
     /**
@@ -247,7 +254,6 @@ public class Ninja {
         this.y = this.tempSaveY;
         this.x = this.tempSaveX;
         this.targetSoulId = this.tempSaveTargetId;
-        this.targetSoulDist = this.tempSaveTargetDist;
     }
 
     public String toString() {
