@@ -222,24 +222,23 @@ public class Codevs {
         my.clean();
         my.updateStoneStatus();
         my.updateEachCellDist();
+        my.updateSoulPower();
+        my.updateDogValue();
+        my.saveDogStatus();
 
         PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
         enemy.clean();
         enemy.updateStoneStatus();
         enemy.updateEachCellDist();
+        enemy.updateSoulPower();
+        enemy.updateDogValue();
 
-        enemy.updateDangerValue();
         enemy.setTargetSoulId();
         enemy.saveNinjaStatus();
         enemy.saveField();
+        enemy.saveDogStatus();
 
         my.spell(commandList);
-
-        if (my.summonsAvator) {
-            my.updateDogPosition();
-        }
-
-        my.updateDangerValue();
         my.setTargetSoulId();
         my.saveNinjaStatus();
         my.saveField();

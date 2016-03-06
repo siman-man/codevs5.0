@@ -24,6 +24,8 @@ public class Cell {
      */
     public int state;
 
+    public int saveDangerValue;
+
     /**
      * 危険度合い
      */
@@ -33,6 +35,8 @@ public class Cell {
      * 忍犬の密集度合い
      */
     public int dogValue;
+
+    public int soulValue;
 
     public Cell(int id) {
         this.id = id;
@@ -47,6 +51,16 @@ public class Cell {
         this.state = 0;
         this.dangerValue = 0;
         this.dogValue = 0;
+        this.soulValue = 0;
+        this.saveDangerValue = 0;
+    }
+
+    public void rollback() {
+        this.dangerValue = this.saveDangerValue;
+    }
+
+    public void save() {
+        this.saveDangerValue = this.dangerValue;
     }
 
     /**

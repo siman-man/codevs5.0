@@ -62,11 +62,11 @@ public class FallRockTest {
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        enemy.fallRockAttack(commandList);
+        enemy.fallRockAttackEasy(commandList);
 
         String expect = NinjaSkill.fallrockEnemy(12, 4);
         // TODO : 相手のベストな行動に対して失敗した時に忍犬にぶつかる場合は石を落とす
-        // assertThat(commandList.spell, is(expect));
+        assertThat(commandList.spell, is(expect));
     }
 
     @Test
