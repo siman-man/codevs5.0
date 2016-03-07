@@ -122,6 +122,8 @@ public class Utility {
                     System.err.print('W');
                 } else if (Field.isFloor(cell.state)) {
                     System.err.print('_');
+                }else if (Field.existNinja(cell.state)) {
+                    System.err.print('N');
                 } else if (Field.existStone(cell.state)) {
                     System.err.print('O');
                 }

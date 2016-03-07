@@ -44,7 +44,7 @@ public class Codevs {
     /**
      * プレイヤーリスト
      */
-    public static PlayerInfo[] playerInfoList;
+    public PlayerInfo[] playerInfoList;
 
     /**
      * 残り時間(msec)
@@ -120,7 +120,7 @@ public class Codevs {
 
             for (int y = 0; y < Field.HEIGHT; y++) {
                 for (int x = 0; x < Field.WIDTH; x++) {
-                    int id = (y * Field.WIDTH) + x;
+                    int id = Utility.getId(y, x);
                     playerInfo.field[y][x] = new Cell(id);
                 }
             }
@@ -225,6 +225,9 @@ public class Codevs {
         my.updateSoulPower();
         my.updateDogValue();
         my.saveDogStatus();
+        my.setTargetSoulId();
+        my.saveNinjaStatus();
+        my.saveField();
 
         PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
         enemy.clean();
@@ -238,10 +241,7 @@ public class Codevs {
         enemy.saveField();
         enemy.saveDogStatus();
 
-        my.spell(commandList);
-        my.setTargetSoulId();
-        my.saveNinjaStatus();
-        my.saveField();
+        my.spell(enemy, commandList);
     }
 
     /**
@@ -270,12 +270,5 @@ public class Codevs {
         }
 
         System.out.flush();
-    }
-
-    /**
-     * 敵の情報を取得
-     */
-    public static PlayerInfo getEnemyInfo() {
-        return playerInfoList[Codevs.ENEMY_ID];
     }
 }

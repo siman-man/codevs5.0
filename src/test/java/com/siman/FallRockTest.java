@@ -30,9 +30,18 @@ public class FallRockTest {
         this.codevs.beforeProc(commandList);
 
         Ninja ninjaA = enemy.ninjaList[0];
-        assertThat(ninjaA.targetSoulId, is(0));
 
-        enemy.fallRockAttack(commandList);
+        assertThat(ninjaA.y, is(2));
+        assertThat(ninjaA.x, is(1));
+        assertTrue(Field.existDog(enemy.field[3][1].state));
+
+        ActionInfo bestAction = enemy.getMaxNinjaEval(ninjaA);
+
+        int id1_8 = Utility.getId(1, 8);
+        assertThat(bestAction.commandList, is("UR"));
+        assertThat(ninjaA.targetId, is(id1_8));
+
+        enemy.fallRockAttack(enemy, commandList);
 
         String expect = NinjaSkill.fallrockEnemy(1, 1);
         assertThat(commandList.spell, is(expect));
@@ -47,7 +56,7 @@ public class FallRockTest {
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        enemy.fallRockAttack(commandList);
+        enemy.fallRockAttack(enemy, commandList);
 
         String expect = NinjaSkill.fallrockEnemy(12, 4);
         assertThat(commandList.spell, is(expect));
@@ -62,10 +71,9 @@ public class FallRockTest {
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        enemy.fallRockAttackEasy(commandList);
+        enemy.fallRockAttackEasy(enemy, commandList);
 
         String expect = NinjaSkill.fallrockEnemy(12, 4);
-        // TODO : 相手のベストな行動に対して失敗した時に忍犬にぶつかる場合は石を落とす
         assertThat(commandList.spell, is(expect));
     }
 
@@ -88,9 +96,61 @@ public class FallRockTest {
         assertFalse(enemy.canMove(5, 9, 2));
         assertFalse(enemy.canMove(5, 9, 3));
 
-        enemy.fallRockAttack(commandList);
+        enemy.fallRockAttack(enemy, commandList);
 
         String expect = "";
+        assertThat(commandList.spell, is(expect));
+    }
+
+    @Test
+    public void case5() throws Exception {
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(my, "src/test/resources/fallrock/sample5.in");
+        Utility.readPlayerInfo(enemy, "src/test/resources/fallrock/sample5.in");
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        Ninja ninja = enemy.ninjaList[0];
+
+        ActionInfo bestAction = enemy.getMaxNinjaEval(ninja);
+
+        assertThat(bestAction.ninjaY, is(3));
+        assertThat(bestAction.ninjaX, is(4));
+
+        enemy.fallRockAttackEasy(enemy, commandList);
+
+        String expect = NinjaSkill.fallrockEnemy(4, 4);
+        assertThat(commandList.spell, is(expect));
+    }
+
+    @Test
+    public void case6() throws Exception {
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(my, "src/test/resources/fallrock/sample6.in");
+        Utility.readPlayerInfo(enemy, "src/test/resources/fallrock/sample6.in");
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        enemy.fallRockAttackEasy(enemy, commandList);
+
+        String expect = NinjaSkill.fallrockEnemy(4, 1);
+        assertThat(commandList.spell, is(expect));
+    }
+
+    @Test
+    public void case7() throws Exception {
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(my, "src/test/resources/fallrock/sample7.in");
+        Utility.readPlayerInfo(enemy, "src/test/resources/fallrock/sample7.in");
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        enemy.fallRockAttackEasy(enemy, commandList);
+
+        String expect = NinjaSkill.fallrockEnemy(6, 6);
         assertThat(commandList.spell, is(expect));
     }
 }

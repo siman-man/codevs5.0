@@ -7,8 +7,9 @@ public class ActionInfo {
     public int ninjaY;
     public int ninjaX;
     public int getSoulCount;
-    public int targetSoulDist;
-    public int baseEval;
+    public int targetId;
+    public int targetDist;
+    public int positionValue;
     public boolean valid;
     public boolean moveStone;
     public boolean unreach;
@@ -19,11 +20,12 @@ public class ActionInfo {
         this.commandList = "N";
         this.valid = true;
         this.getSoulCount = 0;
-        this.baseEval = 0;
         this.notMoveNextCell = false;
         this.moveStone = false;
         this.unreach = false;
-        this.targetSoulDist = -1;
+        this.positionValue = 0;
+        this.targetId = -1;
+        this.targetDist = -1;
     }
 
     public boolean isValid() {
@@ -38,9 +40,15 @@ public class ActionInfo {
         int eval = 0;
 
         eval += 5000 * this.getSoulCount;
-        eval -= 5 * this.targetSoulDist;
+        eval += positionValue;
+        eval -= 10 * this.targetDist;
         eval -= (this.notMoveNextCell)? 50 : 0;
 
         return eval;
+    }
+
+    public String toString() {
+        return String.format("y = %d, x = %d, eval = %d, com = %s, target = %d, dist = %d", this.ninjaY, this.ninjaX,
+                toEval(), this.commandList, this.targetId, this.targetDist);
     }
 }

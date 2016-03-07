@@ -272,7 +272,7 @@ public class PlayerInfoTest {
 
         ninja.y = 1;
         ninja.x = 3;
-        ninja.targetSoulId = 0;
+        ninja.targetId = 0;
 
         String action = "LL";
 
@@ -296,7 +296,7 @@ public class PlayerInfoTest {
 
         ninja.y = 1;
         ninja.x = 3;
-        ninja.targetSoulId = 0;
+        ninja.targetId = 0;
 
         /* 評価値がコロコロ変わるのでテストしない
         assertFalse(Field.existStone(my.field[1][2].state));

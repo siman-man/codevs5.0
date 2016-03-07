@@ -28,8 +28,30 @@ public class EvalTest {
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        assertTrue(Field.existStone(my.field[3][3].state));
+        Ninja ninjaA = my.ninjaList[0];
+        NinjaSoul soul3 = my.soulList.get(3);
+        assertThat(ninjaA.targetId, is(soul3.sid));
+
         ActionInfo[] actions = my.action();
+
+        assertThat(ninjaA.targetId, is(soul3.sid));
+        int id2_2 = Utility.getId(2, 2);
+        int id6_3 = Utility.getId(6, 3);
+        int id4_2 = Utility.getId(4, 2);
+
+        assertThat(my.dogCount, is(0));
+        assertThat(my.eachCellDistDogBlock[id2_2][id6_3], is(5));
+        assertThat(my.eachCellDistDogBlock[id4_2][id6_3], is(3));
+        assertTrue(Field.existStone(my.field[3][3].state));
+        assertTrue(Field.existSoul(my.field[6][3].state));
+        NinjaSoul soul = my.soulList.get(3);
+
+        ActionInfo a = my.getMaxNinjaEval(my.ninjaList[0]);
+
+        assertThat(soul.y, is(6));
+        assertThat(soul.x, is(3));
+
+        assertThat(a.commandList, is("DD"));
 
         ActionInfo actionA = actions[0];
 

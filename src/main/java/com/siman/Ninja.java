@@ -193,9 +193,9 @@ public class Ninja {
     public int tempSaveX;
 
     /**
-     * 目標のニンジャソウルID
+     * 目的地のID
      */
-    public int targetSoulId;
+    public int targetId;
 
     /**
      * 保存した目標ソウルID
@@ -229,13 +229,13 @@ public class Ninja {
     public void saveStatus() {
         this.saveY = this.y;
         this.saveX = this.x;
-        this.saveTarget = this.targetSoulId;
+        this.saveTarget = this.targetId;
     }
 
     public void tempSaveStatus() {
         this.tempSaveY = this.y;
         this.tempSaveX = this.x;
-        this.tempSaveTargetId = this.targetSoulId;
+        this.tempSaveTargetId = this.targetId;
     }
 
     /**
@@ -244,7 +244,7 @@ public class Ninja {
     public void rollback() {
         this.y = this.saveY;
         this.x = this.saveX;
-        this.targetSoulId = this.saveTarget;
+        this.targetId = this.saveTarget;
     }
 
     /**
@@ -253,7 +253,7 @@ public class Ninja {
     public void tempRollback() {
         this.y = this.tempSaveY;
         this.x = this.tempSaveX;
-        this.targetSoulId = this.tempSaveTargetId;
+        this.targetId = this.tempSaveTargetId;
     }
 
     public String toString() {

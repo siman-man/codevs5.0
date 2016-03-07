@@ -79,12 +79,11 @@ public class DogTest {
         int id1_7 = Utility.getId(1, 7);
 
         my.updateDogPosition(false);
+
         Dog dog17 = my.dogList.get(17);
         assertThat(dog17.y, is(1));
         assertThat(dog17.x, is(8));
 
-        ActionInfo[] actions = my.action();
-        assertTrue(Field.existDog(my.field[1][8].state));
         //assertThat(my.field[4][4].dangerValue, is(PlayerInfo.DETH));
     }
 }
