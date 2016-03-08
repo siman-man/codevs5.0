@@ -5,36 +5,36 @@ package main.java.com.siman;
  */
 public class Search {
     // 通常時
-    public static char[][] LIST = {
+    public static String[] LIST = {
             // 0マス (1パターン)
-            {'N'},
+            "N",
 
             // 1マス移動 (4パターン)
-            {'U'},
-            {'R'},
-            {'D'},
-            {'L'},
+            "U",
+            "R",
+            "D",
+            "L",
 
             // 2マス移動  (12パターン)
-            {'U', 'U'},
-            {'U', 'R'},
-            {'U', 'L'},
+            "UU",
+            "UR",
+            "UL",
 
-            {'R', 'U'},
-            {'R', 'R'},
-            {'R', 'D'},
+            "RU",
+            "RR",
+            "RD",
 
-            {'D', 'R'},
-            {'D', 'D'},
-            {'D', 'L'},
+            "DR",
+            "DD",
+            "DL",
 
-            {'L', 'U'},
-            {'L', 'D'},
-            {'L', 'L'},
+            "LU",
+            "LD",
+            "LL",
 
             // 3マス移動
-            {'U', 'U', 'U'},
-            {'U', 'U', 'L'},
-            {'U', 'U', 'R'},
+            "UUU",
+            "UUL",
+            "UUR",
     };
 }

@@ -43,12 +43,15 @@ public class ActionInfo {
         eval += positionValue;
         eval -= 10 * this.targetDist;
         eval -= (this.notMoveNextCell)? 50 : 0;
+        eval -= (this.moveStone)? 20 : 0;
 
         return eval;
     }
 
     public String toString() {
-        return String.format("y = %d, x = %d, eval = %d, com = %s, target = %d, dist = %d", this.ninjaY, this.ninjaX,
-                toEval(), this.commandList, this.targetId, this.targetDist);
+        int targetY = this.targetId / Field.WIDTH;
+        int targetX = this.targetId % Field.WIDTH;
+        return String.format("y = %d, x = %d, eval = %d, com = %s, target = (%d,%d), dist = %d", this.ninjaY, this.ninjaX,
+                toEval(), this.commandList, targetY, targetX, this.targetDist);
     }
 }

@@ -221,9 +221,9 @@ public class Codevs {
         PlayerInfo my = this.playerInfoList[MY_ID];
         my.clean();
         my.updateStoneStatus();
+        my.updateDogValue();
         my.updateEachCellDist();
         my.updateSoulPower();
-        my.updateDogValue();
         my.saveDogStatus();
         my.setTargetSoulId();
         my.saveNinjaStatus();
@@ -232,9 +232,9 @@ public class Codevs {
         PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
         enemy.clean();
         enemy.updateStoneStatus();
+        enemy.updateDogValue();
         enemy.updateEachCellDist();
         enemy.updateSoulPower();
-        enemy.updateDogValue();
 
         enemy.setTargetSoulId();
         enemy.saveNinjaStatus();

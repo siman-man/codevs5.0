@@ -32,9 +32,19 @@ public class Cell {
     public int dangerValue;
 
     /**
+     *
+     */
+    public int tempDangerValue;
+
+    /**
      * 忍犬の密集度合い
      */
     public int dogValue;
+
+    /**
+     *
+     */
+    public int saveDogValue;
 
     /**
      * このセルから一番近い忍犬の距離
@@ -67,6 +77,14 @@ public class Cell {
 
     public void save() {
         this.saveDangerValue = this.dangerValue;
+    }
+
+    public void tempSave() {
+        this.tempDangerValue = this.dangerValue;
+    }
+
+    public void tempRollback() {
+        this.dangerValue = this.tempDangerValue;
     }
 
     /**

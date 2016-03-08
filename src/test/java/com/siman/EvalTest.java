@@ -40,8 +40,8 @@ public class EvalTest {
         int id4_2 = Utility.getId(4, 2);
 
         assertThat(my.dogCount, is(0));
-        assertThat(my.eachCellDistDogBlock[id2_2][id6_3], is(5));
-        assertThat(my.eachCellDistDogBlock[id4_2][id6_3], is(3));
+        assertThat(my.eachCellDistDogBlock[id2_2][id6_3], is(7));
+        assertThat(my.eachCellDistDogBlock[id4_2][id6_3], is(5));
         assertTrue(Field.existStone(my.field[3][3].state));
         assertTrue(Field.existSoul(my.field[6][3].state));
         NinjaSoul soul = my.soulList.get(3);
@@ -61,32 +61,43 @@ public class EvalTest {
 
     @Test
     public void case2() throws Exception {
-        PlayerInfo my = this.codevs.playerInfoList[Codevs.ENEMY_ID];
-        Utility.readPlayerInfo(my, "src/test/resources/eval/sample2.in");
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(enemy, "src/test/resources/eval/sample2.in");
 
-        assertThat(my.getAliveCellCount(1, 1), is(2));
-        assertThat(my.getAliveCellCount(15, 1), is(2));
+        assertThat(enemy.getAliveCellCount(1, 1), is(2));
+        assertThat(enemy.getAliveCellCount(15, 1), is(2));
     }
 
     @Test
     public void case3() throws Exception {
-        PlayerInfo my = this.codevs.playerInfoList[Codevs.ENEMY_ID];
-        Utility.readPlayerInfo(my, "src/test/resources/eval/sample3.in");
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(enemy, "src/test/resources/eval/sample3.in");
 
-        my.updateEachCellDist();
-        my.updateDogValue();
+        enemy.updateEachCellDist();
+        enemy.updateDogValue();
 
-        assertThat(my.getAliveCellCount(10, 8), is(3));
+        assertThat(enemy.getAliveCellCount(10, 8), is(4));
     }
 
     @Test
     public void case4() throws Exception {
-        PlayerInfo my = this.codevs.playerInfoList[Codevs.ENEMY_ID];
-        Utility.readPlayerInfo(my, "src/test/resources/eval/sample4.in");
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(enemy, "src/test/resources/eval/sample4.in");
 
-        my.updateEachCellDist();
-        my.updateDogValue();
+        enemy.updateEachCellDist();
+        enemy.updateDogValue();
 
-        assertThat(my.getAliveCellCount(5, 9), is(1));
+        assertThat(enemy.getAliveCellCount(5, 9), is(1));
+    }
+
+    @Test
+    public void case5() throws Exception {
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        Utility.readPlayerInfo(enemy, "src/test/resources/eval/sample5.in");
+
+        enemy.updateEachCellDist();
+        enemy.updateDogValue();
+
+        assertThat(enemy.getAliveCellCount(3, 1), is(PlayerInfo.INF));
     }
 }
