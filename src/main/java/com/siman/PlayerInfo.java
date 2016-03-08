@@ -183,7 +183,7 @@ public class PlayerInfo {
                 if (distA == INF || distB == INF) continue;
                 int distC = getAllDogDist(y, x);
                 int distD = getAllSoulDist(y, x);
-                int eval = distA + distB - distC + distD - cell.soulValue;
+                int eval = distA + distB + distD - cell.soulValue;
 
                 if (maxDist < eval) {
                     maxDist = eval;
