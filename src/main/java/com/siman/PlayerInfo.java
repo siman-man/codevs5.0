@@ -133,12 +133,12 @@ public class PlayerInfo {
         if (this.soulPower >= rockCost) {
             fallRockAttack(enemy, commandList);
 
-            if (commandList.eval >= 100000) {
+            if (commandList.eval >= 300000) {
                 commandList.useSkill = true;
                 return;
             }
 
-            if (rockCost <= 4 || this.soulPower >= 25) {
+            if ((rockCost <= 4 && this.soulPower >= 15) || this.soulPower >= 30) {
                 fallRockAttackEasy(enemy, commandList);
 
                 if (commandList.eval >= 100000) {
@@ -159,13 +159,6 @@ public class PlayerInfo {
             commandList.useSkill = true;
             commandList.spell = "0";
             this.highSpeedMode = true;
-        } else if (this.soulPower >= Codevs.skillCost[NinjaSkill.ENEMY_ROCKFALL]) {
-            fallRockAttack(enemy, commandList);
-
-            if (commandList.eval >= 100000) {
-                commandList.useSkill = true;
-                return;
-            }
         }
     }
 
@@ -378,16 +371,16 @@ public class PlayerInfo {
         for (NinjaSoul soulA : this.soulList) {
             Cell cellA = this.field[soulA.y][soulA.x];
             int distA = this.eachCellDistDogBlock[nidA][soulA.sid];
-            if (distA >= 15) continue;
+            if (distA >= 20) continue;
             if (Field.existDog(cellA.state)) continue;
 
             for (NinjaSoul soulB : this.soulList) {
                 if (soulA.id == soulB.id) continue;
                 Cell cellB = this.field[soulB.y][soulB.x];
 
-                if (this.eachCellDistNonPush[cellA.id][cellB.id] <= 2) continue;
+                if (this.eachCellDistDogBlock[cellA.id][cellB.id] <= 3) continue;
                 int distB = this.eachCellDistDogBlock[nidB][soulB.sid];
-                if (distB >= 15) continue;
+                if (distB >= 20) continue;
                 if (Field.existDog(cellB.state)) continue;
 
                 int totalDist = distA + distB;
