@@ -80,6 +80,21 @@ public class BestActionTest {
         ActionInfo[] bestAction = my.action();
         ActionInfo actionB = bestAction[0];
 
-        assertThat(actionB.commandList, is("UU"));
+        assertThat(actionB.commandList, is("RD"));
+    }
+
+    @Test
+    public void case5() throws Exception {
+        File file = new File("src/test/resources/action/sample5.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        ActionInfo[] bestAction = my.action();
+        ActionInfo actionA = bestAction[0];
+
+        assertThat(actionA.commandList, is("RD"));
     }
 }

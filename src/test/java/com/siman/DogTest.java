@@ -30,7 +30,7 @@ public class DogTest {
 
         my.avatorId = 110;
         my.summonsAvator = true;
-        my.updateDogPosition(false);
+        my.updateDogPosition(false, my.summonsAvator);
 
         Dog dog0 = my.dogList.get(0);
         assertThat(dog0.y, is(3));
@@ -78,7 +78,7 @@ public class DogTest {
 
         int id1_7 = Utility.getId(1, 7);
 
-        my.updateDogPosition(false);
+        my.updateDogPosition(false, my.summonsAvator);
 
         Dog dog17 = my.dogList.get(17);
         assertThat(dog17.y, is(1));

@@ -136,8 +136,11 @@ public class FallRockTest {
 
         enemy.fallRockAttackEasy(enemy, commandList);
 
+        Ninja ninja = enemy.ninjaList[0];
+        ActionInfo info = enemy.getMaxNinjaEval(ninja);
+
         String expect = NinjaSkill.fallrockEnemy(4, 1);
-        assertThat(commandList.spell, is(""));
+        assertThat(commandList.spell, is(expect));
     }
 
     @Test

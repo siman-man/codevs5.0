@@ -350,7 +350,7 @@ public class PlayerInfoTest {
         Ninja ninjaA = my.ninjaList[0];
         Ninja ninjaB = my.ninjaList[1];
 
-        my.updateDogTarget(false);
+        my.updateDogTarget(false, false);
 
         Dog dog0 = my.dogList.get(0);
         Dog dog9 = my.dogList.get(9);
@@ -364,7 +364,7 @@ public class PlayerInfoTest {
         my.summonsAvator = true;
         my.avatorId = Utility.getId(1, 1);
 
-        my.updateDogTarget(false);
+        my.updateDogTarget(false, my.summonsAvator);
         assertThat(dog0.targetId, is(my.avatorId));
         assertThat(dog0.targetDist, is(7));
         assertThat(dog9.targetId, is(my.avatorId));
@@ -381,7 +381,7 @@ public class PlayerInfoTest {
         my.summonsAvator = true;
         my.avatorId = Utility.getId(1, 1);
 
-        my.updateDogPosition(false);
+        my.updateDogPosition(false, my.summonsAvator);
 
         Dog dog0 = my.dogList.get(0);
         assertThat(dog0.y, is(2));

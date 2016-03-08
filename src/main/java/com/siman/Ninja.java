@@ -7,9 +7,6 @@ public class Ninja {
 
     // 通常時
     public static String[] NORMAL_MOVE_PATTERN = {
-            // 0マス
-            "N",
-
             // 1マス移動
             "U",
             "R",
@@ -40,9 +37,6 @@ public class Ninja {
 
     // 超高速使用時
     public static String[] SUPER_MOVE_PATTERN = {
-            // 0マス
-            "N",
-
             // 1マス移動
             "U",
             "R",
@@ -172,6 +166,9 @@ public class Ninja {
      */
     public int x;
 
+    public int firstY;
+    public int firstX;
+
     /**
      * 保存したy座標
      */
@@ -217,6 +214,16 @@ public class Ninja {
      */
     public int getNID() {
         return (Field.WIDTH * this.y) + this.x;
+    }
+
+    public void saveFirst() {
+        this.firstY = this.y;
+        this.firstX = this.x;
+    }
+
+    public void rollbackFirst() {
+        this.y = this.firstY;
+        this.x = this.firstX;
     }
 
     /**
