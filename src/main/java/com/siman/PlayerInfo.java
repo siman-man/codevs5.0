@@ -136,6 +136,12 @@ public class PlayerInfo {
         int avatorCost = Codevs.skillCost[NinjaSkill.MY_AVATAR] + 2;
         int rockCost = Codevs.skillCost[NinjaSkill.ENEMY_ROCKFALL];
 
+        summonEnemyAvator(enemy, commandList);
+
+        if (commandList.useSkill) {
+            return;
+        }
+
         if (minAliveCnt > 8 && this.soulPower >= rockCost) {
             fallRockAttack(enemy, commandList);
 
@@ -155,7 +161,9 @@ public class PlayerInfo {
         }
 
         if (minAliveCnt <= 8 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
-            summonAvator(commandList);
+            summonMyAvator(commandList);
+        } else if (this.soulPower >= Codevs.skillCost[NinjaSkill.ENEMY_AVATAR]) {
+            summonEnemyAvator(enemy, commandList);
         } else if (this.soulPower >= 35 && Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK] <= 4 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK]) {
             breakFixStone(commandList);
         } else if (false && Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 2 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
@@ -168,7 +176,39 @@ public class PlayerInfo {
         }
     }
 
-    public void summonAvator(CommandList commandList) {
+    public void cleanStone(Ninja ninja, String commands, CommandList commandList) {
+        String newCommand = "N" + commands;
+        boolean isBreak = false;
+
+        for (char command : newCommand.toCharArray()) {
+            int direct = Direction.toInteger(command);
+
+            int ny = ninja.y + DY[direct];
+            int nx = ninja.x + DX[direct];
+            Cell cell = this.field[ny][nx];
+
+            if (cell.dogDist <= 1) {
+                isBreak = true;
+            }
+        }
+
+        if (!isBreak) return;
+
+        for (char command : commands.toCharArray()) {
+            int direct = Direction.toInteger(command);
+
+            int ny = ninja.y + DY[direct];
+            int nx = ninja.x + DX[direct];
+            Cell cell = this.field[ny][nx];
+
+            if (Field.existStone(cell.state)) {
+                commandList.useSkill = true;
+                commandList.spell = NinjaSkill.breakMyStone(cell.y, cell.x);
+            }
+        }
+    }
+
+    public void summonMyAvator(CommandList commandList) {
         int maxDist = Integer.MIN_VALUE;
         int maxY = -1;
         int maxX = -1;
@@ -212,10 +252,24 @@ public class PlayerInfo {
         }
     }
 
+    public void summonEnemyAvator(PlayerInfo enemy, CommandList commandList) {
+
+        for (Ninja ninja : enemy.ninjaList) {
+            ActionInfo bestAction = enemy.getMaxNinjaEval(ninja);
+
+            if (bestAction.commandList != "N") {
+                continue;
+            } else {
+                commandList.useSkill = true;
+                commandList.spell = NinjaSkill.summonEnemyAvator(ninja.y, ninja.x);
+            }
+        }
+    }
+
     /**
      * 忍者の行動を決める
      */
-    public ActionInfo[] action() {
+    public ActionInfo[] action(PlayerInfo enemy, CommandList commandList) {
         String[] movePattern = (this.highSpeedMode) ? Ninja.SUPER_MOVE_PATTERN : Ninja.NORMAL_MOVE_PATTERN;
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
@@ -242,15 +296,21 @@ public class PlayerInfo {
 
         this.BAction = false;
 
+        ActionInfo[] result = new ActionInfo[]{bestActionA, bestActionB};
 
-        return new ActionInfo[]{bestActionA, bestActionB};
+        if (enemy.soulPower >= Codevs.skillCost[NinjaSkill.ENEMY_ROCKFALL]) {
+            cleanStone(ninjaA, bestActionA.commandList, commandList);
+            cleanStone(ninjaB, bestActionB.commandList, commandList);
+        }
+
+        return result;
     }
 
     public ActionInfo getBestAction(Ninja ninja) {
         ActionInfo bestAction = new ActionInfo();
         int maxEval = Integer.MIN_VALUE;
-        int beamWidth = 100;
-        int limitDepth = 4;
+        int beamWidth = 300;
+        int limitDepth = 3;
 
         PriorityQueue<Node> pque = new PriorityQueue<Node>(beamWidth * 21, new NodeComparator());
         Node root = new Node();
@@ -345,7 +405,7 @@ public class PlayerInfo {
     }
 
     public ActionInfo getMaxNinjaEval(Ninja ninja) {
-        int maxEval = Integer.MIN_VALUE;
+        int maxEval = -DEATH / 3;
         ActionInfo bestAction = new ActionInfo();
         tempSaveField();
         tempSaveNinja();
@@ -356,6 +416,8 @@ public class PlayerInfo {
 
             if (info.isValid()) {
                 updateDogPosition(info.moveStone, this.summonsAvator);
+                clearDogValue();
+                updateDogValue();
 
                 info.positionValue = calcPositionEval(ninja);
                 int eval = info.toEval();
@@ -1160,6 +1222,7 @@ public class PlayerInfo {
             // 相手の忍者がいま選択できる一番良い行動を調べる
             ActionInfo baseAction = enemy.getMaxNinjaEval(ninja);
 
+            if (baseAction.commandList == "N") continue;
             int basicEval = baseAction.toEval();
 
             for (int y = -3; y <= 3; y++) {
@@ -1207,6 +1270,10 @@ public class PlayerInfo {
         for (Ninja ninja : enemy.ninjaList) {
             ActionInfo bestAction = enemy.getMaxNinjaEval(ninja);
 
+            if (bestAction.toEval() <= 300) {
+                continue;
+            }
+
             for (int y = -3; y <= 3; y++) {
                 for (int x = -3; x <= 3; x++) {
                     int ny = ninja.y + y;
@@ -1223,6 +1290,8 @@ public class PlayerInfo {
                         ActionInfo info = enemy.moveAction(ninja, bestAction.commandList);
 
                         enemy.updateDogPosition(info.moveStone, false);
+                        enemy.clearDogValue();
+                        enemy.updateDogValue();
 
                         info.positionValue = enemy.calcPositionEval(ninja);
                         int eval = info.toEval() - bestAction.toEval();

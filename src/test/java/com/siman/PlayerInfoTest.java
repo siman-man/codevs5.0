@@ -178,8 +178,9 @@ public class PlayerInfoTest {
         CommandList commandList = new CommandList();
         codevs.beforeProc(commandList);
         PlayerInfo my = codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = codevs.playerInfoList[Codevs.ENEMY_ID];
 
-        my.action();
+        my.action(enemy, commandList);
     }
 
     @Test

@@ -51,6 +51,7 @@ public class DogTest {
         Scanner sc = new Scanner(file);
         this.codevs.readTurnInfo(sc);
         PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
@@ -58,7 +59,7 @@ public class DogTest {
         my.avatorId = aid;
         my.summonsAvator = true;
 
-        ActionInfo[] actions = my.action();
+        ActionInfo[] actions = my.action(enemy, commandList);
         assertTrue(Field.existDog(my.field[3][4].state));
         //assertThat(my.field[4][4].dangerValue, is(PlayerInfo.DETH));
     }

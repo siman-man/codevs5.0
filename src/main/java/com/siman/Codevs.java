@@ -249,9 +249,10 @@ public class Codevs {
     /**
      * アクション
      */
-    public ActionInfo[] action() {
+    public ActionInfo[] action(CommandList commandList) {
         PlayerInfo my = this.playerInfoList[MY_ID];
-        ActionInfo[] actions = my.action();
+        PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
+        ActionInfo[] actions = my.action(enemy, commandList);
 
         return actions;
     }

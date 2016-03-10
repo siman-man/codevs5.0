@@ -147,7 +147,7 @@ public class CodevsTest {
         codevs.readTurnInfo(sc);
 
         this.codevs.beforeProc(commandList);
-        commandList.actions = this.codevs.action();
+        commandList.actions = this.codevs.action(commandList);
         this.codevs.output(commandList);
     }
 }

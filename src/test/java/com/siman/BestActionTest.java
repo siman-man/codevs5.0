@@ -28,10 +28,11 @@ public class BestActionTest {
         Scanner sc = new Scanner(file);
         this.codevs.readTurnInfo(sc);
         PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        ActionInfo[] bestAction = my.action();
+        ActionInfo[] bestAction = my.action(enemy, commandList);
         ActionInfo actionB = bestAction[1];
 
         assertThat(actionB.commandList, is("LL"));
@@ -43,10 +44,11 @@ public class BestActionTest {
         Scanner sc = new Scanner(file);
         this.codevs.readTurnInfo(sc);
         PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        ActionInfo[] bestAction = my.action();
+        ActionInfo[] bestAction = my.action(enemy, commandList);
         ActionInfo actionB = bestAction[1];
 
         assertTrue(Field.existDog(my.field[10][2].state));
@@ -59,10 +61,11 @@ public class BestActionTest {
         Scanner sc = new Scanner(file);
         this.codevs.readTurnInfo(sc);
         PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        ActionInfo[] bestAction = my.action();
+        ActionInfo[] bestAction = my.action(enemy, commandList);
         ActionInfo actionB = bestAction[1];
 
         System.err.println(actionB);
@@ -76,10 +79,11 @@ public class BestActionTest {
         Scanner sc = new Scanner(file);
         this.codevs.readTurnInfo(sc);
         PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        ActionInfo[] bestAction = my.action();
+        ActionInfo[] bestAction = my.action(enemy, commandList);
         ActionInfo actionB = bestAction[0];
 
         assertThat(actionB.commandList, is("RD"));
@@ -91,10 +95,11 @@ public class BestActionTest {
         Scanner sc = new Scanner(file);
         this.codevs.readTurnInfo(sc);
         PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.MY_ID];
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        ActionInfo[] bestAction = my.action();
+        ActionInfo[] bestAction = my.action(enemy, commandList);
         ActionInfo actionA = bestAction[0];
 
         assertThat(actionA.commandList, is("RR"));
@@ -106,11 +111,28 @@ public class BestActionTest {
         Scanner sc = new Scanner(file);
         this.codevs.readTurnInfo(sc);
         PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.MY_ID];
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        ActionInfo[] bestActions = my.action();
+        ActionInfo[] bestActions = my.action(enemy, commandList);
 
         int aliveCnt = my.getAliveCellCount(7, 6);
+    }
+
+    @Test
+    public void case7() throws Exception {
+        File file = new File("src/test/resources/action/sample7.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        ActionInfo[] bestActions = my.action(enemy, commandList);
+        Ninja ninja = my.ninjaList[1];
+
+        assertThat(commandList.spell, is(NinjaSkill.breakMyStone(13, 1)));
     }
 }

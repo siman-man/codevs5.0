@@ -25,6 +25,7 @@ public class EvalTest {
         Scanner sc = new Scanner(file);
         this.codevs.readTurnInfo(sc);
         PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
@@ -32,7 +33,7 @@ public class EvalTest {
         NinjaSoul soul3 = my.soulList.get(3);
         assertThat(ninjaA.targetId, is(soul3.sid));
 
-        ActionInfo[] actions = my.action();
+        ActionInfo[] actions = my.action(enemy, commandList);
 
         assertThat(ninjaA.targetId, is(soul3.sid));
         int id2_2 = Utility.getId(2, 2);

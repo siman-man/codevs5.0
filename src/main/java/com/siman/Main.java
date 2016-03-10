@@ -17,7 +17,7 @@ public class Main {
                 CommandList commandList = new CommandList();
                 codevs.readTurnInfo(sc);
                 codevs.beforeProc(commandList);
-                commandList.actions = codevs.action();
+                commandList.actions = codevs.action(commandList);
                 codevs.output(commandList);
             }
         }

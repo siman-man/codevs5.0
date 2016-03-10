@@ -20,4 +20,12 @@ public class NinjaSkill {
     public static String summonMyAvator(int y, int x) {
         return String.format("%d %d %d", MY_AVATAR, y, x);
     }
+
+    public static String summonEnemyAvator(int y, int x) {
+        return String.format("%d %d %d", ENEMY_AVATAR, y, x);
+    }
+
+    public static String breakMyStone(int y, int x) {
+        return String.format("%d %d %d", MY_LIGHTNING_ATTACK, y, x);
+    }
 }
