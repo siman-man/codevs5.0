@@ -10,6 +10,7 @@ import java.util.List;
 public class Node {
     public int eval;
     public int field;
+    ActionInfo info;
     List<String> actionHistory;
 
     public Node() {
@@ -21,6 +22,6 @@ public class Node {
 class NodeComparator implements Comparator<Node> {
     @Override
     public int compare(Node nodeA, Node nodeB) {
-        return nodeA.eval - nodeB.eval;
+        return nodeB.info.toEval() - nodeA.info.toEval();
     }
 }

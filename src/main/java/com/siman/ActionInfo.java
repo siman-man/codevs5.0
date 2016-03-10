@@ -41,7 +41,7 @@ public class ActionInfo {
 
         eval += 500 * this.getSoulCount;
         eval += positionValue;
-        eval -= 10 * this.targetDist;
+        eval -= 30 * this.targetDist;
         eval -= (this.notMoveNextCell)? 50 : 0;
 
         return eval;
@@ -50,7 +50,13 @@ public class ActionInfo {
     public String toString() {
         int targetY = this.targetId / Field.WIDTH;
         int targetX = this.targetId % Field.WIDTH;
-        return String.format("y = %d, x = %d, eval = %d, com = %s, target = (%d,%d), dist = %d", this.ninjaY, this.ninjaX,
+        return String.format("soul = %d, y = %d, x = %d, eval = %d, com = %s, target = (%d,%d), dist = %d",
+                this.getSoulCount, this.ninjaY, this.ninjaX,
                 toEval(), this.commandList, targetY, targetX, this.targetDist);
+    }
+
+    public void sum(ActionInfo info) {
+        this.getSoulCount += info.getSoulCount;
+        this.notMoveNextCell |= info.notMoveNextCell;
     }
 }

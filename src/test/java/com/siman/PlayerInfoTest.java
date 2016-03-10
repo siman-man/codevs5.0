@@ -332,8 +332,6 @@ public class PlayerInfoTest {
         Utility.readPlayerInfo(my, "src/test/resources/fields/dog.in");
         CommandList commandList = new CommandList();
 
-        assertThat(my.field[13][2].dangerValue, is(0));
-
         codevs.beforeProc(commandList);
 
         // TODO : 評価前に出すのではなくて評価時に出すようにする

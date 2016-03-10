@@ -50,7 +50,7 @@ public class BestActionTest {
         ActionInfo actionB = bestAction[1];
 
         assertTrue(Field.existDog(my.field[10][2].state));
-        assertThat(actionB.commandList, is("DD"));
+        assertThat(actionB.commandList, is("DR"));
     }
 
     @Test
@@ -65,7 +65,9 @@ public class BestActionTest {
         ActionInfo[] bestAction = my.action();
         ActionInfo actionB = bestAction[1];
 
-        assertThat(actionB.commandList, is("RR"));
+        System.err.println(actionB);
+
+        assertThat(actionB.commandList, is("UU"));
     }
 
     @Test
@@ -95,7 +97,7 @@ public class BestActionTest {
         ActionInfo[] bestAction = my.action();
         ActionInfo actionA = bestAction[0];
 
-        assertThat(actionA.commandList, is("RD"));
+        assertThat(actionA.commandList, is("RR"));
     }
 
     @Test
@@ -107,10 +109,7 @@ public class BestActionTest {
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-
         ActionInfo[] bestActions = my.action();
-
-        System.err.println(bestActions[1]);
 
         int aliveCnt = my.getAliveCellCount(7, 6);
     }

@@ -24,26 +24,11 @@ public class Cell {
      */
     public int state;
 
-    public int saveDangerValue;
-
-    /**
-     * 危険度合い
-     */
-    public int dangerValue;
-
-    /**
-     *
-     */
-    public int tempDangerValue;
-
     /**
      * 忍犬の密集度合い
      */
     public int dogValue;
 
-    /**
-     *
-     */
     public int saveDogValue;
 
     /**
@@ -51,6 +36,9 @@ public class Cell {
      */
     public int dogDist;
 
+    /**
+     * ニンジャソウルの密集度
+     */
     public int soulValue;
 
     public Cell(int id) {
@@ -64,27 +52,23 @@ public class Cell {
      */
     public void clear() {
         this.state = 0;
-        this.dangerValue = 0;
         this.dogDist = PlayerInfo.INF;
         this.dogValue = 0;
         this.soulValue = 0;
-        this.saveDangerValue = 0;
     }
 
     public void rollback() {
-        this.dangerValue = this.saveDangerValue;
+        this.dogValue = this.saveDogValue;
     }
 
     public void save() {
-        this.saveDangerValue = this.dangerValue;
+        this.saveDogValue = this.dogValue;
     }
 
     public void tempSave() {
-        this.tempDangerValue = this.dangerValue;
     }
 
     public void tempRollback() {
-        this.dangerValue = this.tempDangerValue;
     }
 
     /**
