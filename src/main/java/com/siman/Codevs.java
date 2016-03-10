@@ -223,18 +223,20 @@ public class Codevs {
         my.updateStoneStatus();
         my.updateDogValue();
         my.updateEachCellDist();
-        my.updateSoulPower();
+        my.updateSoulValue();
         my.saveDogStatus();
         my.setTargetSoulId();
         my.saveNinjaStatus();
         my.saveField();
+        my.saveSoulStatus();
 
         PlayerInfo enemy = this.playerInfoList[ENEMY_ID];
         enemy.clean();
         enemy.updateStoneStatus();
         enemy.updateDogValue();
         enemy.updateEachCellDist();
-        enemy.updateSoulPower();
+        enemy.updateSoulValue();
+        enemy.saveSoulStatus();
 
         enemy.setTargetSoulId();
         enemy.saveNinjaStatus();

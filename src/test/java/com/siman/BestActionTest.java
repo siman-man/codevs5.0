@@ -97,4 +97,21 @@ public class BestActionTest {
 
         assertThat(actionA.commandList, is("RD"));
     }
+
+    @Test
+    public void case6() throws Exception {
+        File file = new File("src/test/resources/action/sample6.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+
+        ActionInfo[] bestActions = my.action();
+
+        System.err.println(bestActions[1]);
+
+        int aliveCnt = my.getAliveCellCount(7, 6);
+    }
 }

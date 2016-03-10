@@ -104,17 +104,19 @@ public class PlayerInfo {
         this.tempSavedField = new int[Field.HEIGHT][Field.WIDTH];
     }
 
+    public boolean BAction;
+    public boolean AAction;
+
     /**
      * 自身の情報をクリアする
      */
     public void clean() {
-        this.isAction = false;
+        this.AAction = false;
+        this.BAction = false;
         this.highSpeedMode = false;
         this.summonsAvator = false;
         this.avatorId = -1;
     }
-
-    public boolean isAction;
 
     /**
      * 忍術を使用する
@@ -127,10 +129,14 @@ public class PlayerInfo {
         int dogCntB = getAroundDogCount(ninjaB.y, ninjaB.x);
         int minDogCnt = Math.max(dogCntA, dogCntB);
 
+        int aliveA = getAliveCellCount(ninjaA.y, ninjaA.x);
+        int aliveB = getAliveCellCount(ninjaB.y, ninjaB.x);
+        int minAliveCnt = Math.min(aliveA, aliveB);
+
         int avatorCost = Codevs.skillCost[NinjaSkill.MY_AVATAR] + 2;
         int rockCost = Codevs.skillCost[NinjaSkill.ENEMY_ROCKFALL];
 
-        if (this.soulPower >= rockCost) {
+        if (minAliveCnt > 8 && this.soulPower >= rockCost) {
             fallRockAttack(enemy, commandList);
 
             if (commandList.eval >= 300000) {
@@ -138,21 +144,21 @@ public class PlayerInfo {
                 return;
             }
 
-            if ((rockCost <= 4 && this.soulPower >= 15) || this.soulPower >= 30) {
+            if ((rockCost <= 5 && this.soulPower >= 15) || this.soulPower >= 20) {
                 fallRockAttackEasy(enemy, commandList);
 
-                if (commandList.eval >= 100000) {
+                if (commandList.eval >= 300000) {
                     commandList.useSkill = true;
                     return;
                 }
             }
         }
 
-        if (minDogCnt >= avatorCost && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
+        if (minAliveCnt <= 8 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_AVATAR]) {
             summonAvator(commandList);
         } else if (this.soulPower >= 35 && Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK] <= 4 && this.soulPower >= Codevs.skillCost[NinjaSkill.MY_LIGHTNING_ATTACK]) {
             breakFixStone(commandList);
-        } else if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 2 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
+        } else if (false && Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] <= 2 && this.soulPower >= Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED]) {
             if (Codevs.skillCost[NinjaSkill.SUPER_HIGH_SPEED] == 2 && this.soulPower <= 30) {
                 return;
             }
@@ -183,7 +189,8 @@ public class PlayerInfo {
                 if (distA == INF || distB == INF) continue;
                 int distC = getAllDogDist(y, x);
                 int distD = getAllSoulDist(y, x);
-                int eval = distA + distB + distD - cell.soulValue;
+                int eval = distA + distB;
+                //int eval = distA + distB + distD - cell.soulValue;
 
                 if (maxDist < eval) {
                     maxDist = eval;
@@ -213,108 +220,123 @@ public class PlayerInfo {
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
 
-        int maxEvalA = -DETH / 2;
-        int maxEvalB = -DETH / 2;
-        ActionInfo bestActionA = new ActionInfo();
-        ActionInfo bestActionB = new ActionInfo();
+        this.AAction = true;
 
-        this.isAction = true;
+        ActionInfo bestActionA = getBestAction(ninjaA);
 
-        for (String firstAction : movePattern) {
-            ActionInfo firstInfo = moveAction(ninjaA, firstAction);
-            updateDogPosition(firstInfo.moveStone, this.summonsAvator);
-            updateDangerValue(this.summonsAvator);
+        this.AAction = false;
 
-            firstInfo.positionValue = calcPositionEval(ninjaA);
-            int firstEval = 3 * firstInfo.toEval();
+        moveAction(ninjaA, bestActionA.commandList);
+        updateEachCellDist();
+        saveField();
+        saveNinjaStatus();
+        setTargetSoulId();
+        saveSoulStatus();
 
-            if (!firstInfo.isValid() || firstEval < -DETH) {
-                rollbackField();
-                rollbackNinja();
-                rollbackDogStatus();
-                continue;
-            } else {
-                saveDogFirst();
-            }
+        this.BAction = true;
 
-            for (String secondAction : Ninja.NORMAL_MOVE_PATTERN) {
-                ActionInfo secondInfo = moveAction(ninjaA, secondAction);
+        ActionInfo bestActionB = getBestAction(ninjaB);
 
-                if (secondInfo.isValid()) {
-                    updateDogPosition(secondInfo.moveStone, false);
-                    updateDangerValue(false);
-                    secondInfo.positionValue = calcPositionEval(ninjaA);
-                    int eval = firstEval + 2 * secondInfo.toEval();
-                    ActionInfo nextAction = getMaxNinjaEval(ninjaA);
-                    eval += nextAction.toEval();
+        this.BAction = false;
 
-                    if (maxEvalA < eval) {
-                        maxEvalA = eval;
-                        bestActionA = firstInfo;
-                    }
-                }
-
-                rollbackField();
-                rollbackNinja();
-                rollbackDogFirst();
-                moveAction(ninjaA, firstInfo.commandList);
-            }
-
-            rollbackField();
-            rollbackNinja();
-            rollbackDogStatus();
-        }
-
-        this.isAction = false;
-
-        for (String firstAction : movePattern) {
-            moveAction(ninjaA, bestActionA.commandList);
-
-            ActionInfo firstInfo = moveAction(ninjaB, firstAction);
-            updateDogPosition(firstInfo.moveStone, this.summonsAvator);
-            updateDangerValue(this.summonsAvator);
-
-            firstInfo.positionValue = calcPositionEval(ninjaB);
-            int firstEval = 3 * firstInfo.toEval();
-
-            if (!firstInfo.isValid() || firstEval < -DETH) {
-                rollbackField();
-                rollbackNinja();
-                rollbackDogStatus();
-                continue;
-            } else {
-                saveDogFirst();
-            }
-
-            for (String secondAction : Ninja.NORMAL_MOVE_PATTERN) {
-                ActionInfo secondInfo = moveAction(ninjaB, secondAction);
-
-                if (secondInfo.isValid()) {
-                    updateDogPosition(secondInfo.moveStone, false);
-                    updateDangerValue(false);
-                    secondInfo.positionValue = calcPositionEval(ninjaB);
-                    int eval = firstEval + 2 * secondInfo.toEval();
-                    ActionInfo nextAction = getMaxNinjaEval(ninjaB);
-                    eval += nextAction.toEval();
-
-                    if (maxEvalB < eval) {
-                        maxEvalB = eval;
-                        bestActionB = firstInfo;
-                    }
-                }
-
-                rollbackField();
-                rollbackNinja();
-                rollbackDogFirst();
-                moveAction(ninjaB, firstInfo.commandList);
-            }
-
-            rollbackField();
-            rollbackNinja();
-            rollbackDogStatus();
-        }
 
         return new ActionInfo[]{bestActionA, bestActionB};
+    }
+
+    public ActionInfo getBestAction(Ninja ninja) {
+        ActionInfo bestAction = new ActionInfo();
+        int maxEval = Integer.MIN_VALUE;
+        int beamWidth = 800;
+
+        PriorityQueue<Node> pque = new PriorityQueue<Node>(beamWidth * 21, new NodeComparator());
+        Node root = new Node();
+        pque.add(root);
+
+        for(int depth = 0; depth < 3; depth++) {
+            Queue<Node> que = new ArrayDeque<>();
+
+            while (!pque.isEmpty()) {
+                Node node = pque.poll();
+
+                for (String action : Ninja.NORMAL_MOVE_PATTERN) {
+                    updateField(ninja, node.actionHistory);
+                    ActionInfo info = moveAction(ninja, action);
+
+                    if (info.isValid() && info.toEval() > -DETH/2) {
+                        Node nextNode = new Node();
+
+                        if (depth == 0) {
+                            updateDogPosition(info.moveStone, this.summonsAvator);
+                            updateDangerValue(this.summonsAvator);
+                        } else {
+                            updateDogPosition(info.moveStone, false);
+                            updateDangerValue(false);
+                        }
+
+                        info.positionValue = calcPositionEval(ninja);
+
+                        if (depth == 0) {
+                            nextNode.eval = node.eval + 3 * info.toEval();
+                        } else if (depth == 1) {
+                            nextNode.eval = node.eval + 2 * info.toEval();
+                        } else {
+                            nextNode.eval = node.eval + info.toEval();
+                        }
+                        nextNode.actionHistory = new ArrayList(node.actionHistory);
+                        nextNode.actionHistory.add(action);
+
+                        if (maxEval < nextNode.eval) {
+                            maxEval = nextNode.eval;
+                            bestAction = info;
+
+                            if (depth == 0) {
+                                bestAction.commandList = action;
+                            } else {
+                                bestAction.commandList = node.actionHistory.get(0);
+                            }
+                        }
+
+                        if (nextNode.eval > -DETH/2) {
+                            que.add(nextNode);
+                        }
+                    }
+
+                    rollbackField();
+                    rollbackNinja();
+                    rollbackDogStatus();
+                }
+            }
+
+            int count = 0;
+
+            while (!que.isEmpty()) {
+                Node candidate = que.poll();
+
+                if (count < beamWidth) {
+                    pque.add(candidate);
+                }
+
+                count++;
+            }
+        }
+
+        return bestAction;
+    }
+
+    public void updateField(Ninja ninja, List<String> actionList) {
+        int depth = 0;
+
+        for(String action : actionList) {
+            ActionInfo info = moveAction(ninja, action);
+
+            if (depth == 0) {
+                updateDogPosition(info.moveStone, this.summonsAvator);
+            } else {
+                updateDogPosition(info.moveStone, false);
+            }
+
+            depth++;
+        }
     }
 
     public ActionInfo getMaxNinjaEval(Ninja ninja) {
@@ -371,16 +393,18 @@ public class PlayerInfo {
         for (NinjaSoul soulA : this.soulList) {
             Cell cellA = this.field[soulA.y][soulA.x];
             int distA = this.eachCellDistDogBlock[nidA][soulA.sid];
-            if (distA >= 20) continue;
+            if (distA >= 30) continue;
+            if (!soulA.exist) continue;
             if (Field.existDog(cellA.state)) continue;
 
             for (NinjaSoul soulB : this.soulList) {
                 if (soulA.id == soulB.id) continue;
+                if (!soulB.exist) continue;
                 Cell cellB = this.field[soulB.y][soulB.x];
 
-                if (this.eachCellDistDogBlock[cellA.id][cellB.id] <= 3) continue;
+                if (this.eachCellDist[cellA.id][cellB.id] <= 8) continue;
                 int distB = this.eachCellDistDogBlock[nidB][soulB.sid];
-                if (distB >= 20) continue;
+                if (distB >= 30) continue;
                 if (Field.existDog(cellB.state)) continue;
 
                 int totalDist = distA + distB;
@@ -409,8 +433,10 @@ public class PlayerInfo {
 
         for (NinjaSoul soul : this.soulList) {
             if (ninja.targetId == soul.sid) {
+                soul.exist = false;
                 continue;
             }
+            if (!soul.exist) continue;
 
             int dist = this.eachCellDistDogBlock[nid][soul.sid];
             if (minDist > dist) {
@@ -434,9 +460,15 @@ public class PlayerInfo {
         for (Dog dog : this.dogList) {
             int distA = this.eachCellDistNonPush[dog.did][nidA];
             int distB = this.eachCellDistNonPush[dog.did][nidB];
-            int tid = (!this.isAction && distA > distB) ? nidB : nidA;
+            int tid = (distA > distB) ? nidB : nidA;
             int targetDist = Math.min(distA, distB);
 
+            if (this.AAction) {
+                tid = nidA;
+            }
+            if (this.BAction) {
+                tid = nidB;
+            }
             if (summon) {
                 tid = this.avatorId;
                 targetDist = this.eachCellDistNonPush[dog.did][tid];
@@ -449,11 +481,13 @@ public class PlayerInfo {
                     Cell cell = this.field[ny][nx];
 
                     if (Field.existNinja(cell.state)) {
+                        /*
                         if (ny == ninjaA.y && nx == ninjaA.x) {
                             tid = nidA;
                         } else {
                             tid = nidB;
                         }
+                        */
 
                         targetDist = 1;
                     }
@@ -481,8 +515,7 @@ public class PlayerInfo {
         queueX.add(cx);
         queueD.add(0);
 
-        int aliveCellCnt = 0;
-        boolean dogExist = false;
+        int aliveCellCount = 0;
 
         boolean[][] checkList = new boolean[Field.HEIGHT][Field.WIDTH];
         for (int y = 0; y < Field.HEIGHT; y++) {
@@ -495,17 +528,18 @@ public class PlayerInfo {
             int dist = queueD.poll();
             Cell cell = this.field[curY][curX];
 
-
             if (checkList[curY][curX]) continue;
-            if (dist != 0 && dist <= 2 && isExistAroundDog(curY, curX)) {
-                dogExist = true;
+            if (dist/2 >= cell.dogDist) continue;
+            if (Field.existDog(cell.state)) {
                 continue;
             }
-            if (dist > cell.dogDist) continue;
+            if (getAroundStoneCount(curY, curX) == 4) continue;
 
             checkList[curY][curX] = true;
 
-            aliveCellCnt++;
+            if (cell.dogDist > 1) {
+                aliveCellCount++;
+            }
 
             for (int i = 0; i < 4; i++) {
                 int ny = curY + DY[i];
@@ -520,14 +554,16 @@ public class PlayerInfo {
             }
         }
 
-        return (dogExist) ? aliveCellCnt : INF;
+        return aliveCellCount;
     }
 
     public boolean isExistAroundDog(int y, int x) {
         for (int i = 0; i < 4; i++) {
             int ny = y + DY[i];
             int nx = x + DX[i];
+            if (isOutside(ny, nx)) continue;
             Cell cell = this.field[ny][nx];
+
 
             if (Field.existDog(cell.state)) {
                 return true;
@@ -606,9 +642,6 @@ public class PlayerInfo {
             if (Field.existSolidObject(cell.state)) {
                 stoneCnt++;
             }
-            if (Field.existStone(cell.state)) {
-                stoneCnt += 2;
-            }
         }
 
         return stoneCnt;
@@ -676,6 +709,23 @@ public class PlayerInfo {
 
         while (!pque.isEmpty()) {
             Dog dog = pque.poll();
+
+            if (moveStone) {
+                for (int i = 0; i < 4; i++) {
+                    int ny = dog.y + DOGY[i];
+                    int nx = dog.x + DOGX[i];
+                    Cell cell = this.field[ny][nx];
+
+                    if (Field.existNinja(cell.state)) {
+                        this.field[dog.y][dog.x].state &= Field.DELETE_DOG;
+                        dog.y = ny;
+                        dog.x = nx;
+                        this.field[dog.y][dog.x].state |= Field.DOG;
+                        break;
+                    }
+                }
+                continue;
+            }
 
             for (int i = 0; i < 4; i++) {
                 int ny = dog.y + DOGY[i];
@@ -804,49 +854,22 @@ public class PlayerInfo {
         Cell cell = this.field[ninja.y][ninja.x];
         int eval = 0;
         eval -= cell.dangerValue;
-        eval -= cell.dogValue;
+        eval -= cell.dogValue/2;
 
         if (Field.existDog(cell.state)) {
             eval -= DETH;
         }
-        if (getAroundFloorCount(ninja.y, ninja.x) == 0) {
-            eval -= 100;
-        }
 
         int aliveCellCount = getAliveCellCount(ninja.y, ninja.x);
-        int stoneCount = 0;
-        int dogCount = 0;
 
-        for (int i = 0; i < 4; i++) {
-            int ny = cell.y + DY[i];
-            int nx = cell.x + DX[i];
-
-            Cell ncell = this.field[ny][nx];
-
-            if (Field.existDog(ncell.state)) {
-                dogCount++;
-            }
-            if (Field.existStone(ncell.state)) {
-                stoneCount++;
-            }
-        }
-
-        if (dogCount >= 2) {
-            eval -= 30;
-        }
-        if (stoneCount >= 3) {
-            eval -= 10;
-        }
         if (aliveCellCount <= 2) {
             eval -= (400000 - aliveCellCount);
         } else if (aliveCellCount <= 4) {
             eval -= (200000 - aliveCellCount);
         } else if (aliveCellCount <= 10) {
             eval -= (1000 - aliveCellCount);
-        } else if (aliveCellCount <= 15) {
-            eval -= (100 - aliveCellCount);
         } else {
-            //eval += aliveCellCount;
+            eval += aliveCellCount/20;
         }
 
         return eval;
@@ -997,14 +1020,14 @@ public class PlayerInfo {
                 int dist = queueD.poll();
                 Cell cell = this.field[curY][curX];
 
-                if (dist > 4) continue;
+                if (dist > 10) continue;
                 if (checkList[curY][curX]) continue;
                 checkList[curY][curX] = true;
-                cell.dogValue = Math.max(cell.dogValue, 5 - dist);
+                cell.dogValue += 10 - dist;
                 cell.dogDist = Math.min(cell.dogDist, dist);
 
                 if (dist <= 2) {
-                    cell.dogValue = Math.max(cell.dogValue, 5 * (3 - dist));
+                    cell.dogValue += 5 * (3 - dist);
                 }
 
                 for (int i = 0; i < 4; i++) {
@@ -1016,6 +1039,9 @@ public class PlayerInfo {
                         queueY.add(ny);
                         queueX.add(nx);
                         queueD.add(dist + 1);
+                    } else if (dist == 0) {
+                        ncell.dogValue += 10;
+                        ncell.dogDist = 1;
                     }
                 }
             }
@@ -1047,15 +1073,15 @@ public class PlayerInfo {
     /**
      *
      */
-    public void updateSoulPower() {
+    public void updateSoulValue() {
         for (NinjaSoul soul : this.soulList) {
             for (int y = 1; y < Field.HEIGHT; y++) {
                 for (int x = 1; x < Field.WIDTH; x++) {
                     Cell cell = this.field[y][x];
-                    int dist = this.eachCellDistDogBlock[soul.sid][cell.id];
+                    int dist = this.eachCellDist[cell.id][soul.sid];
 
-                    if (dist <= 9) {
-                        cell.soulValue += 10 - dist;
+                    if (dist <= 15) {
+                        cell.soulValue += 15 - dist;
                     }
                 }
             }
@@ -1228,7 +1254,7 @@ public class PlayerInfo {
             }
         }
 
-        if (minY != -1 && minEval < -100000) {
+        if (minY != -1 && minEval < -300000) {
             commandList.spell = NinjaSkill.fallrockEnemy(minY, minX);
             commandList.eval = -minEval;
         }
@@ -1312,6 +1338,18 @@ public class PlayerInfo {
     public void rollbackDogStatus() {
         for (Dog dog : this.dogList) {
             dog.rollback();
+        }
+    }
+
+    public void saveSoulStatus() {
+        for (NinjaSoul soul : this.soulList) {
+            soul.saveStatus();
+        }
+    }
+
+    public void rollbackSoulStatus() {
+        for (NinjaSoul soul : this.soulList) {
+            soul.rollback();
         }
     }
 

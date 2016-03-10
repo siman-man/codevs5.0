@@ -1,6 +1,8 @@
 package main.java.com.siman;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by siman on 3/8/16.
@@ -8,9 +10,11 @@ import java.util.Comparator;
 public class Node {
     public int eval;
     public int field;
+    List<String> actionHistory;
 
     public Node() {
         this.eval = 0;
+        actionHistory = new ArrayList<String>();
     }
 }
 

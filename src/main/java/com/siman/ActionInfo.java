@@ -39,11 +39,10 @@ public class ActionInfo {
     public int toEval() {
         int eval = 0;
 
-        eval += 5000 * this.getSoulCount;
+        eval += 500 * this.getSoulCount;
         eval += positionValue;
         eval -= 10 * this.targetDist;
         eval -= (this.notMoveNextCell)? 50 : 0;
-        eval -= (this.moveStone)? 5 : 0;
 
         return eval;
     }
