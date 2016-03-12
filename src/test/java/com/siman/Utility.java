@@ -120,12 +120,18 @@ public class Utility {
 
                 if (Field.isWall(cell.state)) {
                     System.err.print('W');
-                } else if (Field.isFloor(cell.state)) {
-                    System.err.print('_');
                 }else if (Field.existNinja(cell.state)) {
                     System.err.print('N');
                 } else if (Field.existStone(cell.state)) {
                     System.err.print('O');
+                } else if (Field.existDog(cell.state)) {
+                    System.err.print('D');
+                } else if (Field.existSoul(cell.state)) {
+                    System.err.print('S');
+                } else if (Field.isFloor(cell.state)) {
+                    System.err.print('_');
+                } else {
+                    System.err.print('_');
                 }
             }
             System.err.println("");

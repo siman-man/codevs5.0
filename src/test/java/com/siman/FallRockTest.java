@@ -41,7 +41,7 @@ public class FallRockTest {
         assertThat(bestAction.commandList, is("UR"));
         assertThat(ninjaA.targetId, is(id1_8));
 
-        enemy.fallRockAttack(enemy, commandList);
+        enemy.fallRockAttackEasy(enemy, commandList);
 
         String expect = NinjaSkill.fallrockEnemy(1, 1);
         assertThat(commandList.spell, is(expect));
@@ -56,7 +56,7 @@ public class FallRockTest {
         CommandList commandList = new CommandList();
         this.codevs.beforeProc(commandList);
 
-        enemy.fallRockAttack(enemy, commandList);
+        enemy.fallRockAttackEasy(enemy, commandList);
 
         String expect = NinjaSkill.fallrockEnemy(12, 4);
         assertThat(commandList.spell, is(expect));
@@ -96,7 +96,7 @@ public class FallRockTest {
         assertFalse(enemy.canMove(5, 9, 2));
         assertFalse(enemy.canMove(5, 9, 3));
 
-        enemy.fallRockAttack(enemy, commandList);
+        enemy.fallRockAttackEasy(enemy, commandList);
 
         String expect = "";
         assertThat(commandList.spell, is(expect));

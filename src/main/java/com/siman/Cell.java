@@ -36,6 +36,8 @@ public class Cell {
      */
     public int dogDist;
 
+    public int saveDogDist;
+
     /**
      * ニンジャソウルの密集度
      */
@@ -59,16 +61,16 @@ public class Cell {
 
     public void rollback() {
         this.dogValue = this.saveDogValue;
+        this.dogDist = this.saveDogDist;
     }
 
     public void save() {
         this.saveDogValue = this.dogValue;
+        this.saveDogDist = this.dogDist;
     }
 
-    public void tempSave() {
-    }
-
-    public void tempRollback() {
+    public String toString() {
+        return String.format("cell y = %d, x = %d", this.y, this.x);
     }
 
     /**

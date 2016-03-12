@@ -93,6 +93,7 @@ public class Codevs {
 
         for (int i = 0; i < PLAYER_NUM; i++) {
             this.playerInfoList[i] = new PlayerInfo();
+            this.playerInfoList[i].playerId = i;
         }
     }
 
@@ -178,6 +179,8 @@ public class Codevs {
                 ninja.nid = Utility.getId(ninjaY, ninjaX);
                 ninja.y = ninjaY;
                 ninja.x = ninjaX;
+                ninja.originY = ninjaY;
+                ninja.originX = ninjaX;
 
                 player.field[ninjaY][ninjaX].state |= (ninjaId == 0) ? Field.NINJA_A : Field.NINJA_B;
             }
@@ -224,8 +227,8 @@ public class Codevs {
         my.updateDogValue();
         my.updateEachCellDist();
         my.updateSoulValue();
+
         my.saveDogStatus();
-        my.setTargetSoulId();
         my.saveNinjaStatus();
         my.saveField();
         my.saveSoulStatus();
@@ -236,9 +239,8 @@ public class Codevs {
         enemy.updateDogValue();
         enemy.updateEachCellDist();
         enemy.updateSoulValue();
-        enemy.saveSoulStatus();
 
-        enemy.setTargetSoulId();
+        enemy.saveSoulStatus();
         enemy.saveNinjaStatus();
         enemy.saveField();
         enemy.saveDogStatus();

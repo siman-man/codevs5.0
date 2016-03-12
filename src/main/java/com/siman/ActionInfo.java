@@ -7,8 +7,9 @@ public class ActionInfo {
     public int ninjaY;
     public int ninjaX;
     public int getSoulCount;
+    public int getSoulCountFirst;
     public int targetId;
-    public int targetDist;
+    public int alivePathCount;
     public int positionValue;
     public boolean valid;
     public boolean moveStone;
@@ -20,12 +21,13 @@ public class ActionInfo {
         this.commandList = "N";
         this.valid = true;
         this.getSoulCount = 0;
+        this.alivePathCount = 0;
+        this.getSoulCountFirst = 0;
         this.notMoveNextCell = false;
         this.moveStone = false;
         this.unreach = false;
         this.positionValue = 0;
         this.targetId = -1;
-        this.targetDist = -1;
     }
 
     public boolean isValid() {
@@ -39,10 +41,10 @@ public class ActionInfo {
     public int toEval() {
         int eval = 0;
 
-        eval += 500 * this.getSoulCount;
-        eval += positionValue;
-        eval -= 30 * this.targetDist;
+        eval += 25000 * this.getSoulCount;
+        eval += this.positionValue;
         eval -= (this.notMoveNextCell)? 50 : 0;
+        eval -= (this.moveStone)? 10 : 0;
 
         return eval;
     }
@@ -50,13 +52,14 @@ public class ActionInfo {
     public String toString() {
         int targetY = this.targetId / Field.WIDTH;
         int targetX = this.targetId % Field.WIDTH;
-        return String.format("soul = %d, y = %d, x = %d, eval = %d, com = %s, target = (%d,%d), dist = %d",
-                this.getSoulCount, this.ninjaY, this.ninjaX,
-                toEval(), this.commandList, targetY, targetX, this.targetDist);
+        return String.format("ap = %d, fs = %d, soul = %d, y = %d, x = %d, eval = %d, com = %s, target = (%d,%d)",
+                this.alivePathCount, this.getSoulCountFirst, this.getSoulCount, this.ninjaY, this.ninjaX,
+                toEval(), this.commandList, targetY, targetX);
     }
 
     public void sum(ActionInfo info) {
         this.getSoulCount += info.getSoulCount;
+        this.moveStone |= info.moveStone;
         this.notMoveNextCell |= info.notMoveNextCell;
     }
 }

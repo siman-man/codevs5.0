@@ -18,8 +18,6 @@ public class Dog {
     public int saveX;
     public int firstY;
     public int firstX;
-    public int tempSaveY;
-    public int tempSaveX;
 
     public Dog(int id, int y, int x) {
         this.id = id;
@@ -46,16 +44,6 @@ public class Dog {
     public void rollbackFirst() {
         this.y = this.firstY;
         this.x = this.firstX;
-    }
-
-    public void tempSave() {
-        this.tempSaveY = this.y;
-        this.tempSaveX = this.x;
-    }
-
-    public void tempRollback() {
-        this.y = this.tempSaveY;
-        this.x = this.tempSaveX;
     }
 
     public String toString() {

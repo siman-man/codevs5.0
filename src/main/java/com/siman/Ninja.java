@@ -166,6 +166,9 @@ public class Ninja {
      */
     public int x;
 
+    public int originY;
+    public int originX;
+
     public int firstY;
     public int firstX;
 
@@ -180,16 +183,6 @@ public class Ninja {
     public int saveX;
 
     /**
-     * 一時保存
-     */
-    public int tempSaveY;
-
-    /**
-     * 一時保存用
-     */
-    public int tempSaveX;
-
-    /**
      * 目的地のID
      */
     public int targetId;
@@ -198,11 +191,6 @@ public class Ninja {
      * 保存した目標ソウルID
      */
     public int saveTarget;
-
-    /**
-     * 一時保存
-     */
-    public int tempSaveTargetId;
 
     public Ninja(int id) {
         this.id = id;
@@ -214,16 +202,6 @@ public class Ninja {
      */
     public int getNID() {
         return (Field.WIDTH * this.y) + this.x;
-    }
-
-    public void saveFirst() {
-        this.firstY = this.y;
-        this.firstX = this.x;
-    }
-
-    public void rollbackFirst() {
-        this.y = this.firstY;
-        this.x = this.firstX;
     }
 
     /**
@@ -239,12 +217,6 @@ public class Ninja {
         this.saveTarget = this.targetId;
     }
 
-    public void tempSaveStatus() {
-        this.tempSaveY = this.y;
-        this.tempSaveX = this.x;
-        this.tempSaveTargetId = this.targetId;
-    }
-
     /**
      * 保存した状態に戻す
      */
@@ -254,16 +226,7 @@ public class Ninja {
         this.targetId = this.saveTarget;
     }
 
-    /**
-     *
-     */
-    public void tempRollback() {
-        this.y = this.tempSaveY;
-        this.x = this.tempSaveX;
-        this.targetId = this.tempSaveTargetId;
-    }
-
     public String toString() {
-        return String.format("ninja.y = %d, ninja.x = %d", this.y, this.x);
+        return String.format("id: %d, ninja.y = %d, ninja.x = %d", this.id, this.y, this.x);
     }
 }
