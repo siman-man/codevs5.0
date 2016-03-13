@@ -163,7 +163,7 @@ public class PlayerInfo {
             }
             */
 
-            if ((rockCost <= 4) || this.soulPower >= 15) {
+            if ((rockCost <= 5) || this.soulPower >= 10) {
                 fallRockAttackEasy(enemy, commandList);
 
                 if (commandList.eval >= 300000) {
@@ -272,7 +272,7 @@ public class PlayerInfo {
                     return;
                 }
 
-                if (!canMove(ninja.originY, ninja.originX, DD[1]) && Field.existStone(f1Cell.state) && Field.isStonePuttable(f0Cell.state)) {
+                if (Field.existStone(f1Cell.state) && Field.isStonePuttable(f0Cell.state)) {
                     commandList.useSkill = true;
                     commandList.spell = NinjaSkill.breakMyStone(f1Cell.y, f1Cell.x);
                     return;
@@ -337,7 +337,7 @@ public class PlayerInfo {
                 if (distA == INF || distB == INF) continue;
                 int distC = getAllDogDist(y, x);
                 int distD = getAllSoulDist(y, x);
-                int eval = distA + distB - cell.soulValue / 2;
+                int eval = distA + distB - cell.soulValue;
                 //int eval = distA + distB + distD - cell.soulValue;
 
                 if (maxDist < eval) {
@@ -418,6 +418,7 @@ public class PlayerInfo {
         saveNinjaStatus();
         saveSoulStatus();
 
+
         ActionInfo bestActionB = getBestAction(ninjaB);
 
         this.BAction = false;
@@ -434,7 +435,7 @@ public class PlayerInfo {
     public ActionInfo getBestAction(Ninja ninja) {
         ActionInfo bestAction = new ActionInfo();
         int maxEval = Integer.MIN_VALUE;
-        int beamWidth = 1200;
+        int beamWidth = 1000;
         int limitDepth = 3;
 
         clearSoulValue();
@@ -454,7 +455,7 @@ public class PlayerInfo {
                     updateField(ninja, node.actionHistory);
                     ActionInfo info = moveAction(ninja, action);
 
-                    if (info.isValid()){
+                    if (info.isValid()) {
                         Node nextNode = new Node();
 
                         if (depth == 0) {
@@ -489,7 +490,7 @@ public class PlayerInfo {
                             maxEval = nextNode.eval;
                             bestAction = info;
                             bestAction.commandList = nextNode.actionHistory.get(0);
-                        } else if (info.toEval() > -DEATH/2){
+                        } else if (info.toEval() > -DEATH / 2){
                             que.add(nextNode);
                         }
 
@@ -1221,7 +1222,7 @@ public class PlayerInfo {
             queueX.add(dog.x);
             queueD.add(0);
 
-            int limit = 6;
+            int limit = 10;
 
             boolean[][] checkList = new boolean[Field.HEIGHT][Field.WIDTH];
             for (int y = 0; y < Field.HEIGHT; y++) {
@@ -1267,8 +1268,8 @@ public class PlayerInfo {
     }
 
     public void clearSoulValue() {
-        for (int y = 1; y < Field.HEIGHT-1; y++) {
-            for (int x = 1; x < Field.WIDTH-1; x++) {
+        for (int y = 0; y < Field.HEIGHT; y++) {
+            for (int x = 0; x < Field.WIDTH; x++) {
                 Cell cell = this.field[y][x];
                 cell.soulValue = 0;
             }
@@ -1293,25 +1294,17 @@ public class PlayerInfo {
             if (!soul.exist) continue;
             //if (getNearDogCount(soul.y, soul.x) >= 8) continue;
 
-            if (this.AAction && distB+2 <= distA) {
-                soul.owner = ninjaB.id;
-                //continue;
-            }
             if (this.AAction && soul.y < Field.HEIGHT / 2) {
                 soul.owner = ninjaB.id;
                 continue;
-            }
-            if (this.BAction && distA+2 < distB) {
-                soul.owner = ninjaA.id;
-                //continue;
             }
             if (this.BAction && soul.y >= Field.HEIGHT / 2) {
                 soul.owner = ninjaA.id;
                 continue;
             }
 
-            for (int y = 1; y < Field.HEIGHT-1; y++) {
-                for (int x = 1; x < Field.WIDTH-1; x++) {
+            for (int y = 1; y < Field.HEIGHT; y++) {
+                for (int x = 1; x < Field.WIDTH; x++) {
                     Cell cell = this.field[y][x];
                     int dist = this.eachCellDist[cell.id][soul.sid];
 
@@ -1418,6 +1411,7 @@ public class PlayerInfo {
             }
             if (currentCell.dogDist > 2) continue;
 
+
             for (int y = -3; y <= 3; y++) {
                 for (int x = -3; x <= 3; x++) {
                     int ny = ninja.y + y;
@@ -1427,7 +1421,6 @@ public class PlayerInfo {
 
                     Cell cell = enemy.field[ny][nx];
                     if (Field.isWall(cell.state)) continue;
-                    if (enemy.eachCellDist[currentCell.id][cell.id] > 3) continue;
 
                     if (Field.isStonePuttable(cell.state)) {
                         enemy.setStone(ny, nx);
