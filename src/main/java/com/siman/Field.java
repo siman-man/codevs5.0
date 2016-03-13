@@ -122,6 +122,14 @@ public class Field {
         return ((state & NINJA_A) == NINJA_A || (state & NINJA_B) == NINJA_B);
     }
 
+    public static boolean existNinjaA(int state) {
+        return (state & NINJA_A) == NINJA_A;
+    }
+
+    public static boolean existNinjaB(int state) {
+        return (state & NINJA_B) == NINJA_B;
+    }
+
     /**
      * 固定石かどうか
      * @param state フィールドの状態

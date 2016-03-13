@@ -68,8 +68,6 @@ public class BestActionTest {
         ActionInfo[] bestAction = my.action(enemy, commandList);
         ActionInfo actionB = bestAction[1];
 
-        System.err.println(actionB);
-
         assertThat(actionB.commandList, is("UU"));
     }
 
@@ -385,5 +383,109 @@ public class BestActionTest {
         this.codevs.beforeProc(commandList);
 
         assertThat(commandList.spell, is(NinjaSkill.fallrockEnemy(9, 3)));
+    }
+
+    @Test
+    public void case24() throws Exception {
+        File file = new File("src/test/resources/action/sample24.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        assertThat(commandList.spell, is(NinjaSkill.fallrockEnemy(12, 4)));
+    }
+
+    @Test
+    public void case25() throws Exception {
+        File file = new File("src/test/resources/action/sample25.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        assertThat(commandList.spell, is(""));
+    }
+
+    @Test
+    public void case26() throws Exception {
+        File file = new File("src/test/resources/action/sample26.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        ActionInfo[] bestActions = my.action(enemy, commandList);
+
+        System.err.println(bestActions[0]);
+
+        assertThat(my.field[11][7].dogDist, is(1));
+        assertThat(bestActions[0].commandList, is("LL"));
+    }
+
+    @Test
+    public void case27() throws Exception {
+        File file = new File("src/test/resources/action/sample27.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        ActionInfo[] bestActions = my.action(enemy, commandList);
+
+        assertThat(commandList.spell, is(NinjaSkill.fallrockEnemy(10, 1)));
+    }
+
+    @Test
+    public void case28() throws Exception {
+        File file = new File("src/test/resources/action/sample28.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        ActionInfo[] bestActions = my.action(enemy, commandList);
+
+        assertThat(commandList.spell, is(""));
+    }
+
+    @Test
+    public void case29() throws Exception {
+        File file = new File("src/test/resources/action/sample29.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        ActionInfo[] bestActions = my.action(enemy, commandList);
+
+        assertThat(commandList.spell, is(NinjaSkill.summonEnemyAvator(10, 6)));
+    }
+
+    @Test
+    public void case30() throws Exception {
+        File file = new File("src/test/resources/action/sample30.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        ActionInfo[] bestActions = my.action(enemy, commandList);
+
+        assertThat(commandList.spell, is(NinjaSkill.breakMyStone(10, 10)));
     }
 }

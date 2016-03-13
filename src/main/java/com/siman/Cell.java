@@ -43,6 +43,8 @@ public class Cell {
      */
     public int soulValue;
 
+    public int saveSoulValue;
+
     public Cell(int id) {
         this.id = id;
         this.y = id / Field.WIDTH;
@@ -62,11 +64,13 @@ public class Cell {
     public void rollback() {
         this.dogValue = this.saveDogValue;
         this.dogDist = this.saveDogDist;
+        this.soulValue = this.saveSoulValue;
     }
 
     public void save() {
         this.saveDogValue = this.dogValue;
         this.saveDogDist = this.dogDist;
+        this.saveSoulValue = this.soulValue;
     }
 
     public String toString() {

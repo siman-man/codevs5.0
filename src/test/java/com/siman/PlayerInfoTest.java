@@ -75,21 +75,30 @@ public class PlayerInfoTest {
 
         my.updateEachCellDist();
 
-        int id1 = Utility.getId(1, 1);
+        int id1_1 = Utility.getId(1, 1);
+        int id1_2 = Utility.getId(1, 2);
+        int id1_3 = Utility.getId(1, 3);
         int id2 = Utility.getId(10, 6);
         int id3 = Utility.getId(9, 4);
         int id1_4 = Utility.getId(1, 4);
         int id1_5 = Utility.getId(1, 5);
+        int id2_1 = Utility.getId(2, 1);
         int id2_3 = Utility.getId(2, 3);
         int id2_4 = Utility.getId(2, 4);
         int id2_5 = Utility.getId(2, 5);
         int id3_3 = Utility.getId(3, 3);
         int id3_4 = Utility.getId(3, 4);
         int id3_5 = Utility.getId(3, 5);
+        int id3_13 = Utility.getId(3, 13);
+        int id5_5 = Utility.getId(5, 5);
+        int id5_11 = Utility.getId(5, 11);
+        int id1_12 = Utility.getId(1, 12);
+        int id2_12 = Utility.getId(2, 12);
+        int id3_12 = Utility.getId(3, 12);
 
-        assertThat(my.eachCellDist[id1][id1], is(0));
+        assertThat(my.eachCellDist[id1_1][id1_1], is(0));
         //assertThat(my.eachCellDist[id2_3][id2_4], is(3));
-        assertThat(my.eachCellDist[id2_4][id2_5], is(3));
+        //assertThat(my.eachCellDist[id2_4][id2_5], is(3));
         assertThat(my.eachCellDist[id2_4][id2_3], is(PlayerInfo.INF));
         //assertThat(my.eachCellDist[id2_5][id2_4], is(3));
 
@@ -103,14 +112,19 @@ public class PlayerInfoTest {
         //assertThat(my.eachCellDist[id3_5][id1_4], is(PlayerInfo.INF));
         //assertThat(my.eachCellDist[id3_3][id1_4], is(PlayerInfo.INF));
 
-        assertThat(my.eachCellDist[id1][16], is(PlayerInfo.INF));
-        assertThat(my.eachCellDist[id1][17], is(PlayerInfo.INF));
-        assertThat(my.eachCellDist[id1][18], is(27));
-        assertThat(my.eachCellDist[id1][29], is(1));
-        assertThat(my.eachCellDist[id1][47], is(6));
-        assertThat(my.eachCellDist[29][id1], is(1));
-        assertThat(my.eachCellDist[id1][75], is(8));
-        assertThat(my.eachCellDist[75][id1], is(8));
+        assertThat(my.eachCellDist[id1_1][id1_2], is(PlayerInfo.INF));
+        assertThat(my.eachCellDist[id1_1][id1_3], is(PlayerInfo.INF));
+        assertThat(my.eachCellDist[id1_1][id2_1], is(1));
+        assertThat(my.eachCellDist[id1_1][id5_11], is(14));
+        assertThat(my.eachCellDist[id1_1][id3_12], is(17));
+        assertThat(my.eachCellDist[id1_1][id2_12], is(18));
+        assertThat(my.eachCellDist[id1_1][id1_12], is(19));
+        assertThat(my.eachCellDist[id1_1][id1_4], is(27));
+        assertThat(my.eachCellDist[id1_1][29], is(1));
+        assertThat(my.eachCellDist[id1_1][id3_5], is(6));
+        assertThat(my.eachCellDist[29][id1_1], is(1));
+        assertThat(my.eachCellDist[id1_1][id5_5], is(8));
+        assertThat(my.eachCellDist[75][id1_1], is(8));
         assertThat(my.eachCellDist[131][145], is(1));
         assertThat(my.eachCellDist[145][131], is(1));
         assertThat(my.eachCellDist[130][145], is(2));

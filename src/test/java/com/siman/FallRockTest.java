@@ -39,7 +39,6 @@ public class FallRockTest {
 
         int id1_8 = Utility.getId(1, 8);
         assertThat(bestAction.commandList, is("UR"));
-        assertThat(ninjaA.targetId, is(id1_8));
 
         enemy.fallRockAttackEasy(enemy, commandList);
 
@@ -88,17 +87,12 @@ public class FallRockTest {
 
         Ninja ninja = enemy.ninjaList[0];
         enemy.setStone(4, 9);
+        assertTrue(Field.existStone(enemy.field[4][9].state));
         ActionInfo bestAction = enemy.getMaxNinjaEval(ninja);
-
-        assertTrue(Field.existNinja(enemy.field[5][9].state));
-        assertFalse(enemy.canMove(5, 9, 0));
-        assertFalse(enemy.canMove(5, 9, 1));
-        assertFalse(enemy.canMove(5, 9, 2));
-        assertFalse(enemy.canMove(5, 9, 3));
 
         enemy.fallRockAttackEasy(enemy, commandList);
 
-        String expect = "";
+        String expect = NinjaSkill.fallrockEnemy(4, 8);
         assertThat(commandList.spell, is(expect));
     }
 
@@ -139,8 +133,9 @@ public class FallRockTest {
         Ninja ninja = enemy.ninjaList[0];
         ActionInfo info = enemy.getMaxNinjaEval(ninja);
 
+        assertThat(enemy.field[2][1].dogDist, is(2));
         String expect = NinjaSkill.fallrockEnemy(4, 1);
-        assertThat(commandList.spell, is(expect));
+        assertThat(commandList.spell, is(""));
     }
 
     @Test

@@ -10,6 +10,8 @@ public class NinjaSoul {
     public int sid;
     public int y;
     public int x;
+    public int owner;
+    public int ninjaDist;
     public boolean exist;
     public boolean saveExist;
 
@@ -19,6 +21,8 @@ public class NinjaSoul {
         this.y = y;
         this.x = x;
         this.exist = true;
+        this.owner = -1;
+        this.ninjaDist = PlayerInfo.INF;
     }
 
     public void saveStatus() {

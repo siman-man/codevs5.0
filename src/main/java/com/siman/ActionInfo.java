@@ -42,9 +42,15 @@ public class ActionInfo {
         int eval = 0;
 
         eval += 25000 * this.getSoulCount;
+        eval += 25000 * this.getSoulCountFirst;
         eval += this.positionValue;
         eval -= (this.notMoveNextCell)? 50 : 0;
-        eval -= (this.moveStone)? 10 : 0;
+
+        if (this.getSoulCountFirst + this.getSoulCount > 0) {
+            eval -= (this.moveStone)? 10000 : 0;
+        } else {
+            eval -= (this.moveStone)? 100 : 0;
+        }
 
         return eval;
     }
@@ -59,6 +65,7 @@ public class ActionInfo {
 
     public void sum(ActionInfo info) {
         this.getSoulCount += info.getSoulCount;
+        this.getSoulCountFirst = info.getSoulCountFirst;
         this.moveStone |= info.moveStone;
         this.notMoveNextCell |= info.notMoveNextCell;
     }

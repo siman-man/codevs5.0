@@ -8,10 +8,12 @@ public class Ninja {
     // 通常時
     public static String[] NORMAL_MOVE_PATTERN = {
             // 1マス移動
+            /*
             "U",
             "R",
             "D",
             "L",
+            */
 
             // 2マス移動
             "UU",
@@ -169,9 +171,6 @@ public class Ninja {
     public int originY;
     public int originX;
 
-    public int firstY;
-    public int firstX;
-
     /**
      * 保存したy座標
      */
@@ -192,6 +191,8 @@ public class Ninja {
      */
     public int saveTarget;
 
+    public boolean nearSoul;
+
     public Ninja(int id) {
         this.id = id;
     }
@@ -202,6 +203,10 @@ public class Ninja {
      */
     public int getNID() {
         return (Field.WIDTH * this.y) + this.x;
+    }
+
+    public void clean() {
+        this.nearSoul = false;
     }
 
     /**

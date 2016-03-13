@@ -212,7 +212,20 @@ public class Codevs {
              * スキルの使用回数をセット
              */
             for (int i = 0; i < this.skills; i++) {
-                player.useSkill[i] = sc.nextInt();
+                int cnt = sc.nextInt();
+
+                if (i == NinjaSkill.MY_AVATAR) {
+                    for (Ninja ninja : player.ninjaList) {
+                        if (ninja.nearSoul) {
+                        }
+                    }
+                }
+
+                player.useSkill[i] = cnt;
+            }
+
+            for (Ninja ninja : player.ninjaList) {
+                ninja.clean();
             }
         }
     }
