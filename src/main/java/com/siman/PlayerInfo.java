@@ -244,6 +244,7 @@ public class PlayerInfo {
         int FIRST_FAILED = 1;
 
         if (!getSoul && (commandList.useSkill || this.summonsAvator || this.summonsEnemyAvator)) return;
+        if (this.summonsAvator || this.summonsEnemyAvator) return;
 
         int i = 0;
         int ninjaY = ninja.originY;
@@ -395,7 +396,7 @@ public class PlayerInfo {
             int safePointCount = enemy.getSafePointCount(ninja);
 
             if (bestAction.commandList != "N") {
-                continue;
+                //continue;
             } else if (safePointCount == 0 || enemy.useSkill[NinjaSkill.MY_AVATAR] == 0){
                 this.summonsEnemyAvator = true;
                 commandList.useSkill = true;
@@ -415,7 +416,7 @@ public class PlayerInfo {
                         Cell cell = enemy.field[ny][nx];
 
                         if (Field.existSolidObject(cell.state)) continue;
-                        if (calcManhattanDist(ninja.y, ninja.x, ny, nx) > 2) continue;
+                        if (calcManhattanDist(ninja.y, ninja.x, ny, nx) != 2) continue;
                         int aliveCount = enemy.getAliveCellCount(ny, nx);
 
                         if (maxAlive < aliveCount) {
@@ -443,7 +444,7 @@ public class PlayerInfo {
         for (NinjaSoul soul : enemy.soulList) {
             Cell cell = enemy.field[soul.y][soul.x];
 
-            if (soul.ninjaDist == 2 && cell.dogDist <= 1) {
+            if (soul.ninjaDist == 2 && cell.dogDist <= 1 && cell.dogValue <= 3000) {
                 this.summonsEnemyAvator = true;
                 commandList.useSkill = true;
                 commandList.spell = NinjaSkill.summonEnemyAvator(soul.y, soul.x);
@@ -1181,7 +1182,7 @@ public class PlayerInfo {
         } else if (aliveCellCount <= 4) {
             eval -= (200000 - aliveCellCount);
         } else if (aliveCellCount <= 6) {
-            eval -= (10000 - aliveCellCount);
+            //eval -= (100000 - aliveCellCount);
         } else if (aliveCellCount <= 20) {
             //eval -= (1000 - aliveCellCount);
         } else {
@@ -1345,7 +1346,7 @@ public class PlayerInfo {
             queueX.add(dog.x);
             queueD.add(0);
 
-            int limit = 10;
+            int limit = 6;
 
             boolean[][] checkList = new boolean[Field.HEIGHT][Field.WIDTH];
             for (int y = 0; y < Field.HEIGHT; y++) {
@@ -1403,7 +1404,7 @@ public class PlayerInfo {
      *
      */
     public void updateSoulValue() {
-        int limit = 10;
+        int limit = 12;
         Ninja ninjaA = this.ninjaList[0];
         Ninja ninjaB = this.ninjaList[1];
         int nidA = ninjaA.getNID();

@@ -49,10 +49,10 @@ public class ActionInfo {
         if (this.getSoulCountFirst + this.getSoulCount > 0) {
             eval -= (this.moveStone)? 10000 : 0;
         } else {
-            eval -= (this.moveStone)? 500 : 0;
+            eval -= (this.moveStone)? 1000 : 0;
 
             if (playerId == Codevs.ENEMY_ID) {
-                eval -= (this.moveStone)? 1000 : 0;
+                eval -= (this.moveStone)? 3000 : 0;
             }
         }
 
