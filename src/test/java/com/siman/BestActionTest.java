@@ -488,4 +488,19 @@ public class BestActionTest {
 
         assertThat(commandList.spell, is(NinjaSkill.breakMyStone(10, 10)));
     }
+
+    @Test
+    public void case31() throws Exception {
+        File file = new File("src/test/resources/action/sample31.in");
+        Scanner sc = new Scanner(file);
+        this.codevs.readTurnInfo(sc);
+        PlayerInfo my = this.codevs.playerInfoList[Codevs.MY_ID];
+        PlayerInfo enemy = this.codevs.playerInfoList[Codevs.ENEMY_ID];
+        CommandList commandList = new CommandList();
+        this.codevs.beforeProc(commandList);
+
+        ActionInfo[] bestActions = my.action(enemy, commandList);
+
+        assertThat(commandList.spell, is(NinjaSkill.breakMyStone(10, 10)));
+    }
 }

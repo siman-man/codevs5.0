@@ -38,6 +38,31 @@ public class ActionInfo {
      * 行動した際の動作からの評価値を出す
      * @return
      */
+    public int toEval(int playerId) {
+        int eval = 0;
+
+        eval += 25000 * this.getSoulCount;
+        eval += 25000 * this.getSoulCountFirst;
+        eval += this.positionValue;
+        eval -= (this.notMoveNextCell)? 50 : 0;
+
+        if (this.getSoulCountFirst + this.getSoulCount > 0) {
+            eval -= (this.moveStone)? 10000 : 0;
+        } else {
+            eval -= (this.moveStone)? 500 : 0;
+
+            if (playerId == Codevs.ENEMY_ID) {
+                eval -= (this.moveStone)? 1000 : 0;
+            }
+        }
+
+        return eval;
+    }
+
+    /**
+     * 行動した際の動作からの評価値を出す
+     * @return
+     */
     public int toEval() {
         int eval = 0;
 
@@ -49,7 +74,7 @@ public class ActionInfo {
         if (this.getSoulCountFirst + this.getSoulCount > 0) {
             eval -= (this.moveStone)? 10000 : 0;
         } else {
-            eval -= (this.moveStone)? 100 : 0;
+            eval -= (this.moveStone)? 500 : 0;
         }
 
         return eval;
@@ -60,7 +85,7 @@ public class ActionInfo {
         int targetX = this.targetId % Field.WIDTH;
         return String.format("ap = %d, fs = %d, soul = %d, y = %d, x = %d, eval = %d, com = %s, target = (%d,%d)",
                 this.alivePathCount, this.getSoulCountFirst, this.getSoulCount, this.ninjaY, this.ninjaX,
-                toEval(), this.commandList, targetY, targetX);
+                toEval(0), this.commandList, targetY, targetX);
     }
 
     public void sum(ActionInfo info) {
