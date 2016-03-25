@@ -37,6 +37,36 @@ public class Ninja {
             "LL",
     };
 
+    // 通常時 (all complete)
+    public static String[] NORMAL_MOVE_PATTERN_ALL = {
+            // 1マス移動
+            "U",
+            "R",
+            "D",
+            "L",
+
+            // 2マス移動
+            "UU",
+            "UR",
+            "UD",
+            "UL",
+
+            "RU",
+            "RR",
+            "RD",
+            "RL",
+
+            "DU",
+            "DR",
+            "DD",
+            "DL",
+
+            "LU",
+            "LR",
+            "LD",
+            "LL",
+    };
+
     // 超高速使用時
     public static String[] SUPER_MOVE_PATTERN = {
             // 1マス移動

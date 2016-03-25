@@ -401,6 +401,10 @@ public class PlayerInfo {
                 this.summonsEnemyAvator = true;
                 commandList.useSkill = true;
                 commandList.spell = NinjaSkill.summonEnemyAvator(ninja.y, ninja.x);
+
+                enemy.rollbackField();
+                enemy.rollbackNinja();
+                enemy.rollbackDogStatus();
                 return;
             } else {
                 int maxAlive = Integer.MIN_VALUE;
@@ -652,7 +656,9 @@ public class PlayerInfo {
         ActionInfo bestAction = new ActionInfo();
         int alivePathCount = 0;
 
-        for (String action : Ninja.NORMAL_MOVE_PATTERN) {
+        String[] movePattern = (this.playerId == Codevs.MY_ID) ? Ninja.NORMAL_MOVE_PATTERN : Ninja.NORMAL_MOVE_PATTERN_ALL;
+
+        for (String action : movePattern) {
             ActionInfo info = moveAction(ninja, action);
 
             if (info.isValid()) {
@@ -1190,6 +1196,23 @@ public class PlayerInfo {
         }
 
         return eval;
+    }
+
+    public int getCanMoveCount(int y, int x) {
+        int moveCount = 0;
+
+        for(int i = 0; i < 4; i++) {
+            int ny = y + DY[i];
+            int nx = x + DX[i];
+
+            if(isOutside(ny, nx)) continue;
+
+            if(canMove(y, x, i)) {
+                moveCount++;
+            }
+        }
+
+        return moveCount;
     }
 
     /**
